@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36401.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minotti", "MinottiApp\Minotti.csproj", "{918715B5-866A-4528-A213-6AF72E0A11AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinottiApp.Tests", "MinottiApp.Tests\MinottiApp.Tests.csproj", "{3B0FA806-9E7E-4E5C-9619-300BC4565005}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{918715B5-866A-4528-A213-6AF72E0A11AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{918715B5-866A-4528-A213-6AF72E0A11AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{918715B5-866A-4528-A213-6AF72E0A11AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{918715B5-866A-4528-A213-6AF72E0A11AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B0FA806-9E7E-4E5C-9619-300BC4565005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B0FA806-9E7E-4E5C-9619-300BC4565005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B0FA806-9E7E-4E5C-9619-300BC4565005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B0FA806-9E7E-4E5C-9619-300BC4565005}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {35DD1FD6-FE6B-4E39-9A01-B21D555AB025}
+	EndGlobalSection
+EndGlobal

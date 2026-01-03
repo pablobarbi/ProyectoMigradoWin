@@ -1,0 +1,20 @@
+release 5;
+datawindow(units=0 timer_interval=0 color=12632256 processing=0 print.documentname="" print.orientation = 0 print.margin.left = 110 print.margin.right = 110 print.margin.top = 97 print.margin.bottom = 97 print.paper.source = 0 print.paper.size = 0 print.prompt=no )
+header(height=1 color="536870912" )
+summary(height=1 color="536870912" )
+footer(height=1 color="536870912" )
+detail(height=401 color="536870912" )
+table(column=(type=char(8) update=yes updatewhereclause=yes key=yes name=modulo dbname="acc_modulos.modulo" )
+ column=(type=char(40) update=yes updatewhereclause=yes name=nombre dbname="acc_modulos.nombre" )
+ column=(type=char(40) update=yes updatewhereclause=yes name=bitmap dbname="acc_modulos.bitmap" )
+ retrieve="SELECT dba.acc_modulos.modulo,   
+       dba.acc_modulos.nombre,   
+       dba.acc_modulos.bitmap  
+  FROM dba.acc_modulos  
+ WHERE dba.acc_modulos.modulo = :modulo    
+" update="dba.acc_modulos" updatewhere=0 updatekeyinplace=no arguments=(("modulo", string)) )
+column(band=detail id=2 alignment="0" tabsequence=20 border="5" color="0" x="371" y="224" height="73" width="933" format="[general]"  name=nombre edit.limit=20 edit.case=any edit.focusrectangle=no edit.autoselect=yes edit.autohscroll=yes  font.face="Arial" font.height="-9" font.weight="400"  font.family="2" font.pitch="2" font.charset="0" background.mode="2" background.color="1086902488" )
+column(band=detail id=1 alignment="0" tabsequence=10 border="5" color="0" x="371" y="56" height="73" width="279" format="[general]"  name=modulo edit.limit=5 edit.case=any edit.focusrectangle=no edit.autoselect=yes edit.autohscroll=yes  font.face="Arial" font.height="-9" font.weight="400"  font.family="2" font.pitch="2" font.charset="0" background.mode="2" background.color="1086902488" )
+text(band=detail alignment="1" text="Nombre:"border="0" color="8388608" x="92" y="224" height="73" width="247"  name=nombre_t  font.face="Arial" font.height="-10" font.weight="700"  font.family="2" font.pitch="2" font.charset="0" background.mode="1" background.color="536870912" )
+text(band=detail alignment="1" text="Modulo:"border="0" color="8388608" x="101" y="56" height="73" width="238"  name=modulo_t  font.face="Arial" font.height="-10" font.weight="700"  font.family="2" font.pitch="2" font.charset="0" background.mode="1" background.color="536870912" )
+ 

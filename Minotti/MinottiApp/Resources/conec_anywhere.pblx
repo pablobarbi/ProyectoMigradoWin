@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project MSBuildVersion="2.0" ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="ResolveAssemblyReferences" />
+  <PropertyGroup>
+    <Name>conec_anywhere</Name>
+    <SchemaVersion>2</SchemaVersion>
+    <ProjectGuid>{07b76790-0bdc-4358-885f-eb354090d891}</ProjectGuid>
+    <Comment>Objetos para establecer la conección a la base de datos en SQL Anywhere.</Comment>
+    <CreateNewFolder>true</CreateNewFolder>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <Platform>AnyCPU</Platform>
+    <AssemblyName>conec_anywhere</AssemblyName>
+    <RootNamespace>conec_anywhere</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <ProjectTypeGuids>{1e00f043-675d-11d2-bca5-000086095dda};{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{1e00f043-675a-11d2-bca5-000086095dda}</ProjectTypeGuids>
+    <PBOriginalVersion>12.6.0</PBOriginalVersion>
+    <ReferencePath>$(DevEnvDir)\DotNET\bin</ReferencePath>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>.\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>.\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="app.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <ItemType>ApplicationDefinition</ItemType>
+    </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="d_param_x_operacion.srd">
+      <Comment>Menúes. Muestra los parámetros de todas las operaciones.</Comment>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="d_sub_modulos_x_perfil.srd">
+      <Comment>Menúes. Lista de los submódulos que tienen asignados las operaciones de los distintos módulos.</Comment>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="d_operaciones_x_perfil_sub_modulo.srd">
+      <Comment>Menúes. Lista de operaciones a las que tiene acceso un perfíl (a través de los módulos y submódulos).</Comment>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="d_operaciones_x_perfil.srd">
+      <Comment>Menúes. Lista de operaciones a las que tiene acceso un perfíl (a través de los módulos).</Comment>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="d_modulos_x_perfil.srd">
+      <Comment>Menúes. Lista de módulos a los que tiene acceso un perfíl.</Comment>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="w_coneccion_anywhere.srw">
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="w_coneccion_anywhere.srw.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <DependentUpon>w_coneccion_anywhere.srw</DependentUpon>
+    </Page>
+    <Compile Include="f_cargar_datos_operacion.srf">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="f_cargar_datos_usuario.srf">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Sybase\PowerBuilder\12.6\PowerBuilder.targets" />
+</Project>

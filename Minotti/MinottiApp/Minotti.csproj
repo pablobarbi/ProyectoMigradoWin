@@ -1,0 +1,312 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Application\**" />
+		<Compile Remove="Catalog\**" />
+		<Compile Remove="Controls\**" />
+		<Compile Remove="DataWindows\**" />
+		<Compile Remove="Loaders\**" />
+		<Compile Remove="Menus\**" />
+		<Compile Remove="Metadata\**" />
+		<Compile Remove="Models\**" />
+		<Compile Remove="PowerBuilderMeta\**" />
+		<Compile Remove="Reports\**" />
+		<Compile Remove="Resources\**" />
+		<Compile Remove="Services\**" />
+		<Compile Remove="State\**" />
+		<Compile Remove="Structures\**" />
+		<Compile Remove="UserObjects\**" />
+		<Compile Remove="utils\**" />
+		<Compile Remove="Views1\**" />
+		<Compile Remove="Views\LegacyPB\**" />
+		<EmbeddedResource Remove="Application\**" />
+		<EmbeddedResource Remove="Catalog\**" />
+		<EmbeddedResource Remove="Controls\**" />
+		<EmbeddedResource Remove="DataWindows\**" />
+		<EmbeddedResource Remove="Loaders\**" />
+		<EmbeddedResource Remove="Menus\**" />
+		<EmbeddedResource Remove="Metadata\**" />
+		<EmbeddedResource Remove="Models\**" />
+		<EmbeddedResource Remove="PowerBuilderMeta\**" />
+		<EmbeddedResource Remove="Reports\**" />
+		<EmbeddedResource Remove="Resources\**" />
+		<EmbeddedResource Remove="Services\**" />
+		<EmbeddedResource Remove="State\**" />
+		<EmbeddedResource Remove="Structures\**" />
+		<EmbeddedResource Remove="UserObjects\**" />
+		<EmbeddedResource Remove="utils\**" />
+		<EmbeddedResource Remove="Views1\**" />
+		<EmbeddedResource Remove="Views\LegacyPB\**" />
+		<None Remove="Application\**" />
+		<None Remove="Catalog\**" />
+		<None Remove="Controls\**" />
+		<None Remove="DataWindows\**" />
+		<None Remove="Loaders\**" />
+		<None Remove="Menus\**" />
+		<None Remove="Metadata\**" />
+		<None Remove="Models\**" />
+		<None Remove="PowerBuilderMeta\**" />
+		<None Remove="Reports\**" />
+		<None Remove="Resources\**" />
+		<None Remove="Services\**" />
+		<None Remove="State\**" />
+		<None Remove="Structures\**" />
+		<None Remove="UserObjects\**" />
+		<None Remove="utils\**" />
+		<None Remove="Views1\**" />
+		<None Remove="Views\LegacyPB\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="app.cs" />
+		<Compile Remove="sepad.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Pictures\2_256.bmp" />
+		<None Remove="Pictures\2_256.jpg" />
+		<None Remove="Pictures\agregar.bmp" />
+		<None Remove="Pictures\boca.jpg" />
+		<None Remove="Pictures\borrar.bmp" />
+		<None Remove="Pictures\buscar.bmp" />
+		<None Remove="Pictures\cancelar.bmp" />
+		<None Remove="Pictures\capitulo.jpg" />
+		<None Remove="Pictures\cerebro.JPG" />
+		<None Remove="Pictures\Close_file.GIF" />
+		<None Remove="Pictures\confirmar.bmp" />
+		<None Remove="Pictures\confirmar_b.bmp" />
+		<None Remove="Pictures\eliminar.bmp" />
+		<None Remove="Pictures\file_close.bmp" />
+		<None Remove="Pictures\file_open.bmp" />
+		<None Remove="Pictures\guardar_como.bmp" />
+		<None Remove="Pictures\hahnemann_2.bmp" />
+		<None Remove="Pictures\higado.JPG" />
+		<None Remove="Pictures\imprimir.bmp" />
+		<None Remove="Pictures\imprimir_g.bmp" />
+		<None Remove="Pictures\intercalado.bmp" />
+		<None Remove="Pictures\LOGO.ICO" />
+		<None Remove="Pictures\medicamento.gif" />
+		<None Remove="Pictures\Menu.bmp" />
+		<None Remove="Pictures\nariz.jpg" />
+		<None Remove="Pictures\neuronas.JPG" />
+		<None Remove="Pictures\nivel_cero.GIF" />
+		<None Remove="Pictures\ojo.JPG" />
+		<None Remove="Pictures\Open_file.GIF" />
+		<None Remove="Pictures\operacion.bmp" />
+		<None Remove="Pictures\operacion.GIF" />
+		<None Remove="Pictures\paciente2.jpg" />
+		<None Remove="Pictures\pagant.bmp" />
+		<None Remove="Pictures\pagsig.bmp" />
+		<None Remove="Pictures\pripag.bmp" />
+		<None Remove="Pictures\procesar.bmp" />
+		<None Remove="Pictures\pulmones.jpg" />
+		<None Remove="Pictures\REGLA.BMP" />
+		<None Remove="Pictures\reperto.jpg" />
+		<None Remove="Pictures\reperto2.jpg" />
+		<None Remove="Pictures\salir.bmp" />
+		<None Remove="Pictures\tapa1.BMP" />
+		<None Remove="Pictures\ultpag.bmp" />
+		<None Remove="Pictures\Ventana.bmp" />
+		<None Remove="Pictures\zoomin.bmp" />
+		<None Remove="Pictures\zoomout.bmp" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="State\guo_app.cs" />
+		<Compile Include="Structures\st_at_det.cs" />
+		<Compile Include="Structures\st_detalle.cs" />
+		<Compile Include="Structures\st_nivel.cs" />
+		<Compile Include="Structures\st_tamaño_minimo.cs" />
+		<Compile Include="Structures\Helpers.cs" />
+		<Compile Include="UserObjects\c_class.cs" />
+		<Compile Include="UserObjects\picturebutton.cs" />
+		<Compile Include="UserObjects\dw_calendar.cs" />
+		<Compile Include="UserObjects\dw_calendar.Designer.cs" />
+		<Compile Include="UserObjects\uo_link.cs" />
+		<Compile Include="UserObjects\uo_link.Designer.cs" />
+		<Compile Include="utils\Application.cs" />
+		<Compile Include="utils\ArrayHelpers.cs" />
+		<Compile Include="utils\DataStoreWrapper.cs" />
+		<Compile Include="utils\datawindow.cs" />
+		<Compile Include="utils\DynamicEventInvoker.cs" />
+		<Compile Include="utils\FileUtils.cs" />
+		<Compile Include="utils\GlobalHelpers.cs" />
+		<Compile Include="utils\ListExtensions.cs" />
+		<Compile Include="utils\Message.cs" />
+		<Compile Include="utils\MessageBox.cs" />
+		<Compile Include="utils\OpenPB.cs" />
+		<Compile Include="utils\OpenSheetWithParmPB.cs" />
+		<Compile Include="utils\OpenWithParmPB.cs" />
+		<Compile Include="utils\PBColor.cs" />
+		<Compile Include="utils\PBControlExtensions.cs" />
+		<Compile Include="utils\PBEnums.cs" />
+		<Compile Include="utils\PBEnvironment.cs" />
+		<Compile Include="utils\PBLog.cs" />
+		<Compile Include="utils\PBUtils.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Pictures\2_256.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\2_256.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\agregar.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\boca.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\borrar.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\buscar.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\cancelar.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\capitulo.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\cerebro.JPG">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\Close_file.GIF">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\confirmar.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\confirmar_b.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\eliminar.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\file_close.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\file_open.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\guardar_como.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\hahnemann_2.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\higado.JPG">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\imprimir.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\imprimir_g.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\intercalado.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\LOGO.ICO">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\medicamento.gif">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\Menu.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\nariz.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\neuronas.JPG">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\nivel_cero.GIF">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\ojo.JPG">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\Open_file.GIF">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\operacion.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\operacion.GIF">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\paciente2.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\pagant.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\pagsig.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\pripag.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\procesar.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\pulmones.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\REGLA.BMP">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\reperto.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\reperto2.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\salir.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\tapa1.BMP">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\ultpag.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\Ventana.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\zoomin.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Pictures\zoomout.bmp">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Data.Odbc" Version="8.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Views\abm\Controls\" />
+		<Folder Include="Views\Accesos\" />
+		<Folder Include="Views\conect_anywhere\Controls\" />
+		<Folder Include="Views\Informes\Controls\" />
+		<Folder Include="Views\Migracion\" />
+		<Folder Include="Views\Pacientes\Controls\" />
+	</ItemGroup>
+
+</Project>

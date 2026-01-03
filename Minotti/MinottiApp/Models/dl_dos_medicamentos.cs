@@ -1,0 +1,277 @@
+using Minotti.Data;
+using System;
+using System.Data;
+using System.Data.Odbc;
+
+namespace Minotti
+{
+    // Migrado desde PowerBuilder DataWindow: dl_dos_medicamentos.srd
+    // Mantiene el nombre original del objeto DataWindow.
+    public class dl_dos_medicamentos
+    {
+        // Consulta original detectada desde el SRD
+        public const string Sql = @"SELECT cap.capitulo_nombre, 
+cap.rubrica_nombre,        
+cap.subrubrica_nombre,   
+cap.subrubrica01_nombre,  
+cap.subrubrica02_nombre,      
+cap.subrubrica03_nombre,     
+cap.subrubrica04_nombre,     
+cap.subrubrica05_nombre,      
+cap.subrubrica06_nombre,      
+cap.subrubrica07_nombre,      
+cap.subrubrica08_nombre,     
+cap.subrubrica09_nombre,     
+cap.subrubrica10_nombre,     
+cm.medicamento,          
+cm.valor     
+FROM capitulaciones_matriz cap           , capitulacion_med cm    
+WHERE cap.capitulo = ?      AND 
+cap.capitulo = cm.capitulo      AND 
+cap.rubrica = cm.rubrica      AND 
+cm.medicamento IN (?,?)
+UNION  
+SELECT cap.capitulo_nombre,      
+cap.rubrica_nombre,        
+cap.subrubrica_nombre,  
+cap.subrubrica01_nombre,   
+cap.subrubrica02_nombre,   
+cap.subrubrica03_nombre,     
+cap.subrubrica04_nombre,    
+cap.subrubrica05_nombre,    
+cap.subrubrica06_nombre,    
+cap.subrubrica07_nombre,    
+cap.subrubrica08_nombre,    
+cap.subrubrica09_nombre,    
+cap.subrubrica10_nombre,     
+cm.medicamento,         
+cm.valor     
+FROM capitulaciones_matriz cap           , rubricacion_med cm   
+WHERE cap.capitulo = ?      AND 
+cap.rubrica = cm.rubrica      AND 
+cap.subrubrica = cm.subrubrica      AND
+cm.medicamento IN (?,?)
+UNION  
+SELECT cap.capitulo_nombre,    
+cap.rubrica_nombre,        
+cap.subrubrica_nombre, 
+cap.subrubrica01_nombre,
+cap.subrubrica02_nombre,     
+cap.subrubrica03_nombre,   
+cap.subrubrica04_nombre,    
+cap.subrubrica05_nombre,   
+cap.subrubrica06_nombre,   
+cap.subrubrica07_nombre,    
+cap.subrubrica08_nombre,      
+cap.subrubrica09_nombre,      
+cap.subrubrica10_nombre,     
+cm.medicamento,         
+cm.valor    
+FROM capitulaciones_matriz cap           , subrubricacion_med cm    
+WHERE cap.capitulo = ?      AND 
+cap.subrubrica = cm.subrubrica_padre      AND 
+cap.subrubrica01 = cm.subrubrica_hija      AND
+cm.medicamento IN (?,?) 
+UNION  
+SELECT cap.capitulo_nombre,    
+cap.rubrica_nombre,         
+cap.subrubrica_nombre,       
+cap.subrubrica01_nombre,    
+cap.subrubrica02_nombre,     
+cap.subrubrica03_nombre,     
+cap.subrubrica04_nombre,     
+cap.subrubrica05_nombre,     
+cap.subrubrica06_nombre,     
+cap.subrubrica07_nombre,   
+cap.subrubrica08_nombre,   
+cap.subrubrica09_nombre,    
+cap.subrubrica10_nombre,   
+cm.medicamento,         
+cm.valor     
+FROM capitulaciones_matriz cap           , subrubricacion_med cm  
+WHERE cap.capitulo = ?      AND 
+cap.subrubrica01 = cm.subrubrica_padre      AND
+cap.subrubrica02 = cm.subrubrica_hija      AND 
+cm.medicamento IN (?,?) 
+UNION   
+SELECT cap.capitulo_nombre,      
+cap.rubrica_nombre,        
+cap.subrubrica_nombre,   
+cap.subrubrica01_nombre,  
+cap.subrubrica02_nombre,    
+cap.subrubrica03_nombre,     
+cap.subrubrica04_nombre,     
+cap.subrubrica05_nombre,     
+cap.subrubrica06_nombre,     
+cap.subrubrica07_nombre,      
+cap.subrubrica08_nombre,     
+cap.subrubrica09_nombre,     
+cap.subrubrica10_nombre,     
+cm.medicamento,       
+cm.valor    
+FROM capitulaciones_matriz cap           , subrubricacion_med cm   
+WHERE cap.capitulo = ?      AND 
+cap.subrubrica02 = cm.subrubrica_padre      AND 
+cap.subrubrica03 = cm.subrubrica_hija      AND 
+cm.medicamento IN (?,?) 
+UNION   
+SELECT cap.capitulo_nombre,  
+cap.rubrica_nombre,       
+cap.subrubrica_nombre,    
+cap.subrubrica01_nombre,      
+cap.subrubrica02_nombre,   
+cap.subrubrica03_nombre,   
+cap.subrubrica04_nombre,    
+cap.subrubrica05_nombre,      
+cap.subrubrica06_nombre,    
+cap.subrubrica07_nombre,      
+cap.subrubrica08_nombre,     
+cap.subrubrica09_nombre, 
+cap.subrubrica10_nombre,     
+cm.medicamento,          
+cm.valor    
+FROM capitulaciones_matriz cap           , subrubricacion_med cm    
+WHERE cap.capitulo = ?      AND
+cap.subrubrica03 = cm.subrubrica_padre      AND 
+cap.subrubrica04 = cm.subrubrica_hija      AND 
+cm.medicamento IN (?,?) 
+UNION   SELECT cap.capitulo_nombre,       
+cap.rubrica_nombre,          
+cap.subrubrica_nombre,         
+cap.subrubrica01_nombre,         
+cap.subrubrica02_nombre,       
+cap.subrubrica03_nombre,       
+cap.subrubrica04_nombre,      
+cap.subrubrica05_nombre,     
+cap.subrubrica06_nombre,      
+cap.subrubrica07_nombre,     
+cap.subrubrica08_nombre,    
+cap.subrubrica09_nombre,       
+cap.subrubrica10_nombre,     
+cm.medicamento,         
+cm.valor     
+FROM capitulaciones_matriz cap           , subrubricacion_med cm    
+WHERE cap.capitulo = ?      AND 
+cap.subrubrica04 = cm.subrubrica_padre      AND 
+cap.subrubrica05 = cm.subrubrica_hija      AND 
+cm.medicamento IN (?,?) 
+UNION   
+SELECT cap.capitulo_nombre,        
+cap.rubrica_nombre,        
+cap.subrubrica_nombre,  
+cap.subrubrica01_nombre,    
+cap.subrubrica02_nombre,      
+cap.subrubrica03_nombre,    
+cap.subrubrica04_nombre,     
+cap.subrubrica05_nombre,     
+cap.subrubrica06_nombre,      
+cap.subrubrica07_nombre,      
+cap.subrubrica08_nombre,      
+cap.subrubrica09_nombre,     
+cap.subrubrica10_nombre,     
+cm.medicamento,         
+cm.valor    
+FROM capitulaciones_matriz cap           , subrubricacion_med cm    
+WHERE cap.capitulo = ?      AND 
+cap.subrubrica05 = cm.subrubrica_padre      AND 
+cap.subrubrica06 = cm.subrubrica_hija      AND
+cm.medicamento IN (?,?) 
+UNION   
+SELECT cap.capitulo_nombre,    
+cap.rubrica_nombre,        
+cap.subrubrica_nombre,      
+cap.subrubrica01_nombre,    
+cap.subrubrica02_nombre,     
+cap.subrubrica03_nombre,      
+cap.subrubrica04_nombre,      
+cap.subrubrica05_nombre,     
+cap.subrubrica06_nombre,     
+cap.subrubrica07_nombre,      
+cap.subrubrica08_nombre,    
+cap.subrubrica09_nombre,   
+cap.subrubrica10_nombre,    
+cm.medicamento,         
+cm.valor    
+FROM capitulaciones_matriz cap           , subrubricacion_med cm    
+WHERE cap.capitulo = ?      AND 
+cap.subrubrica06 = cm.subrubrica_padre      AND 
+cap.subrubrica07 = cm.subrubrica_hija      AND 
+cm.medicamento IN (?,?)
+UNION   
+SELECT cap.capitulo_nombre,     
+cap.rubrica_nombre,        
+cap.subrubrica_nombre,   
+cap.subrubrica01_nombre,    
+cap.subrubrica02_nombre, 
+cap.subrubrica03_nombre,     
+cap.subrubrica04_nombre,      
+cap.subrubrica05_nombre,      
+cap.subrubrica06_nombre,     
+cap.subrubrica07_nombre,     
+cap.subrubrica08_nombre,     
+cap.subrubrica09_nombre,   
+cap.subrubrica10_nombre,   
+cm.medicamento,          
+cm.valor     
+FROM capitulaciones_matriz cap           , subrubricacion_med cm    
+WHERE cap.capitulo = ?      AND 
+cap.subrubrica07 = cm.subrubrica_padre      AND 
+cap.subrubrica08 = cm.subrubrica_hija      AND 
+cm.medicamento IN (?,?) 
+UNION  
+SELECT cap.capitulo_nombre,          
+cap.rubrica_nombre,          
+cap.subrubrica_nombre,        
+cap.subrubrica01_nombre,      
+cap.subrubrica02_nombre,       
+cap.subrubrica03_nombre,     
+cap.subrubrica04_nombre,    
+cap.subrubrica05_nombre,    
+cap.subrubrica06_nombre,    
+cap.subrubrica07_nombre,    
+cap.subrubrica08_nombre,    
+cap.subrubrica09_nombre,     
+cap.subrubrica10_nombre,     
+cm.medicamento,       
+cm.valor     
+FROM capitulaciones_matriz cap           , subrubricacion_med cm   
+WHERE cap.capitulo = ?      AND 
+cap.subrubrica08 = cm.subrubrica_padre      
+AND cap.subrubrica09 = cm.subrubrica_hija      AND
+cm.medicamento IN (?,?) 
+UNION   
+SELECT cap.capitulo_nombre,     
+cap.rubrica_nombre,         
+cap.subrubrica_nombre,     
+cap.subrubrica01_nombre,      
+cap.subrubrica02_nombre,     
+cap.subrubrica03_nombre,    
+cap.subrubrica04_nombre,    
+cap.subrubrica05_nombre,    
+cap.subrubrica06_nombre,    
+cap.subrubrica07_nombre,    
+cap.subrubrica08_nombre,    
+cap.subrubrica09_nombre,    
+cap.subrubrica10_nombre,    
+cm.medicamento,        
+cm.valor     
+FROM capitulaciones_matriz cap           , subrubricacion_med cm    
+WHERE cap.capitulo = ?      AND 
+cap.subrubrica09 = cm.subrubrica_padre      AND
+cap.subrubrica10 = cm.subrubrica_hija      AND
+cm.medicamento IN (?,?) ORDER BY 1,2,3";
+
+        public static DataTable RetrieveToDataTable(params object[] parametros)
+        {
+            return SQLCA.ExecuteDataTable(Sql, cmd =>
+            {
+                foreach (var p in parametros)
+                {
+                    var prm = cmd.CreateParameter();
+                    prm.Value = p ?? DBNull.Value;
+                    cmd.Parameters.Add(prm);
+                }
+            });
+        }
+    }
+}

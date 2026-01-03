@@ -1,0 +1,12 @@
+conec_anywhere.pblx → Mapeo de archivos y destino en Minotti (WinForms)
+---------------------------------------------------------------------
+app.xaml  =>  Minotti/app.cs (WinForms entry)
+d_param_x_operacion.srd  =>  Minotti/Models/d_param_x_operacion.cs
+d_sub_modulos_x_perfil.srd  =>  Minotti/Models/d_sub_modulos_x_perfil.cs
+d_operaciones_x_perfil_sub_modulo.srd  =>  Minotti/Models/d_operaciones_x_perfil_sub_modulo.cs
+d_operaciones_x_perfil.srd  =>  Minotti/Models/d_operaciones_x_perfil.cs
+d_modulos_x_perfil.srd  =>  Minotti/Models/d_modulos_x_perfil.cs
+w_coneccion_anywhere.srw  =>  Minotti/Views/w_coneccion_anywhere.cs (+Designer)
+w_coneccion_anywhere.srw.xaml  =>  (no aplica en WinForms)
+f_cargar_datos_operacion.srf  =>  Minotti/Functions/f_cargar_datos_operacion.cs
+f_cargar_datos_usuario.srf  =>  Minotti/Functions/f_cargar_datos_usuario.cs
