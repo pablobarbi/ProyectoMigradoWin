@@ -988,7 +988,7 @@ namespace Minotti.Views.Basicos.Controls
 
         public int uof_ancho(bool scroll)
         {
-            int ancho_mdi = guo_app.uof_getmdi().WorkSpaceWidth();
+            int ancho_mdi = guo_app.uof_getmdi().WorkSpaceWidth;
 
             int iAux = ancho + sangria + 25;
             if (scroll) iAux += 70;
@@ -1013,7 +1013,7 @@ namespace Minotti.Views.Basicos.Controls
                 20;
 
             int ancho_mdi = 0, largo_mdi = 0;
-            guo_app.uof_getmdi().wf_GetAreaTrabajo(out ancho_mdi,out largo_mdi);
+            guo_app.uof_getmdi().wf_getareatrabajo(out ancho_mdi,out largo_mdi);
 
             if (this.Describe("DataWindow.Processing") == "3" ||
                 this.Describe("DataWindow.Processing") == "4" ||
@@ -1032,7 +1032,7 @@ namespace Minotti.Views.Basicos.Controls
                 PBInt(this.Describe("DataWindow.Detail.Height")) * a_cant_filas +
                 10;
 
-            int largo_mdi = guo_app.uof_getmdi().WorkSpaceHeight();
+            int largo_mdi = guo_app.uof_getmdi().WorkSpaceHeight;
 
             if (this.Describe("DataWindow.Processing") == "3" ||
                 this.Describe("DataWindow.Processing") == "4" ||

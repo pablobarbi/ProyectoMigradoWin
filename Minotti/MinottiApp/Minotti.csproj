@@ -8,8 +8,8 @@
 		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
 		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 		<Nullable>enable</Nullable>
+		<PlatformTarget>x86</PlatformTarget>
 	</PropertyGroup>
-
 	<ItemGroup>
 		<Compile Remove="Application\**" />
 		<Compile Remove="Catalog\**" />
@@ -70,6 +70,8 @@
 	<ItemGroup>
 		<Compile Remove="app.cs" />
 		<Compile Remove="sepad.cs" />
+		<Compile Remove="Views\Pbl\Views\w_splash.cs" />
+		<Compile Remove="Views\Pbl\Views\w_splash.Designer.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -136,6 +138,7 @@
 		<Compile Include="UserObjects\uo_link.Designer.cs" />
 		<Compile Include="utils\Application.cs" />
 		<Compile Include="utils\ArrayHelpers.cs" />
+		<Compile Include="utils\ContextInformation.cs" />
 		<Compile Include="utils\DataStoreWrapper.cs" />
 		<Compile Include="utils\datawindow.cs" />
 		<Compile Include="utils\DynamicEventInvoker.cs" />
@@ -151,8 +154,11 @@
 		<Compile Include="utils\PBControlExtensions.cs" />
 		<Compile Include="utils\PBEnums.cs" />
 		<Compile Include="utils\PBEnvironment.cs" />
+		<Compile Include="utils\PBListViewExtensions.cs" />
 		<Compile Include="utils\PBLog.cs" />
+		<Compile Include="utils\PBPictureBox.cs" />
 		<Compile Include="utils\PBUtils.cs" />
+		<Compile Include="utils\PBTreeViewItem.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -307,6 +313,21 @@
 		<Folder Include="Views\Informes\Controls\" />
 		<Folder Include="Views\Migracion\" />
 		<Folder Include="Views\Pacientes\Controls\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 </Project>

@@ -45,7 +45,7 @@ namespace Minotti.Views.Menues.Controls
             // BackColor=80269524 (PB long ARGB-like). No asumo formato.
             // WinForms usa Color ARGB. Si tu app tiene conversor PBColor->Color, usalo acá.
             // Para no inventar, lo dejo como FromArgb(int).
-            this.BackColor = System.Drawing.Color.FromArgb(unchecked((int)80269524));
+            this.BackColor = utils.PBColor.FromPB(80269524);// System.Drawing.Color.FromArgb(unchecked((int)80269524));
 
             // WindowType=response! (en PB suele ser no resizable + no min/max)
             // No lo pusiste en este window PB salvo response!. Mantengo comportamiento "response".
@@ -94,8 +94,8 @@ namespace Minotti.Views.Menues.Controls
             this.st_1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.st_1.Enabled = false;
 
-            this.st_1.ForeColor = System.Drawing.Color.FromArgb(unchecked((int)33554432));
-            this.st_1.BackColor = System.Drawing.Color.FromArgb(unchecked((int)67108864));
+            this.st_1.ForeColor = utils.PBColor.FromPB(33554432);// System.Drawing.Color.FromArgb(unchecked((int)33554432));
+            this.st_1.BackColor = utils.PBColor.FromPB(67108864);// System.Drawing.Color.FromArgb(unchecked((int)67108864));
             this.st_1.Font = new System.Drawing.Font("Tahoma", 10f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 
             // 

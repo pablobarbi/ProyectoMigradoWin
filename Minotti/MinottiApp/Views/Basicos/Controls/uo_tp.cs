@@ -269,7 +269,7 @@ namespace Minotti.Views.Basicos.Controls
             {
                 try
                 {
-                    return (int)(mdi.WorkSpaceHeight() * 0.7);
+                    return (int)(mdi.WorkSpaceHeight * 0.7);
                 }
                 catch
                 {
@@ -319,7 +319,7 @@ namespace Minotti.Views.Basicos.Controls
             {
                 try
                 {
-                    return (int)(mdi.WorkSpaceWidth() * 0.7);
+                    return (int)(mdi.WorkSpaceWidth * 0.7);
                 }
                 catch
                 {

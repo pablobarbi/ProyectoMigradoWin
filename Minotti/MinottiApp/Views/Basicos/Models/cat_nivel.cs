@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Minotti.utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,12 +25,15 @@ namespace Minotti.Views.Basicos.Models
         // string Cierra  /* Indica si la ventana se cierra al abrir la siguiente ventana */
         public string Cierra { get; set; } = string.Empty;
 
+        public datastore Dw { get; set; } = null!;
+        public bool Activo { get; set; }
+
         public cat_nivel()
         {
         }
 
         // public subroutine uof_copiaren (ref cat_nivel copia)
-        public void uof_copiaren(ref cat_nivel copia)
+        public void uof_copiaren(cat_nivel copia)
         {
             if (copia == null)
                 copia = new cat_nivel();

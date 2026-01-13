@@ -26,7 +26,7 @@ namespace Minotti.Views.Reportes.Controls
             // (no es inventar lógica; es aplicar propiedad declarada)
             try
             {
-                this.BackColor = Color.FromArgb(unchecked((int)backcolor));
+                this.BackColor = utils.PBColor.FromPB((int)backcolor);// Color.FromArgb(unchecked((int)backcolor));
             }
             catch
             {

@@ -363,7 +363,7 @@ namespace Minotti.Views.Basicos.Controls
         private static string f_ProxParam(string parametros)
         {
             // Tenés que implementar este helper global según tu migración de f_ProxParam PB.
-            return f_proxparam.fproxparam(parametros);
+            return f_proxparam.fproxparam(ref parametros);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Minotti.Views.Basicos
 {
-    public partial class w_splash : w_principal
+    public partial class w_splash : Form
     {
         public cat_splash at_splash { get; set; }
 
@@ -29,9 +29,9 @@ namespace Minotti.Views.Basicos
             this.AutoScaleMode = AutoScaleMode.None;
         }
 
-        protected override void OnShown(EventArgs e)
+        protected override void OnLoad(EventArgs e)
         {
-            base.OnShown(e);
+            base.OnLoad(e);
 
             // === Cargar datos ===
             if (at_splash != null)

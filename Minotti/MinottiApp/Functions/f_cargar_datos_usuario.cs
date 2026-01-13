@@ -1,14 +1,13 @@
 ﻿using Minotti.Data;
 using Minotti.Views.Basicos.Models;
-using System;
+using System.Data;
 using System.Reflection;
-using System.Windows.Forms;
 
-namespace Minotti.Functions
+namespace Minotti.Funciones
 {
     public static class f_cargar_datos_usuario
     {
-        // SQL equivalente a la del SRF (usa SQLCA.UserID como parámetro)
+        // === SQL EXACTO PB ===
         private const string SQL = @"
 SELECT dba.acc_usuarios.usuario,
        dba.acc_usuarios.nombre,
@@ -18,62 +17,80 @@ SELECT dba.acc_usuarios.usuario,
   FROM dba.acc_usuarios
  WHERE dba.acc_usuarios.usuario = ?";
 
+        /// <summary>
+        /// PB: f_cargar_datos_usuario (SRF)
+        /// return: 1 OK | -2 usuario/clave inválido | -1 error SQL
+        /// </summary>
         public static int fcargar_datos_usuario(cat_usuario at_usuario, bool controla_clave)
         {
-            if (SQLCA.Connection is null)
+            if (at_usuario == null)
             {
                 SQLCA.SqlCode = -1;
-                SQLCA.SqlErrText = "SQLCA.Connection no está configurada.";
+                SQLCA.SqlErrText = "cat_usuario es null.";
                 return -1;
             }
 
-            if (string.IsNullOrEmpty(SQLCA.UserID))
+            if (string.IsNullOrWhiteSpace(SQLCA.UserID))
             {
                 SQLCA.SqlCode = -1;
                 SQLCA.SqlErrText = "SQLCA.UserID no está configurado.";
                 return -1;
             }
 
-            var cnn = SQLCA.Connection;
-            if (cnn.State != System.Data.ConnectionState.Open)
-                cnn.Open();
-
             try
             {
-                using var cmd = cnn.CreateCommand();
-                cmd.CommandText = SQL;
-                var p1 = cmd.CreateParameter();
-                p1.Value = SQLCA.UserID!;
-                cmd.Parameters.Add(p1);
+                using var cmd = SQLCA.CreateCommand(SQL);
+                SQLCA.AddParam(cmd, SQLCA.UserID); // param posicional PB
 
-                using var rd = cmd.ExecuteReader();
+                using var rd = SQLCA.ExecuteReader(cmd);
+
                 if (!rd.Read())
                 {
-                    SQLCA.SqlCode = 100; // no encontrado
+                    // PB: sqlcode = 100
+                    SQLCA.SqlCode = 100;
+
                     if (controla_clave)
-                        MessageBox.Show("Usuario o clave inexistente.", "Error en Conexion", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    {
+                        MessageBox.Show(
+                            "Usuario o clave inexistente.",
+                            "Error en Conexion",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop
+                        );
+                    }
+
                     return -2;
                 }
 
-                // Leer columnas
+                // === Lectura columnas (PB 1:1) ===
                 string usuario = rd.IsDBNull(0) ? "" : rd.GetString(0);
                 string nombre = rd.IsDBNull(1) ? "" : rd.GetString(1);
-                string clave = rd.IsDBNull(2) ? "" : rd.GetValue(2)?.ToString() ?? "";
-                string perfil = rd.IsDBNull(3) ? "" : rd.GetValue(3)?.ToString() ?? "";
-                DateTime fechaSrv = rd.IsDBNull(4) ? DateTime.Now : Convert.ToDateTime(rd.GetValue(4));
+                string clave = rd.IsDBNull(2) ? "" : Convert.ToString(rd.GetValue(2)) ?? "";
+                string perfil = rd.IsDBNull(3) ? "" : Convert.ToString(rd.GetValue(3)) ?? "";
+                DateTime fecha = rd.IsDBNull(4) ? DateTime.Now : Convert.ToDateTime(rd.GetValue(4));
 
-                // Asignar a 'at_usuario' manteniendo nombres PB (Usuario, Nombre, Perfil, Fecha_Coneccion)
+                // === Asignación estilo PB ===
                 SetProp(at_usuario, "Usuario", usuario);
                 SetProp(at_usuario, "Nombre", nombre);
                 SetProp(at_usuario, "Perfil", perfil);
-                SetProp(at_usuario, "Fecha_Coneccion", fechaSrv);
+                SetProp(at_usuario, "Fecha_Coneccion", fecha);
 
-                // Validación de clave si corresponde
-                if (controla_clave && !string.IsNullOrEmpty(SQLCA.DBPass) && !string.Equals(clave, SQLCA.DBPass, StringComparison.Ordinal))
+
+                guo_app.uof_SetUsuario(at_usuario);
+
+                // === Validación de clave ===
+                if (controla_clave)
                 {
-                    // En PB: MessageBox(...) y Return(-2)
-                    MessageBox.Show("Usuario o clave inexistente.", "Error en Conexion", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                    return -2;
+                    if (!string.Equals(clave, SQLCA.DBPass ?? "", StringComparison.Ordinal))
+                    {
+                        MessageBox.Show(
+                            "Usuario o clave inexistente.",
+                            "Error en Conexion",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop
+                        );
+                        return -2;
+                    }
                 }
 
                 SQLCA.SqlCode = 0;
@@ -88,17 +105,25 @@ SELECT dba.acc_usuarios.usuario,
             }
         }
 
-        // Helper para asignar propiedades/fields con nombre exacto (ignorando mayúsculas/minúsculas)
+        // === Helper PB-like: asigna Property o Field por nombre ===
         private static void SetProp(object obj, string name, object? value)
         {
-            var type = obj.GetType();
-            var pi = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            var t = obj.GetType();
+
+            var pi = t.GetProperty(
+                name,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+            );
             if (pi != null)
             {
                 pi.SetValue(obj, value);
                 return;
             }
-            var fi = type.GetField(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+            var fi = t.GetField(
+                name,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+            );
             if (fi != null)
             {
                 fi.SetValue(obj, value);

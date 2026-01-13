@@ -27,14 +27,13 @@ namespace Minotti.Data
         public static string? LogID
         {
             get => UserID;
-            set => UserID = value;
+            
         }
 
         // PB: SQLCA.LogPass
         public static string? LogPass
         {
-            get => DBPass;
-            set => DBPass = value;
+            get => DBPass;            
         }
         // PB: SQLCA.SqlDbCode
         public static int SqlDbCode
@@ -49,7 +48,8 @@ namespace Minotti.Data
 
         private static OdbcTransaction? _currentTx;
 
-
+        public static bool IsConnected =>
+      Connection != null && Connection.State == ConnectionState.Open;
 
         private static bool EnsureConfigured()
         {
@@ -621,6 +621,39 @@ namespace Minotti.Data
             }
         }
 
+        public static bool Connect(
+    string dsn,
+    string user,
+    string password)
+        {
+            try
+            {
+                SQLCA.Disconnect();
+
+                string connStr =
+                    $"DSN={dsn};UID={user};PWD={password};";
+
+                var cn = new OdbcConnection(connStr);
+                cn.Open();
+
+                SQLCA.Connection = cn;
+                SQLCA.SqlCode = 0;
+                SQLCA.SqlDbCode = 0;
+                SQLCA.SqlErrText = "";
+
+                return true;
+            }
+            catch (OdbcException ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlDbCode = ex.ErrorCode;
+                SQLCA.SqlErrText = ex.Message;
+                SQLCA.Connection = null;
+                return false;
+            }
+        }
+
+
         public static long GetLastIdentity()
         {
             const string sql = "SELECT @@IDENTITY";
@@ -636,6 +669,19 @@ namespace Minotti.Data
             return Convert.ToInt64(result);
         }
 
+        public static IDataReader ExecuteReader(IDbCommand cmd)
+        {
+            if (cmd == null)
+                throw new ArgumentNullException(nameof(cmd));
+
+            if (cmd.Connection == null)
+                throw new InvalidOperationException("Command sin Connection.");
+
+            if (cmd.Connection.State != ConnectionState.Open)
+                cmd.Connection.Open();
+
+            return cmd.ExecuteReader();
+        }
     }
 
     public sealed class SQLCAProxy

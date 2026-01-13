@@ -121,33 +121,93 @@ namespace Minotti
         // -----------------------------------------------------
         public override void ue_open()
         {
+
             int rtn;
 
-            wMdi = new w_mdi();
 
+            wMdi = new w_mdi();
+            PBGlobals.w_mdi = wMdi;
+            PBGlobals.m_mdi = new m_mdi(wMdi);
+
+            // 1) Cargar datos de la app (crea at_splash)
             ue_cargar_datos_app();
 
-            uof_mostrar_splash(at_splash.segundos);
 
+            // 2️⃣ CONEXIÓN A LA BASE  ← ACÁ
             rtn = ue_coneccion();
-            if (rtn < 1) return;
+            if (rtn < 1)
+            {
+                ue_close();
+                return;
+            }
 
+            // 3️⃣ Datos dependientes de DB
             rtn = ue_cargar_datos_usuarios();
-            if (rtn < 1) return;
+            if (rtn < 1)
+            {
+                ue_close();
+                return;
+            }
 
             rtn = ue_cargar_datos_iniciales();
-            if (rtn < 1) return;
+            if (rtn < 1)
+            {
+                ue_close();
+                return;
+            }
 
             rtn = ue_cargar_datos_invisibles();
-            if (rtn < 1) return;
+            if (rtn < 1)
+            {
+                ue_close();
+                return;
+            }
 
             rtn = ue_tres_capas();
-            if (rtn < 1) return;
+            if (rtn < 1)
+            {
+                ue_close();
+                return;
+            }
+
+            // 2) SPLASH (modal, temporal)
+            using (var splash = new Views.Basicos.w_splash
+            {
+                at_splash = this.at_splash
+            })
+            {
+                splash.ShowDialog();
+            }
+
+
+
+            // 3) LOGIN (modal)
+            using (var login = new w_coneccion_sepad())
+            {
+                login.ShowDialog();
+
+                // PB: si cancela, se sale
+                if (login.Retorno != 1)
+                    return;
+            }
+
+            // ==============================
+            // 4. Abrir la ventana MDI
+            // ==============================
+
+
 
             OpenPB.Open(wMdi);
 
-            menu = new m_mdi();
+            // ==============================
+            // 5. Crear el menú MDI
+            // ==============================            
+            PBGlobals.m_mdi = new m_mdi(wMdi);
 
+
+            // ==============================
+            // 7. Abrir sheet del menú dinámico
+            // ==============================
             OpenSheetWithParmPB.OpenSheet(
                 typeof(w_menu_arbol_lista),
                 wMdi,
@@ -155,6 +215,7 @@ namespace Minotti
                 PBOpenMode.Original
             );
         }
+
 
         // -----------------------------------------------------
         // PB helpers
@@ -172,24 +233,60 @@ namespace Minotti
 
         public virtual void Open() => ue_open();
 
-        internal w_mdi uof_getmdi()
+        public w_mdi uof_getmdi()
         {
             return wMdi!;
         }
 
-        internal cat_usuario uof_getusuario()
+        public cat_usuario uof_getusuario()
         {
             return at_usuario;
         }
-
-        internal string uof_getarchivoinicio()
+        public void uof_setusuario(cat_usuario usuario)
         {
-            throw new NotImplementedException();
+            at_usuario = usuario ?? new cat_usuario();
         }
 
-        internal void uof_mostrar_datos_sistema()
+        public string uof_getarchivoinicio()
         {
-            throw new NotImplementedException();
+            return ArcInicio ?? string.Empty;
         }
+
+        public void uof_mostrar_datos_sistema()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"App: {App?.DisplayName} | Version: {Version} | Usuario: {at_usuario?.Nombre}"
+                );
+            }
+            catch
+            {
+                // PB: ignora errores
+            }
+        }
+
+        public override int ue_coneccion()
+        {
+            string dsn = "Minotti";   // el DSN ODBC real
+            SQLCA.UserID = "dba";// ed_usuario.Text;
+            SQLCA.DBPass = "sql"; //ed_clave.Text;
+
+            bool ok = SQLCA.Connect(dsn, SQLCA.UserID, SQLCA.DBPass);
+
+            if (!ok)
+            {
+                MessageBox.Show(
+                    SQLCA.SqlErrText,
+                    "Error de conexión",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return -1;
+            }
+
+            return 1;
+        }
+
+
     }
 }

@@ -25,7 +25,7 @@ namespace Minotti.Views.Basicos
         }
 
         // event ue_leer_parametros
-        public  override void ue_leer_parametros()
+        protected  override void ue_leer_parametros()
         {
             base.ue_leer_parametros();
 
@@ -103,7 +103,7 @@ namespace Minotti.Views.Basicos
             try
             {
                 //guo_app.uof_getmdi().wf_GetAreaTrabajo( wk_ancho, wk_alto);
-                uo_app.Instance.uof_getmdi().wf_GetAreaTrabajo(out wk_ancho, out wk_alto);
+                uo_app.Instance.uof_getmdi().wf_getareatrabajo(out wk_ancho, out wk_alto);
 
             }
             catch

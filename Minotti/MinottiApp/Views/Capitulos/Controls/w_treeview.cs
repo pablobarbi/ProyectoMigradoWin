@@ -88,7 +88,7 @@ namespace Minotti.Views.Capitulos.Controls
             try
             {
                 int ancho_mdi, largo_mdi;
-                guo_app.uof_Getmdi().wf_GetAreaTrabajo(out ancho_mdi, out largo_mdi);
+                guo_app.uof_Getmdi().wf_getareatrabajo(out ancho_mdi, out largo_mdi);
                 this.Width = ancho_mdi;
                 this.Height = largo_mdi;
             }

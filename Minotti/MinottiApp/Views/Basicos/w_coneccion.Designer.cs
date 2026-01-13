@@ -1,3 +1,4 @@
+using Minotti.utils;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -37,68 +38,70 @@ namespace Minotti.Views.Basicos
         private void InitializeComponent()
         {
             components = new Container();
-            this.SuspendLayout();
+            SuspendLayout();
 
             // =====================================================
             // FORM
             // =====================================================
-            this.Text = "Conexión";
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(900, 550);
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1100, 600);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Conexión";
 
             // =====================================================
-            // LOGO
+            // LOGO (IZQUIERDA)
             // =====================================================
             p_1 = new PictureBox
             {
                 Name = "p_1",
-                Location = new Point(20, 15),
-                Size = new Size(860, 160),
-                SizeMode = PictureBoxSizeMode.Zoom,
-                TabStop = false
+                Location = new Point(20, 20),
+                Size = new Size(500, 520),
+                SizeMode = PictureBoxSizeMode.StretchImage,
+                BorderStyle = BorderStyle.None,
+                TabStop = false,
+                ImageLocation = FileUtils.ResolveImage("tapa1.BMP")
             };
 
             // =====================================================
-            // GB BASE
+            // BASE DE DATOS
             // =====================================================
             gb_base = new GroupBox
             {
                 Name = "gb_base",
                 Text = "Base de Datos",
-                Location = new Point(40, 200),
-                Size = new Size(360, 170)
+                Location = new Point(550, 60),
+                Size = new Size(500, 160)
             };
 
             st_usuario_base = new Label
             {
                 Text = "Usuario:",
-                Location = new Point(20, 40),
-                Width = 80,
+                Location = new Point(30, 45),
+                Size = new Size(100, 23),
                 TextAlign = ContentAlignment.MiddleRight
             };
 
             sle_usuario_base = new TextBox
             {
-                Location = new Point(110, 40),
-                Width = 210
+                Location = new Point(140, 45),
+                Size = new Size(300, 23)
             };
 
             st_clave_base = new Label
             {
                 Text = "Clave:",
-                Location = new Point(20, 85),
-                Width = 80,
+                Location = new Point(30, 85),
+                Size = new Size(100, 23),
                 TextAlign = ContentAlignment.MiddleRight
             };
 
             sle_clave_base = new TextBox
             {
-                Location = new Point(110, 85),
-                Width = 210,
+                Location = new Point(140, 85),
+                Size = new Size(300, 23),
                 UseSystemPasswordChar = true
             };
 
@@ -108,42 +111,42 @@ namespace Minotti.Views.Basicos
             gb_base.Controls.Add(sle_clave_base);
 
             // =====================================================
-            // GB APLICACIÓN
+            // APLICACIÓN
             // =====================================================
             gb_aplicacion = new GroupBox
             {
                 Name = "gb_aplicacion",
                 Text = "Aplicación",
-                Location = new Point(460, 200),
-                Size = new Size(360, 170)
+                Location = new Point(550, 240),
+                Size = new Size(500, 160)
             };
 
             st_usuario_aplicacion = new Label
             {
                 Text = "Usuario:",
-                Location = new Point(20, 40),
-                Width = 80,
+                Location = new Point(30, 45),
+                Size = new Size(100, 23),
                 TextAlign = ContentAlignment.MiddleRight
             };
 
             sle_usuario_aplicacion = new TextBox
             {
-                Location = new Point(110, 40),
-                Width = 210
+                Location = new Point(140, 45),
+                Size = new Size(300, 23)
             };
 
             st_clave_aplicacion = new Label
             {
                 Text = "Clave:",
-                Location = new Point(20, 85),
-                Width = 80,
+                Location = new Point(30, 85),
+                Size = new Size(100, 23),
                 TextAlign = ContentAlignment.MiddleRight
             };
 
             sle_clave_aplicacion = new TextBox
             {
-                Location = new Point(110, 85),
-                Width = 210,
+                Location = new Point(140, 85),
+                Size = new Size(300, 23),
                 UseSystemPasswordChar = true
             };
 
@@ -153,34 +156,38 @@ namespace Minotti.Views.Basicos
             gb_aplicacion.Controls.Add(sle_clave_aplicacion);
 
             // =====================================================
-            // BOTONES
+            // BOTONES (LIBRES, NO DENTRO DE GROUPBOX)
             // =====================================================
-            pb_continuar = new Button
-            {
-                Text = "Continuar",
-                Location = new Point(260, 420),
-                Size = new Size(120, 35)
-            };
-            pb_continuar.Click += pb_continuar_Click;
+            this.pb_continuar = new Button();
+            this.pb_continuar.Location = new System.Drawing.Point(720, 160);
+            this.pb_continuar.Name = "pb_continuar";
+            this.pb_continuar.Size = new System.Drawing.Size(120, 32);
+            this.pb_continuar.TabIndex = 20;
+            this.pb_continuar.Text = "Continuar";
+            this.pb_continuar.UseVisualStyleBackColor = true;
+            this.pb_continuar.Anchor = AnchorStyles.Top;
+            this.pb_continuar.Click += pb_continuar_Click;
 
-            pb_cancelar = new Button
-            {
-                Text = "Cancelar",
-                Location = new Point(520, 420),
-                Size = new Size(120, 35)
-            };
-            pb_cancelar.Click += pb_cancelar_Click;
+            this.pb_cancelar = new Button();
+            this.pb_cancelar.Location = new System.Drawing.Point(860, 160);
+            this.pb_cancelar.Name = "pb_cancelar";
+            this.pb_cancelar.Size = new System.Drawing.Size(120, 32);
+            this.pb_cancelar.TabIndex = 21;
+            this.pb_cancelar.Text = "Cancelar";
+            this.pb_cancelar.UseVisualStyleBackColor = true;
+            this.pb_cancelar.Anchor = AnchorStyles.Top;
+            this.pb_cancelar.Click += pb_cancelar_Click;
 
             // =====================================================
             // ADD CONTROLS
             // =====================================================
-            this.Controls.Add(p_1);
-            this.Controls.Add(gb_base);
-            this.Controls.Add(gb_aplicacion);
-            this.Controls.Add(pb_continuar);
-            this.Controls.Add(pb_cancelar);
+            Controls.Add(p_1);
+            Controls.Add(gb_base);
+            Controls.Add(gb_aplicacion);
+            Controls.Add(pb_continuar);
+            Controls.Add(pb_cancelar);
 
-            this.ResumeLayout(false);
+            ResumeLayout(false);
         }
     }
 }

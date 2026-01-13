@@ -1,4 +1,5 @@
 using Minotti.Data;
+using Minotti.Functions;
 using Minotti.utils;
 using Minotti.Views.Basicos;
 using System;
@@ -16,16 +17,16 @@ namespace Minotti.Views.Pbl.Views
 
         // PB prototype:
         // function long GetVolumeInformationA(...) Library 'kernel32' alias for "GetVolumeInformationA;Ansi"
-        [DllImport("kernel32.dll", CharSet = CharSet.Ansi, SetLastError = true)]
-        private static extern bool GetVolumeInformationA(
-            string lpRootPathName,
-            StringBuilder lpVolumeNameBuffer,
-            int nVolumeNameSize,
-            StringBuilder lpVolumeSerialNumber,
-            out int lpMaximumComponentLength,
-            out int lpFileSystemFlags,
-            StringBuilder lpFileSystemNameBuffer,
-            int nFileSystemNameSize);
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool GetVolumeInformation(
+     string lpRootPathName,
+     StringBuilder lpVolumeNameBuffer,
+     int nVolumeNameSize,
+     out uint lpVolumeSerialNumber,
+     out uint lpMaximumComponentLength,
+     out uint lpFileSystemFlags,
+     StringBuilder lpFileSystemNameBuffer,
+     int nFileSystemNameSize);
 
         public w_coneccion_sepad()
         {
@@ -83,37 +84,47 @@ namespace Minotti.Views.Pbl.Views
         {
             nro_serie = "";
 
-            // PB: ls_Drive="c:\"
-            string drive = @"c:\";
+            string drive = @"C:\";
 
-            var volName = new StringBuilder(32);
-            var fsName = new StringBuilder(32);
-            var serial = new StringBuilder(32);
+            var volName = new StringBuilder(256);
+            var fsName = new StringBuilder(256);
 
-            int maxComp, flags;
-            bool ok = GetVolumeInformationA(drive, volName, volName.Capacity, serial, out maxComp, out flags, fsName, fsName.Capacity);
+            uint serial, maxComp, flags;
 
-            string cserial = serial.ToString(); // PB: cserial = ls_Serial
+            bool ok = GetVolumeInformation(
+                drive,
+                volName,
+                volName.Capacity,
+                out serial,
+                out maxComp,
+                out flags,
+                fsName,
+                fsName.Capacity);
 
-            // PB hace: NoSerie[] = ASC(MID(cserial...)) invertido y luego f_longtohex(...,2) y agrega "-" en posi=2
-            // No tengo tu f_longtohex acá, pero el SRW muestra que al final SOLO usa la suma de dígitos del nro_serie.
-            // Entonces replico exacto el resultado final que el PB usa: st_serial.Text = st_serial.Text + String(ll_Valor)
-            // (si querés el nro_serie textual también, lo reconstruimos cuando tengas f_longtohex).
-            int ll_Valor = 0;
-
-            // PB: recorre nro_serie y suma dígitos numéricos; pero en SRW termina mostrando el valor
-            // Como acá no reconstruimos nro_serie hex, sumo dígitos del SERIAL raw si son numéricos.
-            // Si tu lógica requiere el nro_serie HEX exacto, pasame f_longtohex y lo dejamos 1:1.
-            foreach (char ch in cserial)
+            if (!ok)
             {
-                if (char.IsDigit(ch))
-                    ll_Valor += (ch - '0');
+                st_serial.Text = "Registro Nro. :  0";
+                return;
             }
 
-            // PB: st_serial.Text = st_serial.Text + String(ll_Valor)
-            if (st_serial != null)
-                st_serial.Text = "Registro Nro. :  " + ll_Valor.ToString();
+            // === PB: f_longtohex(serial, 8)
+            string hex = f_longtohex.flongtohex(serial, 8).ToUpperInvariant();
+
+            // === PB: suma SOLO los dígitos numéricos del string
+            int registro = 0;
+            foreach (char c in hex)
+            {
+                if (char.IsDigit(c))
+                    registro += (c - '0');
+            }
+
+            // === PB: este es el valor FINAL
+            nro_serie = hex;// registro.ToString();
+            st_serial.Text = "Registro Nro. :  " + registro.ToString();
         }
+
+
+
 
         // =================================
         // PB: wf_validar_clave(as_nro_serie)

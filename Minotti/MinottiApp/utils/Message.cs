@@ -14,5 +14,6 @@ namespace Minotti.utils
         public static double DoubleParm { get; set; }
         public static decimal DecimalParm { get; set; }
         public static object? PowerObjectParm { get; set; }
+        public static bool Processed { get; set; }
     }
 }

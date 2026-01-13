@@ -1,208 +1,153 @@
-using Minotti.Views.Basicos;
-using Minotti.Views.Basicos.Models;
+using Minotti.utils;
+using Minotti.Views.Menues.Controls;
+using Minotti.Views.Pbl.Views;
 using System;
-using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Minotti.Views.Basicos
 {
-
-    // Enum equivalente a ToolBarAlignment de PB
-    public enum ToolBarAlignment
-    {
-        AlignAtTop,
-        AlignAtBottom,
-        AlignAtLeft,
-        AlignAtRight
-    }
-
-
-    // Migración de PowerBuilder: w_mdi.srw (MDI Frame) desde w_principal
-    // Mantiene el nombre del tipo: w_mdi
-    // w_mdi from w_principal
     public partial class w_mdi : w_principal
     {
-        // PB: mdi_1 mdi_1  (área cliente MDI)
-        // En WinForms usamos el MdiClient interno; no necesitamos un campo separado
+        public string menuname = "m_mdi";
+        public m_mdi MenuID { get; private set; }
 
-        
+        private w_menu_arbol_lista _menu;
+
+        public int WorkSpaceWidth
+        {
+            get
+            {
+                return mdi_1?.ClientSize.Width ?? this.ClientSize.Width;
+            }
+        }
+
+        public int WorkSpaceHeight
+        {
+            get
+            {
+                return mdi_1?.ClientSize.Height ?? this.ClientSize.Height;
+            }
+        }
+
 
         public w_mdi()
         {
             InitializeComponent();
-            
 
-            // Fondo del cliente MDI (mdi_1.BackColor = 82899184)
-            var mdiClient = this.Controls.OfType<MdiClient>().FirstOrDefault();
-            if (mdiClient != null)
-            {
-                mdiClient.BackColor = ColorTranslator.FromWin32(unchecked((int)82899184));
-            }
+            this.IsMdiContainer = true;
+            this.WindowState = FormWindowState.Maximized;
+
+            //if (_menu != null)
+            //    return; // 🔒 evita triple creación
+
+            // PB: MenuID = create m_mdi
+            this.MenuID = new m_mdi();
+            this.MainMenuStrip = this.MenuID;
+            this.Controls.Add(this.MenuID);
+
+            //_menu = new w_menu_arbol_lista();
+            //this.Controls.Add(_menu);
+            //_menu.Dock = DockStyle.Fill;
+
+            //_menu.ue_open_menu();
+
+
+
         }
 
-        
         // =====================================================
-        // Evento ue_mandar_menu_fondo(window w_actual)
+        // PB: EVENT ue_mandar_menu_fondo (window w_actual)
         // =====================================================
-        // PB:
-        // * Junta todas las sheets (excepto la actual) en un vector
-        // * Les da foco en orden inverso
-        public virtual void ue_mandar_menu_fondo(Form w_actual)
+        protected virtual void ue_mandar_menu_fondo(Form w_actual)
         {
-            // call super::ue_mandar_menu_fondo
-            // (w_principal no tiene implementación concreta, así que no llamamos)
+            // call super::ue_mandar_menu_fondo;
+            // (si w_principal tiene implementación, se respeta)
+            base.ue_mandar_menu_fondo(w_actual);
 
             this.SuspendLayout();
 
-            // Meto todas las ventanas MDI en un vector menos la actual
-            var vector = this.MdiChildren
-                .Where(f => f != null && f != w_actual)
+            // PB: vector de ventanas MDI (excepto el menú)
+            var ventanas = this.MdiChildren
+                .Where(w => w != w_actual)
                 .ToArray();
 
-            int cant = vector.Length;
-
-            // Doy foco en orden inverso al de aparición
-            for (int j = cant - 1; j >= 0; j--)
+            // PB: foco en orden inverso
+            for (int i = ventanas.Length - 1; i >= 0; i--)
             {
-                try
-                {
-                    vector[j].Activate();
-                }
-                catch
-                {
-                    // Si alguna está disposed, la salteamos
-                }
+                ventanas[i].Activate();
             }
 
-            this.ResumeLayout(true);
+            this.ResumeLayout();
         }
 
         // =====================================================
-        // wf_getareatrabajo(ref integer ancho, ref integer largo)
+        // PB: EVENT POST ue_mandar_menu_fondo
         // =====================================================
-        // PB:
-        //  ancho = guo_app.uof_GetMdi().Width - 55
-        //  largo = guo_app.uof_GetMdi().Height - 272
-        //  GetToolbar(1, tb_visible, tb_alignment)
-        //  ... ajusta según toolbar y ToolBarText
-        public void wf_GetAreaTrabajo(out int ancho, out int largo)
+        public void PostEvent_ue_mandar_menu_fondo(Form w_actual)
         {
-            /* Lee el ancho y el largo del área de trabajo de la ventana */
+            if (this.IsHandleCreated)
+            {
+                this.BeginInvoke(new Action(() =>
+                {
+                    ue_mandar_menu_fondo(w_actual);
+                }));
+            }
+            else
+            {
+                ue_mandar_menu_fondo(w_actual);
+            }
+        }
+
+        // =====================================================
+        // PB: public subroutine wf_getareatrabajo
+        // =====================================================
+        public void wf_getareatrabajo(out int ancho, out int largo)
+        {
+            // PB:
+            // ancho = guo_app.uof_GetMdi().Width - 55
+            // largo = guo_app.uof_GetMdi().Height - 272
+
             ancho = this.Width - 55;
             largo = this.Height - 272;
 
-            /* Captura los datos del Toolbar */
-            bool tb_visible;
-            ToolBarAlignment tb_alignment;
-            GetToolbar(1, out tb_visible, out tb_alignment);
-
-            /* Si está visible, reduce el área de trabajo de acuerdo a su posición */
-            if (tb_visible)
+            // Toolbar (equivalente PB)
+            if (this.MainMenuStrip != null)
             {
-                if (tb_alignment == ToolBarAlignment.AlignAtTop ||
-                    tb_alignment == ToolBarAlignment.AlignAtBottom)
+                largo -= this.MainMenuStrip.Height;
+            }
+
+            if (this.Controls.OfType<ToolStrip>().Any())
+            {
+                var tb = this.Controls.OfType<ToolStrip>().First();
+                if (tb.Visible)
                 {
-                    /* Si está visible el texto del menú */
-                    if (uo_app.Instance != null && guo_app.Instance.App.ToolBarText)
-                    {
-                        largo = largo - 152;
-                    }
+                    if (tb.Dock == DockStyle.Top || tb.Dock == DockStyle.Bottom)
+                        largo -= tb.Height;
                     else
-                    {
-                        // largo = largo - 120
-                        largo = largo - 90;
-                    }
-                }
-                else if (tb_alignment == ToolBarAlignment.AlignAtLeft ||
-                         tb_alignment == ToolBarAlignment.AlignAtRight)
-                {
-                    if (uo_app.Instance != null && guo_app.Instance.App.ToolBarText)
-                    {
-                        ancho = ancho - 224;
-                    }
-                    else
-                    {
-                        ancho = ancho - 155;
-                    }
+                        ancho -= tb.Width;
                 }
             }
         }
 
-        // Stub equivalente a GetToolbar(1, ...) de PB.
-        // Acá solo devolvemos "no visible" para no alterar el layout
-        // hasta que vos lo enlaces a tu ToolStrip real.
-        public  virtual void GetToolbar(int index, out bool visible, out ToolBarAlignment alignment)
+        // =====================================================
+        // PB: public function integer wf_getsheetcant()
+        // =====================================================
+        public int wf_getsheetcant()
         {
-            visible = false;
-            alignment = ToolBarAlignment.AlignAtTop;
-            // TODO: mapear tu ToolStrip real si querés replicar exactamente el comportamiento.
+            return this.MdiChildren.Length;
         }
 
         // =====================================================
-        // wf_getsheetcant()
+        // PB: closequery
         // =====================================================
-        // PB:
-        //  wAux = GetFirstSheet()
-        //  count mientras IsValid(...)
-        public int wf_GetSheetCant()
-        {
-            /* Lee la cantidad de sheet windows abiertas en esta ventana */
-            return this.MdiChildren?.Length ?? 0;
-        }
-
-        // =====================================================
-        // Ciclo de vida (create / destroy / closequery)
-        // =====================================================
-
-        // on w_mdi.create
-        // PB hacía:
-        //   if this.MenuName = "m_mdi" then this.MenuID = create m_mdi
-        //   this.mdi_1=create mdi_1
-        //   this.Control[iCurrent+1]=this.mdi_1
-        //
-        // En WinForms:
-        // - el menú "m_mdi" lo vas a crear como MenuStrip / MainMenu en el Designer.
-        // - el MdiClient lo maneja automáticamente el framework cuando IsMdiContainer = true.
-        // Eso ya lo configuramos en InitializeComponent, así que no necesitamos override extra.
-
-        // on w_mdi.destroy
-        // el GC/Dispose se encarga en .NET, no hacemos nada especial.
-
-        // event closequery; Message.StringParm = 'Aplicación esta cerrando'
-        // En WinForms lo análogo es OnFormClosing; dejamos un hook por si usás algún logger.
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            // call super::closequery
             base.OnFormClosing(e);
 
             // PB: Message.StringParm = 'Aplicación esta cerrando'
-            // Podés mapear esto a algún mecanismo propio si querés.
-            // Acá dejamos el comentario para que no se pierda el sentido.
-            // Ejemplo (si tuvieras algo así):
-            // guo_app.MessageStringParm = "Aplicación esta cerrando";
-
-            MessageBox.Show(
-       $"MDI CERRANDO - Reason: {e.CloseReason}",
-       "DEBUG"
-   );
+            this.Tag = "Aplicación esta cerrando";
         }
-
-
-
-        public virtual int WorkSpaceHeight()
-        {
-            // PB: alto del área de trabajo del MDI (sin title/menu/barras externas).
-            // WinForms: usamos el MdiClient si existe; si no, caemos al ClientSize.
-            var mdiClient = this.Controls.OfType<MdiClient>().FirstOrDefault();
-            return mdiClient?.ClientSize.Height ?? this.ClientSize.Height;
-        }
-
-        public virtual int WorkSpaceWidth()
-        {
-            var mdiClient = this.Controls.OfType<MdiClient>().FirstOrDefault();
-            return mdiClient?.ClientSize.Width ?? this.ClientSize.Width;
-        }
-
     }
+
 }

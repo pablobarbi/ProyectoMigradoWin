@@ -434,7 +434,7 @@ namespace Minotti.Views.Basicos.Controls
 
             // PB: Retrieve(f_ProxParam(parametros))
             string parametrosLocal = parametros;
-            string retrieveParam = f_proxparam.fproxparam(parametrosLocal);// PBParamHelper.f_ProxParam(parametrosLocal);
+            string retrieveParam = f_proxparam.fproxparam(ref parametrosLocal);// PBParamHelper.f_ProxParam(parametrosLocal);
             ds_carpetas.Retrieve(retrieveParam);
 
             // ===== PB: recorrer filas =====

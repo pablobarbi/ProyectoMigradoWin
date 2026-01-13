@@ -3,6 +3,7 @@ using Minotti.Functions;
 using Minotti.utils;
 using Minotti.Views.Basicos.Controls;
 using Minotti.Views.Basicos.Models;
+using MinottiApp.utils;
 using System;
 using System.Windows.Forms;
 
@@ -41,8 +42,29 @@ namespace Minotti.Views.Basicos
             this.FormClosing += w_sheet_FormClosing;
 
             // En PB se ejecuta ue_optar en el ciclo de vida; lo llamamos aquí
-            ue_optar();
+            //ue_optar();
         }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            ue_leer_parametros();
+        }
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+
+            // ✅ AHORA sí el objeto es w_menu
+            //ue_leer_parametros();
+        }
+
+        protected override void ue_leer_parametros()
+        {
+            //MessageBox.Show("ue_leer_parametros EN w_sheet");
+            base.ue_leer_parametros();
+        }
+
 
         // =====================================================
         // Eventos PB → métodos protegidos
@@ -52,7 +74,7 @@ namespace Minotti.Views.Basicos
         /// PB: event ue_insertar()
         /// (Base vacío: lo sobreescriben las herencias si lo necesitan)
         /// </summary>
-        public  virtual void ue_insertar() { }        
+        public virtual void ue_insertar() { }        
         public  virtual void ue_borrar() { }
         public  virtual void ue_cancelar()
         {
@@ -263,7 +285,7 @@ namespace Minotti.Views.Basicos
             int largo_max;
 
             // guo_app.uof_GetMdi().wf_GetAreaTrabajo(ancho_max, largo_max)
-            guo_app.Instance.uof_getmdi().wf_GetAreaTrabajo(out ancho_max, out largo_max);
+            guo_app.Instance.uof_getmdi().wf_getareatrabajo(out ancho_max, out largo_max);
 
             // Impide que se vaya de pantalla
             if (this.Width > ancho_max) this.Width = ancho_max;
@@ -285,7 +307,7 @@ namespace Minotti.Views.Basicos
 
             int ancho_max;
             int largo_max;
-            guo_app.Instance.uof_getmdi().wf_GetAreaTrabajo(out ancho_max, out largo_max);
+            guo_app.Instance.uof_getmdi().wf_getareatrabajo(out ancho_max, out largo_max);
 
             int iAux = (int)(ancho_max * s_min.ancho / 100.0);
             if (this.Width < iAux) this.Width = iAux;
@@ -368,13 +390,13 @@ namespace Minotti.Views.Basicos
             var wAux = new w_operacion();
             string objeto = at_det.uof_getobjeto();
 
-            int retorno = OpenSheetWithParm(
+            int retorno = OpenSheetWithParmPB.OpenSheetWithParm(
                 wAux,
                 at_det,
                 objeto,
                 this.MdiParent,
                 guo_app.Menu.Colgar,
-                "Original"
+               PBOpenMode.Original
             );
 
             return retorno;
@@ -440,30 +462,7 @@ namespace Minotti.Views.Basicos
         // Helper para OpenSheetWithParm (stub)
         // =====================================================
 
-        private int OpenSheetWithParm(
-            w_operacion wAux,
-            cat_operacion at_det,
-            string objeto,
-            Form? parentWindow,
-            object menuModo,
-            string estilo)
-        {
-            // Simplificación: mostramos la ventana como MDI child o modal
-            if (parentWindow is Form mdi && mdi.IsMdiContainer)
-            {
-                wAux.MdiParent = mdi;
-                wAux.Tag = at_det;
-                wAux.Show();
-            }
-            else
-            {
-                wAux.Tag = at_det;
-                wAux.Show();
-            }
-
-            // En PB devuelve un código; aquí devolvemos 1 como OK
-            return 1;
-        }
+        
 
 
         // PB event stub: ue_abrir_siguiente
@@ -514,26 +513,27 @@ namespace Minotti.Views.Basicos
 
             BeginInvoke(new Action(() => TriggerEvent(eventName)));
         }
-    }
 
-    // =================================================================
-    // STUBS mínimos – si ya existen, BORRAR estas definiciones
-    // =================================================================
-    /*
-    public class cat_operacion
-    {
-        public string uof_GetObjeto() => string.Empty;
-    }
+        protected w_principal ParentWindow()
+        {
+            // PB: ParentWindow()
+            // Recorremos la jerarquía hasta encontrar el w_principal
+            Control? c = this;
 
-    public class w_operacion : w_sheet
-    {
-    }
+            while (c != null)
+            {
+                if (c is w_principal wp)
+                    return wp;
 
-    public static class m_mdi
-    {
-        public static (ToolStripMenuItem? m_cancelar) m_operaciones;
-    }
-    */
+                c = c.Parent;
+            }
 
+            // Fallback: si este form es el principal
+            if (this is w_principal self)
+                return self;
 
+            throw new InvalidOperationException("ParentWindow (w_principal) no encontrado en la jerarquía.");
+        }
+
+    } 
 }

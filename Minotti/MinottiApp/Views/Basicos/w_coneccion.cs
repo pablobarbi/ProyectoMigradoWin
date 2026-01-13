@@ -1,4 +1,5 @@
 using Minotti.Data;
+using Minotti.Funciones;
 using Minotti.Functions;
 using Minotti.utils;
 using Minotti.Views.Basicos.Models;
@@ -14,7 +15,7 @@ namespace Minotti.Views.Basicos
     public partial class w_coneccion : w_response
     {
         // ===== PB: variables (public ) =====
-        public  int Retorno = -1;
+        public  int Retorno = 0;
         public  int Intentos = 3;
         public  bool conectado = false;
         public  cat_usuario at_usuario = new cat_usuario();
@@ -191,8 +192,8 @@ namespace Minotti.Views.Basicos
             // SQLCA.LogPass = sle_clave_base.text
             SQLCA.UserID = sle_usuario_aplicacion.Text;
             SQLCA.DBPass = sle_clave_aplicacion.Text;
-            SQLCA.LogID = sle_usuario_base.Text;
-            SQLCA.LogPass = sle_clave_base.Text;
+            //SQLCA.LogID = sle_usuario_base.Text;
+            //SQLCA.LogPass = sle_clave_base.Text;
         }
 
         // =======================

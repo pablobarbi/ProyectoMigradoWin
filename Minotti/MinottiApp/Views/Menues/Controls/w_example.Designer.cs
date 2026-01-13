@@ -65,7 +65,7 @@ namespace Minotti.Views.Menues.Controls
             // === FORM ===
             this.ClientSize = new Size(1513, 1416);
             this.Text = "HiperLink object sample";
-            this.BackColor = Color.FromArgb(unchecked((int)80269524));
+            this.BackColor = utils.PBColor.FromPB(80269524); // Color.FromArgb(unchecked((int)80269524));
             this.MinimizeBox = true;
 
             // === cb_1 ===

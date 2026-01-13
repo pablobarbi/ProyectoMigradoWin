@@ -378,7 +378,7 @@ namespace Minotti.Views.Basicos.Controls
         private static string f_ProxParam(string parametros)
         {
             // TODO: reemplazar por tu implementación real.
-            return f_proxparam.fproxparam(parametros);
+            return f_proxparam.fproxparam(ref parametros);
         }
 
 

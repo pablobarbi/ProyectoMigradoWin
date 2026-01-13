@@ -1,38 +1,57 @@
+// w_menu_arbol.Designer.cs
+// NET WinForms equivalente (sin custom controls). Mantengo nombres.
+// OJO: asumo que w_menu ya existe como Form (o clase base WinForms equivalente).
+
+using Minotti.utils;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
+
+
 namespace Minotti.Views.Menues.Controls
 {
     partial class w_menu_arbol
     {
-        private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.TreeView tv_1;
+        private IContainer components = null;
 
-        protected  override void Dispose(bool disposing)
+        // PB: tv_1 tv_1
+        public TreeView tv_1;
+
+        protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && components != null)
                 components.Dispose();
+
             base.Dispose(disposing);
         }
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.tv_1 = new System.Windows.Forms.TreeView();
-            this.SuspendLayout();
-            // 
-            // tv_1
-            // 
-            this.tv_1.Name = "tv_1";
-            this.tv_1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tv_1.HideSelection = false;
-            this.tv_1.TabIndex = 0;
-            // 
-            // w_menu_arbol
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.tv_1);
+            this.components = new Container();
+
+            // ===== Form =====
+            this.AutoScaleMode = AutoScaleMode.None;
+            this.ClientSize = new Size(1792, 1664);
             this.Name = "w_menu_arbol";
-            this.Text = "w_menu_arbol";
-            this.ResumeLayout(false);
+
+            // ===== tv_1 (TreeView) =====
+            this.tv_1 = new TreeView();
+            this.tv_1.Name = "tv_1";
+            this.tv_1.Location = new Point(32, 32);
+            this.tv_1.Size = new Size(1682, 1496);
+            this.tv_1.TabIndex = 1;
+
+            // PB props aproximadas (sin inventar comportamiento)
+            this.tv_1.HideSelection = false;
+            // LinesAtRoot similar:
+            this.tv_1.ShowLines = true;
+            this.tv_1.ShowRootLines = true;
+            this.tv_1.BorderStyle = BorderStyle.Fixed3D;
+            this.tv_1.BackColor = utils.PBColor.FromPB(15793151);
+
+            // ===== Add =====
+            this.Controls.Add(this.tv_1);
         }
     }
 }

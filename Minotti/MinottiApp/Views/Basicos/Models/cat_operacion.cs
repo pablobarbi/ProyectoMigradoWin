@@ -20,7 +20,10 @@ namespace Minotti.Views.Basicos.Models
 
         // Datos para cada nivel  -> cat_nivel  at_nvl[]
         // En PB el array es 1-based. Acá usamos List y tratamos nivel como 1-based.
-        public List<cat_nivel> at_nvl { get; set; } = new List<cat_nivel>();
+        //public List<cat_nivel> at_nvl { get; set; } = new List<cat_nivel>();
+
+        public List<cat_operacion_nivel> at_nvl { get; set; } = new();
+
 
         // =========================
         // Parámetros para cada ventana que se abre
@@ -68,14 +71,17 @@ namespace Minotti.Views.Basicos.Models
             // No copia s_det (arreglo de argumentos), igual que en PB.
         }
 
-        // Helper privado para respetar que nivel es 1-based
-        private cat_nivel? GetNivel(int nivel)
+        // Helper privado para respetar que nivel es 1-based (PB)
+        private cat_operacion_nivel? GetNivel(int nivel)
         {
-            int idx = nivel - 1;      // PB: 1-based  -> C#: 0-based
+            int idx = nivel - 1; // PB: 1-based → C#: 0-based
+
             if (idx < 0 || idx >= at_nvl.Count)
                 return null;
+
             return at_nvl[idx];
         }
+
 
         // public function string uof_getparametros (integer nivel);
         public string uof_getparametros(int nivel)
@@ -132,5 +138,13 @@ namespace Minotti.Views.Basicos.Models
             // Tratamos arg_nivel como 1-based
             return arg_nivel > 0 && at_nvl.Count >= arg_nivel;
         }
+
+        public void EnsureNivelIndex(int index)
+        {
+            // PB arrays empiezan en 1
+            while (at_nvl.Count <= index)
+                at_nvl.Add(new cat_operacion_nivel());
+        }
+
     }
 }

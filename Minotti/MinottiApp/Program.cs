@@ -16,7 +16,7 @@ namespace Minotti
             Application.SetCompatibleTextRenderingDefault(false);
 
             var app = new uo_sepad();
-
+            guo_app.Attach(app);
             // PB: create + constructor
             app.ue_open(); // ⬅️ ACÁ está TODO el flujo real
 

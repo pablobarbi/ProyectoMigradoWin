@@ -28,7 +28,7 @@ namespace Minotti.Views.Pbl.Views
             // 
             // gb_borde
             // 
-            this.gb_borde.BackColor = System.Drawing.Color.FromArgb(81324524);
+            this.gb_borde.BackColor = utils.PBColor.FromPB(81324524);// System.Drawing.Color.FromArgb(81324524);
             this.gb_borde.Location = new System.Drawing.Point(37, 32);
             this.gb_borde.Size = new System.Drawing.Size(2254, 928);
             this.gb_borde.TabIndex = 0;
@@ -38,8 +38,8 @@ namespace Minotti.Views.Pbl.Views
             // st_nombre
             // 
             this.st_nombre.Font = new System.Drawing.Font("Arial", 14F, System.Drawing.FontStyle.Bold);
-            this.st_nombre.ForeColor = System.Drawing.Color.FromArgb(8388608);
-            this.st_nombre.BackColor = System.Drawing.Color.FromArgb(81324524);
+            this.st_nombre.ForeColor = utils.PBColor.FromPB(8388608);// System.Drawing.Color.FromArgb(8388608);
+            this.st_nombre.BackColor = utils.PBColor.FromPB(81324524);//System.Drawing.Color.FromArgb(81324524);
             this.st_nombre.Location = new System.Drawing.Point(155, 456);
             this.st_nombre.Size = new System.Drawing.Size(2016, 104);
             this.st_nombre.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -50,8 +50,8 @@ namespace Minotti.Views.Pbl.Views
             // st_version
             // 
             this.st_version.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular);
-            this.st_version.ForeColor = System.Drawing.Color.FromArgb(8388608);
-            this.st_version.BackColor = System.Drawing.Color.FromArgb(81324524);
+            this.st_version.ForeColor = utils.PBColor.FromPB(8388608);//System.Drawing.Color.FromArgb(8388608);
+            this.st_version.BackColor = utils.PBColor.FromPB(81324524);// System.Drawing.Color.FromArgb(81324524);
             this.st_version.Location = new System.Drawing.Point(155, 564);
             this.st_version.Size = new System.Drawing.Size(2016, 88);
             this.st_version.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -62,8 +62,8 @@ namespace Minotti.Views.Pbl.Views
             // st_copyright
             // 
             this.st_copyright.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular);
-            this.st_copyright.ForeColor = System.Drawing.Color.FromArgb(8388608);
-            this.st_copyright.BackColor = System.Drawing.Color.FromArgb(81324524);
+            this.st_copyright.ForeColor = utils.PBColor.FromPB(8388608);// System.Drawing.Color.FromArgb(8388608);
+            this.st_copyright.BackColor = utils.PBColor.FromPB(81324524);// System.Drawing.Color.FromArgb(81324524);
             this.st_copyright.Location = new System.Drawing.Point(155, 868);
             this.st_copyright.Size = new System.Drawing.Size(2016, 72);
             this.st_copyright.TextAlign = System.Drawing.ContentAlignment.MiddleRight;

@@ -3,26 +3,67 @@ using System;
 namespace Minotti.Functions
 {
     /// <summary>
-    /// Migración de PowerBuilder: f_proxparam.srf
-    /// Firma típica en PB: global function string f_proxparam (ref string as_parametros {, string as_separador })
-    /// Mantengo el nombre del archivo, clase y método. Por compatibilidad, doy dos overloads:
-    ///  - f_proxparam(ref string parametro)                -> usa ';' como separador por defecto (como en tus SRW)
-    ///  - f_proxparam(ref string parametro, string sep)    -> permite indicar separador
+    /// Migración fiel de PowerBuilder: f_proxparam.srf
+    /// Firma original PB:
+    ///   public function string wf_proxparam (ref string param)
+    ///   public function string wf_proxparam (ref string param, integer orden_buscado)
     ///
-    /// Comportamiento: devuelve el PRÓXIMO parámetro (Trim) y acorta 'parametro' dejando el resto (Trim).
-    /// Si no hay más, devuelve "" y deja 'parametro' = "".
+    /// Comportamiento:
+    /// - Devuelve el próximo parámetro (Trim)
+    /// - Consume el string original (ref)
+    /// - Separador fijo: ',' (como en PB)
     /// </summary>
     public static class f_proxparam
     {
-        /// <summary>Usa ';' como separador por defecto (coincide con wf_ProxParam(param) de tus ventanas).</summary>
-        public static string fproxparam(string parametro)
-            => fproxparam(ref parametro, ";");
-
-        /// <summary>Permite indicar otro separador (por ejemplo, coma, pipe, etc.).</summary>
-        public static string fproxparam(ref string parametro, string as_separador)
+        /// <summary>
+        /// Equivalente a PB: wf_ProxParam(ref param)
+        /// </summary>
+        public static string fproxparam(ref string param)
         {
-            // Reutilizamos la función migrada f_cortar_string para mantener el mismo comportamiento de PB.
-            return f_cortar_string.fcortar_string(parametro, as_separador ?? string.Empty);
+            return fproxparam(ref param, 1);
+        }
+
+        /// <summary>
+        /// Equivalente a PB: wf_ProxParam(ref param, orden_buscado)
+        /// </summary>
+        public static string fproxparam(ref string param, int ordenBuscado)
+        {
+            if (string.IsNullOrWhiteSpace(param))
+                return string.Empty;
+
+            int iFin;
+            string retorno = string.Empty;
+
+            // Saltea los parámetros anteriores al buscado
+            for (int contador = 1; contador <= ordenBuscado - 1; contador++)
+            {
+                iFin = param.IndexOf(',');
+                if (iFin >= 0)
+                {
+                    param = param.Substring(iFin + 1).Trim();
+                }
+                else
+                {
+                    param = string.Empty;
+                    return string.Empty;
+                }
+            }
+
+            // Extrae el parámetro actual
+            iFin = param.IndexOf(',');
+            if (iFin >= 0)
+            {
+                retorno = param.Substring(0, iFin).Trim();
+                param = param.Substring(iFin + 1).Trim();
+            }
+            else
+            {
+                retorno = param.Trim();
+                param = string.Empty;
+            }
+
+            return retorno;
         }
     }
+
 }

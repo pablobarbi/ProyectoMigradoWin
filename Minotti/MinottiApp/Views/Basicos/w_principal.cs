@@ -2,9 +2,8 @@ using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos.Controls;
 using Minotti.Views.Basicos.Models;
-using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Basicos
 {
@@ -45,9 +44,10 @@ namespace Minotti.Views.Basicos
         // =================== Eventos ue_* (equivalentes PB) ===================
 
         // event ue_leer_parametros()
-        public  virtual void ue_leer_parametros()
+        protected  virtual void ue_leer_parametros()
         {
             // Implementación en las ventanas hijas
+            //MessageBox.Show("ue_leer_parametros EN w_principal");
         }
 
         // event ue_optar()
@@ -261,8 +261,8 @@ namespace Minotti.Views.Basicos
             // This.SetRedraw(FALSE)
             this.SuspendLayout();
 
-            // This.TriggerEvent("ue_leer_parametros")
-            this.ue_leer_parametros();
+            //// This.TriggerEvent("ue_leer_parametros")
+            //this.ue_leer_parametros();
 
             // This.TriggerEvent("ue_optar")
             this.ue_optar();
@@ -349,6 +349,75 @@ namespace Minotti.Views.Basicos
                 this.Invalidate(true);
                 this.Update();
             }
+        }
+
+        // =====================================================
+        // PB: event ue_mandar_menu_fondo (window w_actual)
+        // Evento base (no hace nada por defecto)
+        // =====================================================
+        public virtual void ue_mandar_menu_fondo(Form w_actual)
+        {
+            // En PB, el base puede estar vacío.
+            // La lógica real vive en w_mdi.
+        }
+        public void SetMicroHelp(string texto)
+        {
+            // PB: SetMicroHelp()
+            // WinForms: normalmente status bar / label inferior
+
+            if (string.IsNullOrWhiteSpace(texto))
+                texto = string.Empty;
+
+            // Opción A: StatusStrip
+            if (this.statusStrip1 != null && this.toolStripStatusLabelMicroHelp != null)
+            {
+                this.toolStripStatusLabelMicroHelp.Text = texto;
+                return;
+            }
+
+            // Opción B: Label simple (fallback)
+            if (this.lblMicroHelp != null)
+            {
+                this.lblMicroHelp.Text = texto;
+                return;
+            }
+
+            // Opción C: fallback silencioso (no rompe ejecución)
+            // Debug.WriteLine($"MicroHelp: {texto}");
+        }
+
+        // =====================================================
+        // PB: GetContextService
+        // =====================================================
+        public virtual void GetContextService(
+            string serviceName,
+            out ContextInformation service)
+        {
+            // En PB devuelve servicios del runtime.
+            // En .NET solo necesitamos ContextInformation.
+            service = new ContextInformation();
+        }
+
+        // =====================================================
+        // PB: TriggerEvent("ue_xxx")
+        // =====================================================
+        public virtual void TriggerEvent(string eventName)
+        {
+            if (string.IsNullOrWhiteSpace(eventName))
+                return;
+
+            // Busca un método con ese nombre (PB events)
+            var method = this.GetType().GetMethod(
+                eventName,
+                BindingFlags.Instance |
+                BindingFlags.Public |
+                BindingFlags.NonPublic);
+
+            if (method == null)
+                return;
+
+            // Invoca el evento/método
+            method.Invoke(this, null);
         }
     }
 

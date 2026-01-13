@@ -1,97 +1,161 @@
-using Minotti.utils;
 using Minotti.Views.Basicos;
-using Minotti.Views.Basicos.Models;
-using MinottiApp.utils;
 using System;
-using System.Reflection;
 using System.Windows.Forms;
 
 namespace Minotti.Views.Pbl.Views
 {
-    // PowerBuilder: global type m_mdi from menu
-    // WinForms: MenuStrip.
-    public partial class m_mdi : Form
+    // PB: m_mdi from menu
+    public partial class m_mdi : MenuStrip
     {
-        public m_mdi()
+        private w_mdi? _mdi;
+
+        // 🔹 Constructor PB-style
+        public m_mdi(w_mdi mdi) : this()
         {
-            InitializeComponent();
-            WireEvents();
-            PBGlobals.m_mdi = this;
-        }
+            _mdi = mdi;
 
-        private void WireEvents()
-        {
-            // Operaciones
-            m_confirmar.Click += (s, e) => TriggerActiveSheet("ue_grabar");
-            m_cancelar.Click += (s, e) => TriggerActiveSheet("ue_cancelar");
-            m_insertar.Click += (s, e) => TriggerActiveSheet("ue_insertar");
-            m_borrar.Click += m_borrar_Click;
-            m_iniciarconsulta.Click += (s, e) => TriggerActiveSheet("ue_buscar");
-            m_procesar.Click += (s, e) => TriggerActiveSheet("ue_procesar");
-            m_preliminar.Click += (s, e) => TriggerActiveSheet("ue_preview");
-            m_imprimir.Click += (s, e) => TriggerActiveSheet("ue_imprimir");
-            m_salvarcomo.Click += (s, e) => TriggerActiveSheet("ue_salvar");
-            m_salir.Click += m_salir_Click;
+            // Asociar menú al MDI
+            _mdi.MainMenuStrip = this;
+            _mdi.Controls.Add(this);
 
-            // Navegación
-            m_primerregistro.Click += (s, e) => TriggerActiveSheet("ue_primero");
-            m_siguienteregistro.Click += (s, e) => TriggerActiveSheet("ue_siguiente");
-            m_anteriorregistro.Click += (s, e) => TriggerActiveSheet("ue_anterior");
-            m_ultimoregistro.Click += (s, e) => TriggerActiveSheet("ue_ultimo");
-
-            // Ventanas
-            m_layer.Click += (s, e) => ArrangeSheets(MdiLayout.TileVertical);
-            m_mosaico.Click += (s, e) => ArrangeSheets(MdiLayout.TileHorizontal);
-            m_casacada.Click += (s, e) => ArrangeSheets(MdiLayout.Cascade);
-
-            // Ayuda
-            m_acercade.Click += (s, e) => uo_app.Instance.uof_mostrar_datos_sistema();
-        }
-
-        // ========================================================
-        //  Helpers PB -> C#
-        // ========================================================
-        private w_sheet? GetActiveSheet()
-        {
-            return this.MdiParent?.ActiveMdiChild as w_sheet;
-        }
-
-        private void TriggerActiveSheet(string eventName)
-        {
-            var wAux = GetActiveSheet();
-            if (wAux != null)
-                DynamicEventInvoker.Trigger(wAux, eventName);
-        }
-
-        private void ArrangeSheets(MdiLayout layout)
-        {
-            this.MdiParent?.LayoutMdi(layout);
-        }
-
-        // ========================================================
-        //  Eventos especiales
-        // ========================================================
-        private void m_borrar_Click(object sender, EventArgs e)
-        {
-            var wAux = GetActiveSheet();
-            if (wAux == null) return;
-
-            var result = MessageBox.Show("¿Está seguro que desea borrar el registro?",
-                "Minotti", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (result == DialogResult.Yes)
-                DynamicEventInvoker.Trigger(wAux, "ue_eliminar");
-        }
-
-        private void m_salir_Click(object sender, EventArgs e)
-        {
-            var result = MessageBox.Show("¿Está seguro que desea salir del sistema?",
-                "Minotti", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (result == DialogResult.Yes)
-                this.MdiParent?.Close(); // igual que PB: Close(ParentWindow)
+            _mdi.Load += Mdi_Load;
         }
 
         
+
+        public m_mdi()
+        {
+            InitializeComponent();
+
+            // PB: propiedades visuales generales del menú
+            this.Name = "m_mdi";
+            this.Dock = DockStyle.Top;
+        }
+
+
+        private void Mdi_Load(object? sender, EventArgs e)
+        {
+            if (_mdi == null) return;
+
+            _mdi.MainMenuStrip = this;
+
+            if (!_mdi.Controls.Contains(this))
+                _mdi.Controls.Add(this);
+        }
+
+
+        // ===============================
+        // Helpers PB
+        // ===============================
+        private w_principal? GetActiveSheet()
+        {
+            var mdi = this.FindForm() as w_mdi;
+            return mdi?.ActiveMdiChild as w_principal;
+        }
+
+        // ===============================
+        // m_confirmar
+        // ===============================
+        private void m_confirmar_Click(object? sender, EventArgs e)
+        {
+            GetActiveSheet()?.TriggerEvent("ue_grabar");
+        }
+
+        private void m_cancelar_Click(object? sender, EventArgs e)
+        {
+            GetActiveSheet()?.TriggerEvent("ue_cancelar");
+        }
+
+        private void m_insertar_Click(object? sender, EventArgs e)
+        {
+            GetActiveSheet()?.TriggerEvent("ue_insertar");
+        }
+
+        private void m_borrar_Click(object? sender, EventArgs e)
+        {
+            var sheet = GetActiveSheet();
+            if (sheet == null) return;
+
+            var r = MessageBox.Show(
+                "¿Esta seguro que desea borrar el registro?",
+                "Minotti 2020",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (r == DialogResult.Yes)
+                sheet.TriggerEvent("ue_eliminar");
+        }
+
+        private void m_iniciarconsulta_Click(object? sender, EventArgs e)
+        {
+            GetActiveSheet()?.TriggerEvent("ue_buscar");
+        }
+
+        private void m_procesar_Click(object? sender, EventArgs e)
+        {
+            GetActiveSheet()?.TriggerEvent("ue_procesar");
+        }
+
+        private void m_preliminar_Click(object? sender, EventArgs e)
+        {
+            GetActiveSheet()?.TriggerEvent("ue_preview");
+        }
+
+        private void m_imprimir_Click(object? sender, EventArgs e)
+        {
+            GetActiveSheet()?.TriggerEvent("ue_imprimir");
+        }
+
+        private void m_salvarcomo_Click(object? sender, EventArgs e)
+        {
+            GetActiveSheet()?.TriggerEvent("ue_salvar");
+        }
+
+        private void m_salir_Click(object? sender, EventArgs e)
+        {
+            var r = MessageBox.Show(
+                "¿Esta seguro que desea salir del sistema?",
+                "Minotti 2020",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (r == DialogResult.Yes)
+                this.FindForm()?.Close();
+        }
+
+        // ===============================
+        // Navegación
+        // ===============================
+        private void m_primerregistro_Click(object? sender, EventArgs e)
+            => GetActiveSheet()?.TriggerEvent("ue_primero");
+
+        private void m_siguienteregistro_Click(object? sender, EventArgs e)
+            => GetActiveSheet()?.TriggerEvent("ue_siguiente");
+
+        private void m_anteriorregistro_Click(object? sender, EventArgs e)
+            => GetActiveSheet()?.TriggerEvent("ue_anterior");
+
+        private void m_ultimoregistro_Click(object? sender, EventArgs e)
+            => GetActiveSheet()?.TriggerEvent("ue_ultimo");
+
+        // ===============================
+        // Ventanas
+        // ===============================
+        private void m_layer_Click(object? sender, EventArgs e)
+            => (this.FindForm() as w_mdi)?.LayoutMdi(MdiLayout.ArrangeIcons);
+
+        private void m_mosaico_Click(object? sender, EventArgs e)
+            => (this.FindForm() as w_mdi)?.LayoutMdi(MdiLayout.TileVertical);
+
+        private void m_cascada_Click(object? sender, EventArgs e)
+            => (this.FindForm() as w_mdi)?.LayoutMdi(MdiLayout.Cascade);
+
+        // ===============================
+        // Ayuda
+        // ===============================
+        private void m_acercade_Click(object? sender, EventArgs e)
+        {
+            guo_app.uof_mostrar_datos_sistema();
+        }
     }
 }

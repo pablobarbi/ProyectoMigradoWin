@@ -104,7 +104,7 @@ SELECT dba.acc_operacion_mod.modulo
                 // /* Lee los datos de la operación que va a ejecutar */
                 at_operacion.Operacion = operacion;
 
-                if (f_cargar_datos_operacion.fcargar_datos_operacion(at_operacion) != 1)
+                if (f_cargar_datos_operacion.fcargar_datos_operacion(ref at_operacion) != 1)
                 {
                     MessageBox.Show("No se encontró la operación", "Atención!!!",
                         MessageBoxButtons.OK, MessageBoxIcon.Stop);

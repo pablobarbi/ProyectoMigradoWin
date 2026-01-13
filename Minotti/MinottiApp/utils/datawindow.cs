@@ -1,4 +1,5 @@
-﻿using Minotti.Structures;
+﻿using Minotti.Data;
+using Minotti.Structures;
 using Minotti.Views.Basicos.Controls;
 using Minotti.Views.Reportes.Controls;
 using System;
@@ -272,6 +273,37 @@ namespace Minotti.utils
 
         public virtual long uof_retrieve(object? arg1, object? arg2, object? arg3)
             => this.Retrieve(arg1, arg2, arg3);
+
+        public virtual void SetData(DataTable table)
+        {
+            if (table == null)
+                return;
+
+            // ===============================
+            // 1. Crear Primary con SCHEMA
+            // ===============================
+            _primary = table.Clone();   // <-- CLAVE
+            _primary.Clear();
+
+            // ===============================
+            // 2. Copiar filas
+            // ===============================
+            foreach (DataRow row in table.Rows)
+                _primary.ImportRow(row);
+
+            // ===============================
+            // 3. Sincronizar estado PB
+            // ===============================
+            _table = _primary;          // tabla activa
+            _editorText = null;
+
+            _currentRow = _table.Rows.Count > 0 ? 1 : 0;
+            _currentColumn = _table.Columns.Count > 0 ? 1 : 0;
+
+            TriggerRowFocusChanged();
+        }
+
+
     }
 
     /// <summary>
@@ -280,8 +312,21 @@ namespace Minotti.utils
     /// </summary>
     public class datawindow : UserControl
     {
-        // (si no lo tenías)
-        protected int _currentColumn = 0;
+
+
+        // ===============================
+        // Estado interno (PB engine state)
+        // ===============================
+
+        // Tabla principal (equivalente al Primary buffer)
+        protected DataTable? _table;
+
+        // Columna actual (PB es 1-based)
+        protected int _currentColumn = 1;
+
+        // Texto en edición (editor activo)
+        protected string? _editorText;
+        
         // (si no lo tenías)
         protected bool _redrawEnabled = true;
         public Control? Control { get; set; }  // Control WinForms asociado (si existe)
@@ -505,6 +550,7 @@ namespace Minotti.utils
             EnsurePrimaryTable();
             _primary!.Clear();
 
+         
             RetrieveEnd?.Invoke();
             TriggerRowFocusChanged();
             return RowCount();
@@ -694,21 +740,98 @@ namespace Minotti.utils
         public virtual bool isSelected(long row) => false;
 
         // PB: GetText/SetText (texto del editor activo)
-        public virtual string GetText() => string.Empty;
-        public virtual int SetText(string value) => 1;
+        // PB: GetText (texto del editor activo)
+        public virtual string GetText()
+        {
+            // Si hay texto en edición, devolverlo
+            if (_editorText != null)
+                return _editorText;
+
+            // Si no, devolver el valor actual de la celda
+            if (_table == null) return string.Empty;
+            if (_currentRow < 1 || _currentRow > _table.Rows.Count) return string.Empty;
+            if (_currentColumn < 1 || _currentColumn > _table.Columns.Count) return string.Empty;
+
+            return Convert.ToString(
+                _table.Rows[_currentRow - 1][_currentColumn - 1]
+            ) ?? string.Empty;
+        }
+
+        // PB: SetText (modifica el editor activo)
+        public virtual int SetText(string value)
+        {
+            _editorText = value;
+            return 1; // PB retorna 1 si OK
+        }
+
 
         // PB: GetColumnName/GetColumn
-        public virtual string GetColumnName() => string.Empty;
-        public virtual int GetColumn() => 0;
+        // PB: GetColumnName
+        public virtual string GetColumnName()
+        {
+            if (_table == null) return string.Empty;
+            if (_currentColumn < 1 || _currentColumn > _table.Columns.Count)
+                return string.Empty;
+
+            return _table.Columns[_currentColumn - 1].ColumnName;
+        }
+
+        // PB: GetColumn (1-based)
+        public virtual int GetColumn()
+        {
+            return _currentColumn;
+        }
+
         // Hook: la base NO asume cómo mapear nombre->índice.
-       // uo_dw lo va a implementar usando at_col[] o su diccionario.
-        public virtual int GetColumnNumber(string columnName) => -1;
+        // uo_dw lo va a implementar usando at_col[] o su diccionario.
+        // PB: GetColumnNumber(string)
+        public virtual int GetColumnNumber(string columnName)
+        {
+            if (_table == null || string.IsNullOrEmpty(columnName))
+                return -1;
+
+            for (int i = 0; i < _table.Columns.Count; i++)
+            {
+                if (string.Equals(
+                    _table.Columns[i].ColumnName,
+                    columnName,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    return i + 1; // PB es 1-based
+                }
+            }
+
+            return -1; // PB: no encontrada
+        }
+
 
         // PB: GetBandAtPointer / GetObjectAtPointer / PointerX/Y etc (stubs)
-        public virtual string GetBandAtPointer() => string.Empty;
-        public virtual string GetObjectAtPointer() => string.Empty;
-        public virtual int PointerX() => 0;
-        public virtual int PointerY() => 0;
+        // PB: GetBandAtPointer
+        public virtual string GetBandAtPointer()
+        {
+            // PB retorna "detail" / "header" / etc.
+            // En WinForms no hay banding real
+            return "detail";
+        }
+
+        // PB: GetObjectAtPointer
+        public virtual string GetObjectAtPointer()
+        {
+            // PB retorna el nombre del objeto bajo el mouse
+            // En WinForms no existe sin hit-testing específico
+            return string.Empty;
+        }
+
+        public virtual int PointerX()
+        {
+            return 0;
+        }
+
+        public virtual int PointerY()
+        {
+            return 0;
+        }
+
 
         // PB: GetItemStatus/SetItemStatus
         public virtual dwitemstatus GetItemStatus(long row, int column, dwbuffer buffer) => dwitemstatus.NotModified;

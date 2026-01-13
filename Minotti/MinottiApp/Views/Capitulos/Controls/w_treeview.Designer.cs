@@ -29,7 +29,7 @@ namespace Minotti.Views.Capitulos.Controls
             // Fuente PB:
             // textsize=-10, weight=400, facename="Arial", textcolor=33554432
             this.tv_1.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.tv_1.ForeColor = System.Drawing.Color.FromArgb(unchecked((int)0xFF200000)); // 33554432 (aprox)
+            this.tv_1.ForeColor = utils.PBColor.FromPB(33554432);// System.Drawing.Color.FromArgb(unchecked((int)0xFF200000)); // 33554432 (aprox)
 
             // PB borderstyle=stylelowered! (equivalente aproximado)
             this.tv_1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;

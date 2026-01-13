@@ -105,10 +105,10 @@ namespace Minotti.Views.Basicos
             Cursor.Current = Cursors.WaitCursor;
 
             // consumir el userobject (no usado)
-            string _ = f_proxparam.fproxparam(param);  // GlobalHelpers.wf_proxparam(param);
+            string _ = f_proxparam.fproxparam(ref param);  // GlobalHelpers.wf_proxparam(param);
 
             // obtener CARPETA
-            string ls_siguiente = f_proxparam.fproxparam(param);// GlobalHelpers.wf_proxparam(param);
+            string ls_siguiente = f_proxparam.fproxparam(ref param);// GlobalHelpers.wf_proxparam(param);
 
             if (tab_1 != null)
             {

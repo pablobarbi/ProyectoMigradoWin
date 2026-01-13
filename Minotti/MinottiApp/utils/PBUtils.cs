@@ -86,8 +86,8 @@ namespace Minotti.utils
                 return 0;
 
             return col.Count;
-        }
-
+        } 
+       
     }
 }
 
