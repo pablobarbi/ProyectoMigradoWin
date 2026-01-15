@@ -142,5 +142,11 @@ namespace Minotti.Views.Pbl.Views
         {
             guo_app.uof_mostrar_datos_sistema();
         }
+
+        public int Colgar()
+        {
+            MessageBox.Show("Colgar desde menu principal", "Colgar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return 1;
+        }
     }
 }

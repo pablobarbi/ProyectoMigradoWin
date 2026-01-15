@@ -174,8 +174,8 @@ namespace Minotti.Views.Basicos
         {
             base.OnActivated(e);
 
-            PBGlobals.m_mdi.m_insertar.Enabled = at_op.Alta;
-            PBGlobals.m_mdi.m_borrar.Enabled = at_op.Baja;
+            PBGlobals.m_mdi.m_insertar.Enabled =at_op.Alta;
+            PBGlobals.m_mdi.m_borrar.Enabled =  at_op.Baja;
             PBGlobals.m_mdi.m_confirmar.Enabled = at_op.Modificacion;
         }
 

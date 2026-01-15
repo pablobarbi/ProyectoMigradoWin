@@ -69,6 +69,10 @@ namespace Minotti
         public application? App;
         public environment Env;
 
+
+         
+
+
         // -----------------------------------------------------
         // PB: SPLASH
         // -----------------------------------------------------

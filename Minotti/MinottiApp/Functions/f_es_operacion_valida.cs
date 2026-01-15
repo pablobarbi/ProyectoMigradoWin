@@ -149,7 +149,7 @@ SELECT dba.acc_parametros.objeto,
                             at_operacion,
                             at_operacion.uof_getobjeto(nivel),
                             guo_app.uof_Getmdi(),
-                            guo_app.Menu.Colgar,
+                            guo_app.menu.Colgar(),
                             PBOpenMode.Original);
 
                         // En PB no usa retorno para decidir acá.

@@ -42,6 +42,10 @@ namespace Minotti.Views.Basicos
             this.MenuID = new m_mdi(this);
             this.MainMenuStrip = this.MenuID;
             this.Controls.Add(this.MenuID);
+
+            // ✅ Asigna el menú global para poder usar guo_app.Menu
+            guo_app.menu = this.MenuID;
+            PBGlobals.m_mdi = this.MenuID;
         }
 
         // =====================================================

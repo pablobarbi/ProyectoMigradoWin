@@ -4,6 +4,7 @@
 //       Asumo que w_menu_arbol, uo_link, uo_calendar, TreeViewItem, ListViewItem, cat_operacion,
 //       Message, guo_app, f_cortar_string, f_cargar_datos_operacion, etc. YA EXISTEN migrados.
 
+using Minotti.Data;
 using Minotti.Functions;
 using Minotti.Structures;
 using Minotti.utils;
@@ -151,20 +152,27 @@ namespace Minotti.Views.Menues.Controls
             string valorPadre;
             int cantidad;
 
-            // 1. Obtener el nodo actual desde el handle
+            // 1. Obtener el nodo del árbol
             tv_1_GetItem(handle, out tvi_Actual);
 
-            // 2. Calcular el nivel siguiente (el que contiene las operaciones a listar)
+            // 2. Nivel siguiente (en PB es Level + 1)
             if (tvi_Actual.Level >= UpperBound(s_nvl)) return;
             nuevo_nivel = tvi_Actual.Level + 1;
 
-            // 3. Limpiar el ListView
-            lv_1.Items.Clear();
+            // 3. Validar objectparam definido
+            if (nuevo_nivel >= s_nvl.Length) return;
+            string nombreDataObject = s_nvl[nuevo_nivel].objectparam;
+            if (string.IsNullOrWhiteSpace(nombreDataObject)) return;
 
-            // 4. Acceder al DataWindow correspondiente al nuevo_nivel
-            var dw = s_nvl[nuevo_nivel].dw;
+            // 4. Cast a datastore (para acceder a DataObject y métodos)
+            var dw = s_nvl[nuevo_nivel].dw as datastore;
+            if (dw == null) return;
 
-            // 5. Filtro: columna #3 = Data del ítem seleccionado
+            dw.DataObject = nombreDataObject;
+            dw.SetTransObject(SQLCA.Instance);
+            dw.Retrieve(uo_app.Instance.at_usuario.Perfil);
+
+            // 5. Filtrar por valor padre
             colPadre = dw.Describe("#3.Name");
             valorPadre = Convert.ToString(tvi_Actual.Data) ?? "";
             valorPadre = valorPadre.Replace("'", "''");
@@ -174,9 +182,12 @@ namespace Minotti.Views.Menues.Controls
 
             cantidad = dw.RowCount();
 
-            // 6. Obtener nombres de columnas visibles
-            colKey = dw.Describe("#1.Name");
-            colDesc = dw.Describe("#2.Name");
+            // 6. Obtener columnas visibles
+            colKey = dw.Describe("#1.Name");   // operacion
+            colDesc = dw.Describe("#2.Name"); // titulo / descripción visible
+
+            // 7. Limpiar y llenar el ListView
+            lv_1.Items.Clear();
 
             for (int i = 1; i <= cantidad; i++)
             {
@@ -191,6 +202,8 @@ namespace Minotti.Views.Menues.Controls
                 lv_1.Items.Add(item);
             }
         }
+
+
 
 
         public virtual void ue_cargar_lista()
@@ -467,28 +480,35 @@ namespace Minotti.Views.Menues.Controls
         // ========== PB: lv_1 doubleclicked ==========
         private void lv_1_DoubleClicked(object? sender, EventArgs e)
         {
-            if (lv_1.SelectedIndex() < 1) return;
+            if (lv_1.SelectedItems.Count == 0 || tv_1.SelectedNode == null)
+                return;
 
-            PBListViewItemExtensions lvi_Actual;
-            string Modulo, Operacion;
-            string sAux;
+            // 1. Operación seleccionada desde el ListView
+            string operacion = lv_1.SelectedItems[0].Tag?.ToString() ?? "";
 
-            lv_1.GetItem(lv_1.SelectedIndex(), out lvi_Actual);
+            // 2. Módulo actual desde el nodo del TreeView
+            string modulo = "";
 
-            if (puede_ejecutar)
+            if (tv_1.SelectedNode.Tag is NodeTag tag)
             {
-                sAux = Convert.ToString(lvi_Actual.Data);
-                Modulo = f_cortar_string.fcortar_string(sAux, "-");
-                Operacion = sAux;
-
-                // Parent.Event Post ue_ejecutar(Modulo, Operacion)
-                this.PostEvent_ue_ejecutar(Modulo, Operacion);
+                // tag.Data = "modulo*****submodulo"
+                var s = tag.Data?.ToString() ?? "";
+                modulo = f_cortar_string.fcortar_string(s, "*****");
             }
             else
             {
-                return;
+                // fallback: intentá cortarlo directo del Text
+                var s = tv_1.SelectedNode.Text;
+                modulo = f_cortar_string.fcortar_string(s, " - ");
             }
+
+            if (string.IsNullOrEmpty(modulo) || string.IsNullOrEmpty(operacion))
+                return;
+
+            // 3. Ejecuta la operación (como PB hacía Parent.Event Post ue_ejecutar)
+            this.PostEvent_ue_ejecutar(modulo, operacion);
         }
+
 
         // ========== PB: lnk_mail constructor/link ==========
         private void lnk_mail_Link(object? sender, EventArgs e)

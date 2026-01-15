@@ -395,7 +395,7 @@ namespace Minotti.Views.Basicos
                 at_det,
                 objeto,
                 this.MdiParent,
-                guo_app.Menu.Colgar,
+                guo_app.menu.Colgar(),
                PBOpenMode.Original
             );
 

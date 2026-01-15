@@ -25,6 +25,9 @@ namespace Minotti.Views.Menues.Controls
             //public datastore dw;
             public IDataWindow dw;
             public int activo;
+
+            // ✅ Agregalo si no existe
+            public string objectparam;
         }
 
         // =========================
@@ -79,11 +82,17 @@ namespace Minotti.Views.Menues.Controls
 
             for (iAux = 1; iAux <= dw_param.RowCount(); iAux++)
             {
-                at_op.at_nvl[iAux].Objeto = dw_param.GetItemString(iAux, "objeto");
-                at_op.at_nvl[iAux].Titulo = dw_param.GetItemString(iAux, "titulo");
-                at_op.at_nvl[iAux].Parametros = dw_param.GetItemString(iAux, "parametros");
-                at_op.at_nvl[iAux].Cierra = dw_param.GetItemString(iAux, "cierra");
+                var nivel = new cat_operacion_nivel
+                {
+                    Objeto = dw_param.GetItemString(iAux, "objeto"),
+                    Titulo = dw_param.GetItemString(iAux, "titulo"),
+                    Parametros = dw_param.GetItemString(iAux, "parametros"),
+                    Cierra = dw_param.GetItemString(iAux, "cierra")
+                };
+
+                at_op.at_nvl.Add(nivel);
             }
+
 
             at_op.Orden = 1;
             at_op.w_anterior = this;
@@ -133,6 +142,7 @@ namespace Minotti.Views.Menues.Controls
 
                 s_nvl[iAux].dw = DwFactory.Create(dwName);
                 s_nvl[iAux].activo = 1;
+                s_nvl[iAux].objectparam = dwName;
             }
 
             // ===== DataWindow de parámetros de operaciones =====

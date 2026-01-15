@@ -2,6 +2,7 @@
 using Minotti.utils;
 using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Models;
+using Minotti.Views.Pbl.Views;
 
 namespace Minotti
 {
@@ -29,7 +30,7 @@ namespace Minotti
 
         public static cat_error_db? at_error_db => Instance.at_error_db;
 
-        public static dynamic? Menu => Instance.menu;
+        public static m_mdi? menu { get; set; }
 
 
         public static void uof_SetUsuario(cat_usuario usuario)
