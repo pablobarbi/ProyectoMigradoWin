@@ -125,11 +125,13 @@
 
 	<ItemGroup>
 		<Compile Include="State\guo_app.cs" />
+		<Compile Include="Structures\NodeTag.cs" />
 		<Compile Include="Structures\st_at_det.cs" />
 		<Compile Include="Structures\st_detalle.cs" />
 		<Compile Include="Structures\st_nivel.cs" />
 		<Compile Include="Structures\st_tamaño_minimo.cs" />
 		<Compile Include="Structures\Helpers.cs" />
+		<Compile Include="Structures\TreeViewItem.cs" />
 		<Compile Include="UserObjects\c_class.cs" />
 		<Compile Include="UserObjects\picturebutton.cs" />
 		<Compile Include="UserObjects\dw_calendar.cs" />
@@ -141,6 +143,7 @@
 		<Compile Include="utils\ContextInformation.cs" />
 		<Compile Include="utils\DataStoreWrapper.cs" />
 		<Compile Include="utils\datawindow.cs" />
+		<Compile Include="utils\DwFactory.cs" />
 		<Compile Include="utils\DynamicEventInvoker.cs" />
 		<Compile Include="utils\FileUtils.cs" />
 		<Compile Include="utils\GlobalHelpers.cs" />

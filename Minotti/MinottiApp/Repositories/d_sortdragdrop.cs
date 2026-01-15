@@ -3,74 +3,48 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class d_sortdragdrop
-    {
+
+   
+
+    public class d_sortdragdrop : datastore{
         public string columnname { get; set; }
         public string sort_order { get; set; }
         public string displayname { get; set; }
         public string use_display { get; set; }
 
 
-
-        public static List<d_sortdragdrop> GetAll()
-        {
-            const string sql = @"SELECT * FROM dba.<sortdragdrop>";
-
-            var lista = SQLCA.ExecuteList(
-                sql,
-                reader => new d_sortdragdrop
-                {
-                    columnname = reader["columnname"]?.ToString() ?? string.Empty,
-                    sort_order = reader["sort_order"]?.ToString() ?? string.Empty,
-                    displayname = reader["displayname"]?.ToString() ?? string.Empty,
-                    use_display = reader["use_display"]?.ToString() ?? string.Empty
-                },
-                cmd =>
-                {
-                    // sin parámetros
-                }
-            );
-
-            return lista;
-        }
+        private const string SQL = @"SELECT * FROM dba.<sortdragdrop>";
 
 
 
+        public override int Retrieve(params object?[] args)
+{
+    if (SQLCA.Connection == null)
+        throw new InvalidOperationException("SQLCA.Connection es null");
 
+    try
+    {
+        using var cmd = SQLCA.Connection.CreateCommand();
+        cmd.CommandText = SQL;
 
+        using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+        var dt = new DataTable();
+        da.Fill(dt);
 
-
-
-        //        public static List<d_sortdragdrop> GetAll()
-        //        {
-        //            var lista = new List<d_sortdragdrop>();
-        //            string connectionString = "DSN=tu_dsn_aqui";
-
-        //            using (var connection = new OdbcConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                var command = new OdbcCommand(@"
-        //SELECT * FROM dba.<sortdragdrop>
-        //                ", connection);
-
-        //                using (var reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        lista.Add(new d_sortdragdrop
-        //                        {
-        //                            columnname = reader["columnname"]?.ToString(),
-        //                            sort_order = reader["sort_order"]?.ToString(),
-        //                            displayname = reader["displayname"]?.ToString(),
-        //                            use_display = reader["use_display"]?.ToString()
-        //                        });
-        //                    }
-        //                }
-        //            }
-
-        //            return lista;
-        //        }
+        this.SetData(dt);
+        return this.RowCount();
     }
+    catch (Exception ex)
+    {
+        SQLCA.SqlCode = -1;
+        SQLCA.SqlErrText = ex.Message;
+        throw;
+    }
+}
+
+}
 }

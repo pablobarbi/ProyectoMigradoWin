@@ -1,4 +1,5 @@
 ﻿using Minotti.Data;
+using Minotti.utils;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,41 +10,41 @@ using System.Threading.Tasks;
 
 namespace Minotti.Repositories
 {
-    public class d_agregar_capitulos
+    public class d_agregar_capitulos : datastore
     {
 
         // SQL exacto del SRD, adaptado a ODBC posicional
-        private const string SQL_SELECT_NOMBRE_POR_CAPITULO = @"
+        private const string SQL = @"
 SELECT capitulos.nombre
   FROM capitulos
  WHERE capitulos.capitulo = ?
 ";
 
-        public static DataTable uof_retrieve(string capitulo)
+        public override int Retrieve(params object?[] args)
         {
-            if (capitulo is null) throw new ArgumentNullException(nameof(capitulo));
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
 
-            using OdbcCommand cmd = SQLCA.CreateCommand(SQL_SELECT_NOMBRE_POR_CAPITULO);
-            SQLCA.AddParam(cmd, capitulo);
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
 
-            return SQLCA.ExecuteDataTable(cmd);
-        }
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
 
-        public static string? uof_get_nombre(string capitulo)
-        {
-            if (capitulo is null) throw new ArgumentNullException(nameof(capitulo));
-
-            using OdbcCommand cmd = SQLCA.CreateCommand(SQL_SELECT_NOMBRE_POR_CAPITULO);
-            SQLCA.AddParam(cmd, capitulo);
-
-            // Podés usar DataTable o Scalar; el SRD selecciona 1 columna, 1 fila esperable.
-            var dt = SQLCA.ExecuteDataTable(cmd);
-            if (dt.Rows.Count == 0) return null;
-
-            object v = dt.Rows[0]["nombre"];
-            return v == DBNull.Value ? null : Convert.ToString(v);
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
     }
 }
- 
- 
+
+        

@@ -1,22 +1,18 @@
 ﻿using Minotti.Data;
-using System;
-using System.Collections.Generic;
 using System.Data.Odbc;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class d_operaciones_x_perfil
-    {
+    public class d_operaciones_x_perfil : datastore{
         public string? operacion { get; set; }
         public string? nombre { get; set; }
         public string? modulo { get; set; }
 
 
         // Query del SRD (misma lógica). ODBC usa parámetro posicional '?'
-        private const string SQL_RETRIEVE =
+        private const string SQL =
 @"SELECT DISTINCT dba.acc_operaciones.operacion,
                 dba.acc_operaciones.nombre,
                 dba.acc_operaciones_x_modulo.modulo
@@ -29,47 +25,37 @@ namespace Minotti.Repositories
   ORDER BY dba.acc_operaciones_x_modulo.modulo,
            dba.acc_operaciones.operacion";
 
-        public static List<d_operaciones_x_perfil> Retrieve(string perfil)
-        {
-            if (SQLCA.Connection == null)
-                throw new InvalidOperationException("SQLCA.Connection es null (no inicializada).");
+        
 
-            var list = new List<d_operaciones_x_perfil>();
 
-            try
-            {
-                using var cmd = SQLCA.Connection.CreateCommand();
-                cmd.CommandText = SQL_RETRIEVE;
+public override int Retrieve(params object?[] args)
+{
+    if (SQLCA.Connection == null)
+        throw new InvalidOperationException("SQLCA.Connection es null");
 
-                cmd.Parameters.Add(new OdbcParameter
-                {
-                    OdbcType = OdbcType.Char,
-                    Value = perfil
-                });
+    try
+    {
+        using var cmd = SQLCA.Connection.CreateCommand();
+        cmd.CommandText = SQL;
 
-                using var rd = cmd.ExecuteReader();
-                while (rd.Read())
-                {
-                    list.Add(new d_operaciones_x_perfil
-                    {
-                        operacion = rd.IsDBNull(0) ? null : rd.GetString(0),
-                        nombre = rd.IsDBNull(1) ? null : rd.GetString(1),
-                        modulo = rd.IsDBNull(2) ? null : rd.GetString(2),
-                    });
-                }
+var prm0 = cmd.CreateParameter();
+prm0.Value = args[0];
+cmd.Parameters.Add(prm0);
 
-                SQLCA.SqlCode = 0;
-                SQLCA.SqlErrText = null;
-                return list;
-            }
-            catch (Exception ex)
-            {
-                SQLCA.SqlCode = -1;
-                SQLCA.SqlErrText = ex.Message;
-                throw;
-            }
-        }
+        using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+        var dt = new DataTable();
+        da.Fill(dt);
+
+        this.SetData(dt);
+        return this.RowCount();
     }
+    catch (Exception ex)
+    {
+        SQLCA.SqlCode = -1;
+        SQLCA.SqlErrText = ex.Message;
+        throw;
+    }
+}
 
-
+}
 }

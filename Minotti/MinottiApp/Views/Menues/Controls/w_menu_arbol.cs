@@ -4,6 +4,7 @@
 // Asumo que existen: s_nvl[], UpperBound(...), f_cortar_string, ue_ejecutar, w_menu base, etc.
 
 using Minotti.Functions;
+using Minotti.Structures;
 using System;
 using System.Windows.Forms;
 
@@ -103,80 +104,164 @@ namespace Minotti.Views.Menues.Controls
             }
         }
 
+        //public virtual void ue_cargar_nivelOld(int incremento)
+        //{
+        //    int cantidad, nuevo_nivel, i_Aux, nuevo_item;
+        //    TreeViewItem tvi_Actual;
+        //    TreeViewItem tvi_Nuevo;
+        //    string sAux;
+
+        //    // === Item actual ===
+        //    tv_1_GetItem(incremento, out tvi_Actual);
+
+        //    if (tvi_Actual.Level >= UpperBound(s_nvl) ||
+        //        (!ultimo_nivel && tvi_Actual.Level == UpperBound(s_nvl) - 1))
+        //        return;
+
+        //    nuevo_nivel = tvi_Actual.Level + 1;
+
+        //    // === FILTRO (PB: #3.Name → modulo) ===
+        //    if (nuevo_nivel > 1)
+        //    {
+        //        //s_nvl[nuevo_nivel].dw.SetFilter(
+        //        //    $"modulo = \"{Convert.ToString(tvi_Actual.Data)}\""
+        //        //); 
+
+        //        s_nvl[nuevo_nivel].dw.SetFilter("");
+        //        s_nvl[nuevo_nivel].dw.Filter();
+
+        //        s_nvl[nuevo_nivel].dw.SetFilter(  $"modulo = '{tvi_Actual.Data}'" );
+        //        s_nvl[nuevo_nivel].dw.Filter();
+
+        //        //s_nvl[nuevo_nivel].dw.Filter();
+        //    }
+
+        //    cantidad = s_nvl[nuevo_nivel].dw.RowCount();
+
+        //    // === Construcción del TreeView ===
+        //    for (i_Aux = 1; i_Aux <= cantidad; i_Aux++)
+        //    {
+        //        sAux = "";
+
+        //        // PB: último nivel concatena módulo
+        //        if (nuevo_nivel == UpperBound(s_nvl))
+        //            sAux = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "modulo") + " - ";
+
+        //        tvi_Nuevo = new TreeViewItem();
+
+        //        // === Data (PB: Data) ===
+        //        tvi_Nuevo.Data =
+        //            sAux + s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "submodulo");
+
+        //        // === Label (PB: Label → texto visible) ===
+        //        tvi_Nuevo.Label =
+        //            s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "nombre");
+
+        //        tvi_Nuevo.PictureIndex = nuevo_nivel;
+
+        //        // Imagen seleccionada
+        //        tvi_Nuevo.SelectedPictureIndex = (nuevo_nivel == 1) ? 1 : 4;
+
+        //        // Hijos
+        //        tvi_Nuevo.Children =
+        //            !(nuevo_nivel == UpperBound(s_nvl) ||
+        //              (!ultimo_nivel && nuevo_nivel == UpperBound(s_nvl) - 1));
+
+        //        // Inserta en árbol
+        //        nuevo_item = tv_1_InsertItemLast(incremento, tvi_Nuevo);
+
+        //        if (nuevo_item < 1)
+        //        {
+        //            MessageBox.Show(
+        //                "Error insertando item",
+        //                "Error",
+        //                MessageBoxButtons.OK,
+        //                MessageBoxIcon.Exclamation
+        //            );
+        //        }
+        //        else if (nuevo_item == 1)
+        //        {
+        //            tv_1_ExpandItem(nuevo_item);
+        //            tv_1_SelectItem(nuevo_item);
+        //        }
+        //    }
+        //}
+
+
+
         public virtual void ue_cargar_nivel(int incremento)
         {
             int cantidad, nuevo_nivel, i_Aux, nuevo_item;
             TreeViewItem tvi_Actual;
             TreeViewItem tvi_Nuevo;
-            string sAux;
+            string sAux = "";
 
-            // === Item actual ===
+            // PB: tv_1.GetItem(incremento, tvi_Actual)
             tv_1_GetItem(incremento, out tvi_Actual);
 
+            // PB:
+            // If tvi_Actual.Level >= UpperBound(s_nvl[]) OR
+            //    (not(ultimo_nivel) AND tvi_Actual.Level = UpperBound(s_nvl[]) - 1) Then Return
             if (tvi_Actual.Level >= UpperBound(s_nvl) ||
                 (!ultimo_nivel && tvi_Actual.Level == UpperBound(s_nvl) - 1))
                 return;
 
             nuevo_nivel = tvi_Actual.Level + 1;
 
-            // === FILTRO (PB: #3.Name → modulo) ===
+            // PB:
+            // If nuevo_nivel > 1 Then
+            //   SetFilter( Describe('#3.Name') + '="' + string(tvi_Actual.Data) + '"' )
+            //   Filter()
+            // End If
             if (nuevo_nivel > 1)
             {
-                //s_nvl[nuevo_nivel].dw.SetFilter(
-                //    $"modulo = \"{Convert.ToString(tvi_Actual.Data)}\""
-                //); 
+                var dw = s_nvl[nuevo_nivel].dw;
 
-                s_nvl[nuevo_nivel].dw.SetFilter("");
-                s_nvl[nuevo_nivel].dw.Filter();
+                // 🔴 CRÍTICO: resetear filtros anteriores (PB lo hace implícito)
+                dw.SetFilter(string.Empty);
+                dw.Filter();
 
-                s_nvl[nuevo_nivel].dw.SetFilter(  $"modulo = '{tvi_Actual.Data}'" );
-                s_nvl[nuevo_nivel].dw.Filter();
+                string colPadre = dw.Describe("#3.Name");
+                string padreVal = Convert.ToString(tvi_Actual.Data) ?? "";
 
-                //s_nvl[nuevo_nivel].dw.Filter();
+                padreVal = padreVal.Replace("'", "''");
+
+                dw.SetFilter($"{colPadre} = '{padreVal}'");
+                dw.Filter();
             }
+
 
             cantidad = s_nvl[nuevo_nivel].dw.RowCount();
 
-            // === Construcción del TreeView ===
+            // PB: For i_Aux = 1 To cantidad
             for (i_Aux = 1; i_Aux <= cantidad; i_Aux++)
             {
                 sAux = "";
 
-                // PB: último nivel concatena módulo
+                // PB: If nuevo_nivel = UpperBound(s_nvl[]) Then sAux = GetItemString('modulo') + ' - '
                 if (nuevo_nivel == UpperBound(s_nvl))
                     sAux = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "modulo") + " - ";
 
-                tvi_Nuevo = new TreeViewItem();
+                string colKey = s_nvl[nuevo_nivel].dw.Describe("#1.Name");
+                string colDesc = s_nvl[nuevo_nivel].dw.Describe("#2.Name");
 
-                // === Data (PB: Data) ===
-                tvi_Nuevo.Data =
-                    sAux + s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "submodulo");
+                tvi_Nuevo = new TreeViewItem
+                {
+                    Data = sAux + s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, colKey),
+                    Label = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, colDesc),
+                    PictureIndex = nuevo_nivel,
+                    SelectedPictureIndex = (nuevo_nivel == 1) ? 1 : 4,
+                    Children = !(nuevo_nivel == UpperBound(s_nvl) ||
+                                 (!ultimo_nivel && nuevo_nivel == UpperBound(s_nvl) - 1))
+                };
 
-                // === Label (PB: Label → texto visible) ===
-                tvi_Nuevo.Label =
-                    s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "nombre");
 
-                tvi_Nuevo.PictureIndex = nuevo_nivel;
 
-                // Imagen seleccionada
-                tvi_Nuevo.SelectedPictureIndex = (nuevo_nivel == 1) ? 1 : 4;
-
-                // Hijos
-                tvi_Nuevo.Children =
-                    !(nuevo_nivel == UpperBound(s_nvl) ||
-                      (!ultimo_nivel && nuevo_nivel == UpperBound(s_nvl) - 1));
-
-                // Inserta en árbol
                 nuevo_item = tv_1_InsertItemLast(incremento, tvi_Nuevo);
 
                 if (nuevo_item < 1)
                 {
-                    MessageBox.Show(
-                        "Error insertando item",
-                        "Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation
-                    );
+                    MessageBox.Show("Error insertando item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
                 else if (nuevo_item == 1)
                 {
@@ -185,9 +270,6 @@ namespace Minotti.Views.Menues.Controls
                 }
             }
         }
-
-
-
 
 
 
@@ -207,38 +289,46 @@ namespace Minotti.Views.Menues.Controls
         // ===== PB: tv_1 doubleclicked =====
         private void tv_1_NodeMouseDoubleClick(object? sender, TreeNodeMouseClickEventArgs e)
         {
-            TreeViewItem tvi_Actual;
-            string sAux;
-            string Modulo, Operacion;
+            // Solo último nivel
+            if (e.Node.Level != UpperBound(s_nvl) - 1)
+                return;
 
-            // PB: tv_1.GetItem(handle, tvi_Actual)
-            tv_1_GetItem_FromNode(e.Node, out tvi_Actual);
+            if (e.Node.Tag is not NodeTag tag)
+                return;
 
-            if (tvi_Actual.Level != UpperBound(s_nvl)) return;
+            string modulo = tag.Modulo ?? string.Empty;
+            string operacion = tag.Operacion ?? string.Empty;
 
-            // Separa módulo/operación ("Modulo - Operacion")
-            sAux = Convert.ToString(tvi_Actual.Data);
-            Modulo = f_cortar_string.fcortar_string(sAux, "-");
-            Operacion = sAux;
+            if (string.IsNullOrEmpty(operacion))
+                return;
 
-            // Parent.Event Post ue_ejecutar(Modulo, Operacion)
-            // Asumo que ue_ejecutar existe en base.
-            this.PostEvent_ue_ejecutar(Modulo, Operacion);
+            // PB: Parent.Event Post ue_ejecutar(modulo, operacion)
+            this.PostEvent_ue_ejecutar(modulo, operacion);
         }
+
+
 
         // ===== PB: tv_1 itempopulate =====
         // Equivalente WinForms: BeforeExpand para "poblar" al expandir
         private void tv_1_BeforeExpand(object? sender, TreeViewCancelEventArgs e)
         {
+            // Si ya está poblado (no tiene dummy), no hagas nada
+            if (e.Node.Nodes.Count > 0 &&
+                !(e.Node.Nodes.Count == 1 && string.IsNullOrEmpty(e.Node.Nodes[0].Text) && e.Node.Nodes[0].Tag == null))
+                return;
+
+            // Si tiene dummy, borrarlo antes de cargar
+            if (e.Node.Nodes.Count == 1 && string.IsNullOrEmpty(e.Node.Nodes[0].Text) && e.Node.Nodes[0].Tag == null)
+                e.Node.Nodes.Clear();
+
             Cursor.Current = Cursors.WaitCursor;
 
-            // PB: Parent.Event Trigger ue_cargar_nivel(handle)
-            // Acá uso el "handle" como un id en Tag; si no existe, intento mapear por ruta.
             int handle = GetHandleFromNode(e.Node);
             ue_cargar_nivel(handle);
 
             Cursor.Current = Cursors.Default;
         }
+
 
         // =====================================================================
         // Helpers mínimos para no "inventar" reglas: sólo puente PB TreeViewItem <-> TreeNode
@@ -246,7 +336,7 @@ namespace Minotti.Views.Menues.Controls
         // por tus llamados reales. Nombres intencionalmente "tv_1_*" para conservar semántica.
         // =====================================================================
 
-        private void tv_1_GetItem(int handle, out TreeViewItem item)
+        protected void tv_1_GetItem(int handle, out TreeViewItem item)
         {
             // handle=0 en PB suele ser root. Lo mapeo a una "raíz virtual".
             if (handle == 0)
@@ -272,16 +362,24 @@ namespace Minotti.Views.Menues.Controls
             tv_1_GetItem_FromNode(node, out item);
         }
 
-        private void tv_1_GetItem_FromNode(TreeNode node, out TreeViewItem item)
+        protected void tv_1_GetItem_FromNode(TreeNode node, out TreeViewItem item)
         {
+            object data = "";
+
+            if (node.Tag is NodeTag nt)
+                data = nt.Data;
+            else if (node.Tag != null)
+                data = node.Tag;
+
             item = new TreeViewItem
             {
-                Level = node.Level + 1,          // PB root suele ser nivel 1; WinForms root Level=0
-                Data = node.Tag ?? "",
+                Level = node.Level + 1,   // WinForms Level(0) => PB Level(1)
+                Data = data,
                 Label = node.Text,
                 Children = node.Nodes.Count > 0
             };
         }
+
 
         private int tv_1_InsertItemLast(int parentHandle, TreeViewItem newItem)
         {
@@ -356,10 +454,7 @@ namespace Minotti.Views.Menues.Controls
         }
 
         // Small internal structures
-        private sealed record NodeTag(int Handle, object Data)
-        {
-            public override string ToString() => Data?.ToString() ?? "";
-        }
+       
 
         private static class NodeHandleGenerator
         {
@@ -368,14 +463,6 @@ namespace Minotti.Views.Menues.Controls
         }
     }
 
-    // PB placeholder type used in logic (asumo ya lo tenés migrado, pero lo declaro mínimo para compilar si falta)
-    public sealed class TreeViewItem
-    {
-        public int Level { get; set; }
-        public object Data { get; set; } = "";
-        public string Label { get; set; } = "";
-        public int PictureIndex { get; set; }
-        public int SelectedPictureIndex { get; set; }
-        public bool Children { get; set; }
-    }
+     
+   
 }

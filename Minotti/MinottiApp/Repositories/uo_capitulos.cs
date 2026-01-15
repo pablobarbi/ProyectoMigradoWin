@@ -3,17 +3,20 @@ using Minotti.utils;
 using Minotti.Views.Basicos.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Odbc;
 using System.Globalization;
 
 namespace Minotti.Repositories
 {
 
+   
+
     /// <summary>
     /// Migración de PB: uo_capitulos.sru (non visual object)
     /// Mantiene nombres de variables y métodos.
     /// </summary>
-    public class uo_capitulos
-    {
+    public class uo_capitulos : datastore{
         // === VARIABLES (type variables) ===
         public uo_ds ds_capitulo;
         public uo_ds ds_rubricas;
@@ -22,6 +25,10 @@ namespace Minotti.Repositories
         public uo_ds ds_rubricas_med;
         public uo_ds ds_subrubricas_med;
         public uo_ds ds_capitulo_todo;
+
+
+        private const string SQL = "/* SQL NO ENCONTRADO AUTOMATICAMENTE */";
+
 
         public long capitulo_id { get; set; }
         // Estado para TreeView lazy-load (PB: flag de expandido)
@@ -442,11 +449,36 @@ namespace Minotti.Repositories
             ds_capitulo_todo.SetFilter(string.Empty);
             ds_capitulo_todo.Filter();
         }
+
+        public override int Retrieve(params object?[] args)
+        {
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
+
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
+
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
+        }
+
     }
 
 
-    //public class uo_capitulosOld
-    //{
+    //public class uo_capitulos : datastore{
     //    protected datastore ds_capitulo;
 
     //    // ============================
@@ -681,5 +713,9 @@ namespace Minotti.Repositories
     //}
 
 
-}
 
+
+
+
+
+}

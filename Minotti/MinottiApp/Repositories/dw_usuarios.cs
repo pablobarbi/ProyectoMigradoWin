@@ -3,66 +3,48 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class dw_usuarios
-    {
+
+
+
+    public class dw_usuarios : datastore{
         public string Usuario { get; set; }
         public string Nombre { get; set; }
 
-        public static List<dw_usuarios> GetAll()
-        {
-            const string sql = @"
+
+        private const string SQL = @"
 SELECT dba.acc_usuarios.usuario,
        dba.acc_usuarios.nombre
   FROM dba.acc_usuarios
  ORDER BY dba.acc_usuarios.nombre";
 
-            var lista = SQLCA.ExecuteReaderList(
-                sql,
-                r => new dw_usuarios
-                {
-                    Usuario = r["usuario"] as string ?? string.Empty,
-                    Nombre = r["nombre"] as string ?? string.Empty
-                },
-                cmd =>
-                {
-                    // sin parámetros
-                });
+        public override int Retrieve(params object?[] args)
+{
+    if (SQLCA.Connection == null)
+        throw new InvalidOperationException("SQLCA.Connection es null");
 
-            return lista;
-        }
+    try
+    {
+        using var cmd = SQLCA.Connection.CreateCommand();
+        cmd.CommandText = SQL;
 
+        using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+        var dt = new DataTable();
+        da.Fill(dt);
 
-        //        public static List<dw_usuarios> GetAll()
-        //        {
-        //            var lista = new List<dw_usuarios>();
-        //            string connectionString = "DSN=tu_dsn_aqui";
-
-        //            using (var connection = new OdbcConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                var command = new OdbcCommand(@"
-        //SELECT dba.acc_usuarios.usuario,
-        //        dba.acc_usuarios.nombre
-        //   FROM dba.acc_usuarios
-        //  ORDER BY dba.acc_usuarios.nombre
-        //                ", connection);
-
-        //                using (var reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        lista.Add(new dw_usuarios
-        //                        {
-        //                            Usuario = reader["usuario"].ToString(),
-        //                            Nombre = reader["nombre"].ToString()
-        //                        });
-        //                    }
-        //                }
-        //            }
-
-        //            return lista;
-        //        }
+        this.SetData(dt);
+        return this.RowCount();
     }
+    catch (Exception ex)
+    {
+        SQLCA.SqlCode = -1;
+        SQLCA.SqlErrText = ex.Message;
+        throw;
+    }
+}
+
+}
 }

@@ -3,69 +3,50 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class dl_perfiles
-    {
+
+
+
+    public class dl_perfiles : datastore{
         public string Perfil { get; set; }
         public string Nombre { get; set; }
         public string Bitmap { get; set; }
 
-        public static List<dl_perfiles> GetAll()
-        {
-            const string sql = @"
+
+        private const string SQL = @"
 SELECT dba.acc_perfiles.perfil,
        dba.acc_perfiles.nombre,
        dba.acc_perfiles.bitmap
   FROM dba.acc_perfiles
  ORDER BY dba.acc_perfiles.nombre";
 
-            var lista = SQLCA.ExecuteList(
-                sql,
-                r => new dl_perfiles
-                {
-                    Perfil = r["perfil"]?.ToString() ?? string.Empty,
-                    Nombre = r["nombre"]?.ToString() ?? string.Empty,
-                    Bitmap = r["bitmap"]?.ToString() ?? string.Empty
-                },
-                cmd =>
-                {
-                    // sin parámetros
-                });
+        public override int Retrieve(params object?[] args)
+{
+    if (SQLCA.Connection == null)
+        throw new InvalidOperationException("SQLCA.Connection es null");
 
-            return lista;
-        }
-        //        public static List<dl_perfiles> GetAll()
-        //        {
-        //            var lista = new List<dl_perfiles>();
-        //            string connectionString = "DSN=tu_dsn_aqui";
+    try
+    {
+        using var cmd = SQLCA.Connection.CreateCommand();
+        cmd.CommandText = SQL;
 
-        //            using (var connection = new OdbcConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                var command = new OdbcCommand(@"
-        //SELECT dba.acc_perfiles.perfil,
-        //        dba.acc_perfiles.nombre,
-        //        dba.acc_perfiles.bitmap
-        //   FROM dba.acc_perfiles
-        //  ORDER BY dba.acc_perfiles.nombre
-        //                ", connection);
+        using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+        var dt = new DataTable();
+        da.Fill(dt);
 
-        //                using (var reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        lista.Add(new dl_perfiles
-        //                        {
-        //                            Perfil = reader["perfil"].ToString(),
-        //                            Nombre = reader["nombre"].ToString(),
-        //                            Bitmap = reader["bitmap"].ToString()
-        //                        });
-        //                    }
-        //                }
-        //            }
-
-        //            return lista;
-        //        }
+        this.SetData(dt);
+        return this.RowCount();
     }
+    catch (Exception ex)
+    {
+        SQLCA.SqlCode = -1;
+        SQLCA.SqlErrText = ex.Message;
+        throw;
+    }
+}
+
+}
 }

@@ -3,62 +3,48 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class d_campos_invisibles
+
+ 
+    public class d_campos_invisibles : datastore
     {
         public string campo { get; set; }
 
 
 
-
-        public static List<d_campos_invisibles> GetAll()
-        {
-            const string sql = @"
+        private const string SQL = @"
 SELECT dba.par_campoinvisible.campo
   FROM dba.par_campoinvisible";
 
-            var lista = SQLCA.ExecuteList(
-                sql,
-                reader => new d_campos_invisibles
-                {
-                    campo = reader["campo"]?.ToString() ?? string.Empty
-                },
-                cmd =>
-                {
-                    // sin parámetros
-                }
-            );
 
-            return lista;
+
+        public override int Retrieve(params object?[] args)
+        {
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
+
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
+
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
 
-
-
-
-        //public static List<d_campos_invisibles> GetAll()
-        //{
-        //    var lista = new List<d_campos_invisibles>();
-        //    string connectionString = "DSN=tu_dsn_aqui";
-
-        //    using (var connection = new OdbcConnection(connectionString))
-        //    {
-        //        connection.Open();
-        //        var command = new OdbcCommand(@"SELECT dba.par_campoinvisible.campo FROM dba.par_campoinvisible", connection);
-
-        //        using (var reader = command.ExecuteReader())
-        //        {
-        //            while (reader.Read())
-        //            {
-        //                lista.Add(new d_campos_invisibles
-        //                {
-        //                    campo = reader["campo"]?.ToString()
-        //                });
-        //            }
-        //        }
-        //    }
-
-        //    return lista;
-        //}
     }
 }

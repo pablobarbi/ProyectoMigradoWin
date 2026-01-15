@@ -22,7 +22,8 @@ namespace Minotti.Views.Menues.Controls
         protected struct st_nivel
         {
             public string titulo;
-            public datastore dw;
+            //public datastore dw;
+            public IDataWindow dw;
             public int activo;
         }
 
@@ -31,7 +32,7 @@ namespace Minotti.Views.Menues.Controls
         // =========================
         protected st_nivel[] s_nvl;
         protected int nivel_actual;
-        protected datastore dw_param;
+        protected IDataWindow dw_param;
 
         public w_menu()
         {
@@ -125,35 +126,37 @@ namespace Minotti.Views.Menues.Controls
 
             for (iAux = 1; iAux <= niveles; iAux++)
             {
-                s_nvl[iAux].dw = new datastore();
                 s_nvl[iAux].titulo = f_proxparam.fproxparam(ref param);
-                s_nvl[iAux].dw.DataObject = f_proxparam.fproxparam(ref param);
-                s_nvl[iAux].dw.SetTransObject(SQLCA.Instance);
+
+                // 👇 acá estaba la magia PB → ahora es reflexión
+                string dwName = f_proxparam.fproxparam(ref param);
+
+                s_nvl[iAux].dw = DwFactory.Create(dwName);
                 s_nvl[iAux].activo = 1;
             }
 
-            // Carga los parámetros de las operaciones
-            dw_param = new datastore();
-            dw_param.DataObject = f_proxparam.fproxparam(ref param);
-            dw_param.SetTransObject(SQLCA.Instance);
+            // ===== DataWindow de parámetros de operaciones =====
+            string dwParamName = f_proxparam.fproxparam(ref param);
+            dw_param = DwFactory.Create(dwParamName);
 
-            // Carga los DataStore con los datos del usuario conectado
+            // ===== Usuario conectado =====
             at_usuario = guo_app.uof_GetUsuario();
 
-           // s_nvl[1].dw.Retrieve(at_usuario.Usuario);
-            DataTable dt = d_perfiles_x_usuario.Retrieve(at_usuario.Usuario);
-            s_nvl[1].dw.SetData(dt);
+            // ===== NIVEL 1 =====
+            s_nvl[1].dw.Retrieve(at_usuario.Usuario);
 
             // ===== NIVELES 2..N =====
+            // ⚠️ OJO: esto todavía es genérico, el parámetro real
+            // lo va a definir el nodo padre seleccionado
             for (iAux = 2; iAux < s_nvl.Length; iAux++)
             {
-                DataTable dtNivel = d_submodulos_x_perfil.Retrieve(at_usuario.Perfil);
-                s_nvl[iAux].dw.SetData(dtNivel);
+                s_nvl[iAux].dw.Retrieve(at_usuario.Perfil);
             }
 
-
+            // ===== Operaciones =====
             dw_param.Retrieve(at_usuario.Perfil);
         }
+
 
         // =========================
         // PB event: ue_ajustar_posicion

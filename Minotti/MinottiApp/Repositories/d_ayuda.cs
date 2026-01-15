@@ -3,77 +3,51 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class d_ayuda
+
+
+    public class d_ayuda : datastore
     {
         public string Titulo { get; set; }
         public string Descripcion { get; set; }
         public string Ayuda { get; set; }
 
-        //        public static List<d_ayuda> GetAll()
-        //        {
-        //            var lista = new List<d_ayuda>();
-        //            string connectionString = "DSN=tu_dsn_aqui";
-
-        //            using (var connection = new OdbcConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                var command = new OdbcCommand(@"
-        //SELECT ayuda, descripcion FROM dba.acc_ayuda ORDER BY ayuda
-        //                ", connection);
-
-        //                using (var reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        lista.Add(new d_ayuda
-        //                        {
-        //                            Titulo = reader["titulo"]?.ToString(),
-        //                            Descripcion = reader["descripcion"]?.ToString(),
-        //                            Ayuda = reader["ayuda"]?.ToString()
-        //                        });
-        //                    }
-        //                }
-        //            }
-
-        //            return lista;
-        //        }
-
-
-        public static List<d_ayuda> GetAll()
-        {
-            const string sql = @"
+        //        
+        private const string SQL = @"
 SELECT ayuda,
        titulo,
        descripcion
   FROM dba.acc_ayuda
  ORDER BY ayuda";
 
-            // Usamos SQLCA.ExecuteList para no manejar conexiones acá
-            var lista = SQLCA.ExecuteList(
-                sql,
-                reader => new d_ayuda
-                {
-                    Ayuda = reader.IsDBNull(reader.GetOrdinal("ayuda"))
-                        ? string.Empty
-                        : reader.GetString(reader.GetOrdinal("ayuda")),
 
-                    Titulo = reader.IsDBNull(reader.GetOrdinal("titulo"))
-                        ? string.Empty
-                        : reader.GetString(reader.GetOrdinal("titulo")),
+        public override int Retrieve(params object?[] args)
+        {
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
 
-                    Descripcion = reader.IsDBNull(reader.GetOrdinal("descripcion"))
-                        ? string.Empty
-                        : reader.GetString(reader.GetOrdinal("descripcion"))
-                },
-                cmd =>
-                {
-                    // Sin parámetros en este SELECT
-                }
-            );
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
 
-            return lista;
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
+
     }
 }

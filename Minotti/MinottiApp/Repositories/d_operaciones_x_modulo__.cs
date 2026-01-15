@@ -3,9 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class d_operaciones_x_modulo__
+
+
+
+    public class d_operaciones_x_modulo__ : datastore
     {
         public string Modulo { get; set; }
         public string Operacion { get; set; }
@@ -17,11 +22,7 @@ namespace Minotti.Repositories
         public bool Modifica { get; set; }
 
 
-
-
-        public static List<d_operaciones_x_modulo__> GetByModulo(string modulo)
-        {
-            const string sql = @"
+        private const string SQL = @"
 SELECT dba.acc_operaciones_x_modulo.modulo,
        dba.acc_operaciones_x_modulo.operacion,
        dba.acc_operaciones_x_modulo.alta,
@@ -33,69 +34,37 @@ SELECT dba.acc_operaciones_x_modulo.modulo,
  WHERE dba.acc_operaciones_x_modulo.operacion = dba.acc_operaciones.operacion
    AND dba.acc_operaciones_x_modulo.modulo = ?";
 
-            var lista = SQLCA.ExecuteList(
-                sql,
-                reader => new d_operaciones_x_modulo__
-                {
-                    Modulo = reader["modulo"]?.ToString() ?? string.Empty,
-                    Operacion = reader["operacion"]?.ToString() ?? string.Empty,
-                    Alta = reader["alta"]?.ToString() ?? string.Empty,
-                    Baja = reader["baja"]?.ToString() ?? string.Empty,
-                    Modificacion = reader["modificacion"]?.ToString() ?? string.Empty,
-                    Nombre = reader["nombre"]?.ToString() ?? string.Empty,
 
-                    // Estas columnas NO están en el SELECT actual.
-                    // Antes tu código iba a tirar excepción al leerlas.
-                    Xx_descripcion = reader["xx_descripcion"]?.ToString()
-                    //,Modifica = string.Empty  // TODO: idem
-                },
-                cmd =>
-                {
-                    var p = cmd.CreateParameter();
-                    p.Value = modulo ?? string.Empty;
-                    cmd.Parameters.Add(p);
-                }
-            );
 
-            return lista;
+
+        public override int Retrieve(params object?[] args)
+        {
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
+
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
+
+                var prm0 = cmd.CreateParameter();
+                prm0.Value = args[0];
+                cmd.Parameters.Add(prm0);
+
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
 
-
-
-
-        //        public static List<d_operaciones_x_modulo__> GetByModulo(string modulo)
-        //        {
-        //            var lista = new List<d_operaciones_x_modulo__>();
-        //            string connectionString = "DSN=tu_dsn_aqui";
-
-        //            using (var connection = new OdbcConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                var command = new OdbcCommand(@"
-        //SELECT dba.acc_operaciones_x_modulo.modulo,        dba.acc_operaciones_x_modulo.operacion,        dba.acc_operaciones_x_modulo.alta,        dba.acc_operaciones_x_modulo.baja,        dba.acc_operaciones_x_modulo.modificacion,        dba.acc_operaciones.nombre   FROM dba.acc_operaciones_x_modulo,        dba.acc_operaciones  WHERE dba.acc_operaciones_x_modulo.operacion = dba.acc_operaciones.operacion    AND dba.acc_operaciones_x_modulo.modulo = :modulo
-        //                ", connection);
-        //                command.Parameters.AddWithValue("@modulo", modulo);
-
-        //                using (var reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        lista.Add(new d_operaciones_x_modulo__
-        //                        {
-        //                            Modulo = reader["modulo"]?.ToString(),
-        //                            Operacion = reader["operacion"]?.ToString(),
-        //                            Alta = reader["alta"]?.ToString(),
-        //                            Baja = reader["baja"]?.ToString(),
-        //                            Modificacion = reader["modificacion"]?.ToString(),
-        //                            Xx_descripcion = reader["xx_descripcion"]?.ToString(),
-        //                            Nombre = reader["nombre"]?.ToString(),
-        //                            Modifica = reader["modifica"]?.ToString()
-        //                        });
-        //                    }
-        //                }
-        //            }
-
-        //            return lista;
-        //        }
     }
 }

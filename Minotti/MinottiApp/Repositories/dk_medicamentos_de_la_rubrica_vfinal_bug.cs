@@ -3,14 +3,18 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 
+using Minotti.utils;
 namespace Minotti.Repositories
 {
+
+   
+
     // Migrado desde PowerBuilder DataWindow: dk_medicamentos_de_la_rubrica_vfinal_bug.srd
     // Mantiene el nombre original del objeto DataWindow.
-    public class dk_medicamentos_de_la_rubrica_vfinal_bug
+    public class dk_medicamentos_de_la_rubrica_vfinal_bug : datastore
     {
         // Consulta original detectada desde el SRD
-        public const string Sql = @"SELECT capitulacion_med.medicamento,        
+        public const string SQL = @"SELECT capitulacion_med.medicamento,        
                                                    medicamentos.descripcion,
                                                    capitulacion_med.valor,    
                                                    'S' seleccionado   
@@ -31,47 +35,49 @@ namespace Minotti.Repositories
                                                                                   capitulacion_med.rubrica = ?)";
 
 
-        public static DataTable RetrieveToDataTable(params object[] parametros)
+
+
+
+        public override int Retrieve(params object?[] args)
         {
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
 
-
-            return SQLCA.ExecuteDataTable(Sql, cmd =>
+            try
             {
-                foreach (var p in parametros)
-                {
-                    var prm = cmd.CreateParameter();
-                    prm.Value = p ?? DBNull.Value;
-                    cmd.Parameters.Add(prm);
-                }
-            });
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
+
+                var prm0 = cmd.CreateParameter();
+                prm0.Value = args[0];
+                cmd.Parameters.Add(prm0);
+
+                var prm1 = cmd.CreateParameter();
+                prm1.Value = args[1];
+                cmd.Parameters.Add(prm1);
+
+                var prm2 = cmd.CreateParameter();
+                prm2.Value = args[2];
+                cmd.Parameters.Add(prm2);
+
+                var prm3 = cmd.CreateParameter();
+                prm3.Value = args[3];
+                cmd.Parameters.Add(prm3);
+
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
 
-        // Carga los datos usando ODBC (SQL Anywhere 9 via DSN).
-        //public static DataTable Retrieve(OdbcConnection? externalConnection = null, params OdbcParameter[] parameters)
-        //{
-        //    bool created = false;
-        //    var cn = externalConnection;
-        //    if (cn == null)
-        //    {
-        //        // Se espera Minotti.Config.AppConfig con Dsn/Uid/Pwd (mantener nombres existentes)
-        //        cn = new OdbcConnection("DSN=" + Config.AppConfig.SqlAnywhereDsn + ";UID=" + Config.AppConfig.SqlAnywhereUid + ";PWD=" + Config.AppConfig.SqlAnywherePwd);
-        //        created = true;
-        //    }
-        //    using var cmd = cn.CreateCommand();
-        //    cmd.CommandText = RetrieveSql;
-        //    if (parameters != null && parameters.Length > 0) cmd.Parameters.AddRange(parameters);
-        //    var dt = new DataTable();
-        //    try
-        //    {
-        //        if (created) cn.Open();
-        //        using var da = new OdbcDataAdapter((OdbcCommand)cmd);
-        //        da.Fill(dt);
-        //    }
-        //    finally
-        //    {
-        //        if (created && cn != null) cn.Dispose();
-        //    }
-        //    return dt;
-        //}
     }
 }

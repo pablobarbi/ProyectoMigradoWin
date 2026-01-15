@@ -3,9 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class d_system_error
+
+
+
+    public class d_system_error : datastore
     {
         public string nro_error { get; set; }
         public string fecha_hora { get; set; }
@@ -16,9 +21,7 @@ namespace Minotti.Repositories
         public string mensaje_error { get; set; }
 
 
-        public static List<d_system_error> GetAll()
-        {
-            const string sql = @"
+        private const string SQL = @"
 SELECT dba.errores_sistema.nro_error,
        dba.errores_sistema.fecha_hora,
        dba.errores_sistema.lugar,
@@ -28,60 +31,31 @@ SELECT dba.errores_sistema.nro_error,
        dba.errores_sistema.mensaje_error
   FROM dba.errores_sistema";
 
-            var lista = SQLCA.ExecuteList(
-                sql,
-                reader => new d_system_error
-                {
-                    nro_error = reader["nro_error"]?.ToString() ?? string.Empty,
-                    fecha_hora = reader["fecha_hora"]?.ToString() ?? string.Empty,
-                    lugar = reader["lugar"]?.ToString() ?? string.Empty,
-                    evento = reader["evento"]?.ToString() ?? string.Empty,
-                    objeto = reader["objeto"]?.ToString() ?? string.Empty,
-                    linea_script = reader["linea_script"]?.ToString() ?? string.Empty,
-                    mensaje_error = reader["mensaje_error"]?.ToString() ?? string.Empty
-                },
-                cmd =>
-                {
-                    // sin parámetros
-                }
-            );
 
-            return lista;
+        public override int Retrieve(params object?[] args)
+        {
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
+
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
+
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
 
-
-
-        //        public static List<d_system_error> GetAll()
-        //        {
-        //            var lista = new List<d_system_error>();
-        //            string connectionString = "DSN=tu_dsn_aqui";
-
-        //            using (var connection = new OdbcConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                var command = new OdbcCommand(@"
-        //SELECT dba.errores_sistema.nro_error, dba.errores_sistema.fecha_hora, dba.errores_sistema.lugar, dba.errores_sistema.evento, dba.errores_sistema.objeto, dba.errores_sistema.linea_script, dba.errores_sistema.mensaje_error FROM dba.errores_sistema
-        //                ", connection);
-
-        //                using (var reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        lista.Add(new d_system_error
-        //                        {
-        //                            nro_error = reader["nro_error"]?.ToString(),
-        //                            fecha_hora = reader["fecha_hora"]?.ToString(),
-        //                            lugar = reader["lugar"]?.ToString(),
-        //                            evento = reader["evento"]?.ToString(),
-        //                            objeto = reader["objeto"]?.ToString(),
-        //                            linea_script = reader["linea_script"]?.ToString(),
-        //                            mensaje_error = reader["mensaje_error"]?.ToString()
-        //                        });
-        //                    }
-        //                }
-        //            }
-
-        //            return lista;
-        //        }
     }
 }

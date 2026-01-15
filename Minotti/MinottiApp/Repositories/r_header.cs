@@ -1,31 +1,37 @@
 ﻿using Minotti.Data;
 using System;
 
+using Minotti.utils;
+using System.Data.Odbc;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class r_header
+    public class r_header : datastore
     {
         // SQL exacto del SRD
-        private const string SQL_RETRIEVE =
+        private const string SQL =
 @"SELECT count(*)
    FROM dba.acc_usuarios";
 
-        public static long GetCantidadUsuarios()
+
+
+
+        public override int Retrieve(params object?[] args)
         {
             if (SQLCA.Connection == null)
-                throw new InvalidOperationException("SQLCA.Connection es null (no inicializada).");
+                throw new InvalidOperationException("SQLCA.Connection es null");
 
             try
             {
                 using var cmd = SQLCA.Connection.CreateCommand();
-                cmd.CommandText = SQL_RETRIEVE;
+                cmd.CommandText = SQL;
 
-                object? val = cmd.ExecuteScalar();
-                long result = (val == null || val is DBNull) ? 0L : Convert.ToInt64(val);
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
 
-                SQLCA.SqlCode = 0;
-                SQLCA.SqlErrText = null;
-                return result;
+                this.SetData(dt);
+                return this.RowCount();
             }
             catch (Exception ex)
             {
@@ -34,6 +40,6 @@ namespace Minotti.Repositories
                 throw;
             }
         }
+
     }
 }
- 

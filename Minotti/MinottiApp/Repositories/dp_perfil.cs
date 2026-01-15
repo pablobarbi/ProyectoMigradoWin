@@ -1,55 +1,47 @@
 using Minotti.Data;
-using System;
-using System.Collections.Generic;
 using System.Data.Odbc;
+using Minotti.utils;
+using System.Data;
+
+
 
 namespace Minotti.Repositories
 {
-    public class dp_perfil
+
+
+    public class dp_perfil : datastore
     {
         public string Perfil { get; set; }
 
 
-        public static List<dp_perfil> GetAll()
+        private const string SQL = @"SELECT perfil FROM dba.acc_perfiles ORDER BY perfil";
+
+
+
+        public override int Retrieve(params object?[] args)
         {
-            const string sql = @"SELECT perfil FROM dba.acc_perfiles ORDER BY perfil";
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
 
-            var lista = SQLCA.ExecuteList(
-                sql,
-                r => new dp_perfil
-                {
-                    Perfil = r["perfil"]?.ToString() ?? string.Empty
-                },
-                cmd =>
-                {
-                    // sin parámetros
-                });
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
 
-            return lista;
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
-        //public static List<dp_perfil> GetAll()
-        //{
-        //    var lista = new List<dp_perfil>();
-        //    string connectionString = "DSN=tu_dsn_aqui";
 
-        //    using (var connection = new OdbcConnection(connectionString))
-        //    {
-        //        connection.Open();
-        //        var command = new OdbcCommand(@"SELECT perfil FROM dba.acc_perfiles ORDER BY perfil", connection);
-
-        //        using (var reader = command.ExecuteReader())
-        //        {
-        //            while (reader.Read())
-        //            {
-        //                lista.Add(new dp_perfil
-        //                {
-        //                    Perfil = reader["perfil"].ToString()
-        //                });
-        //            }
-        //        }
-        //    }
-
-        //    return lista;
-        //}
     }
 }

@@ -127,7 +127,8 @@ namespace Minotti
 
             wMdi = new w_mdi();
             PBGlobals.w_mdi = wMdi;
-            PBGlobals.m_mdi = new m_mdi(wMdi);
+            // El menú principal (m_mdi) lo crea w_mdi en su constructor.
+            PBGlobals.m_mdi = wMdi.MenuID;
 
             // 1) Cargar datos de la app (crea at_splash)
             ue_cargar_datos_app();
@@ -200,9 +201,10 @@ namespace Minotti
             OpenPB.Open(wMdi);
 
             // ==============================
-            // 5. Crear el menú MDI
-            // ==============================            
-            PBGlobals.m_mdi = new m_mdi(wMdi);
+            // 5. Menú MDI
+            // ==============================
+            // Ya fue creado en w_mdi (una sola vez)
+            PBGlobals.m_mdi = wMdi.MenuID;
 
 
             // ==============================

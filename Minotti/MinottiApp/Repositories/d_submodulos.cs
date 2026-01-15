@@ -3,80 +3,56 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class d_submodulos
+
+
+
+    public class d_submodulos : datastore
     {
         public string Submodulo { get; set; }
         public string Nombre { get; set; }
         public string Bitmap { get; set; }
 
 
-        public static List<d_submodulos> GetBySubmodulo(string submod)
-        {
-            const string sql = @"
+        private const string SQL = @"
 SELECT dba.acc_submodulos.submodulo,
        dba.acc_submodulos.nombre,
        dba.acc_submodulos.bitmap
   FROM dba.acc_submodulos
  WHERE dba.acc_submodulos.submodulo = ?";
 
-            var lista = SQLCA.ExecuteList(
-                sql,
-                reader => new d_submodulos
-                {
-                    Submodulo = reader["submodulo"]?.ToString() ?? string.Empty,
-                    Nombre = reader["nombre"]?.ToString() ?? string.Empty,
-                    Bitmap = reader["bitmap"]?.ToString() ?? string.Empty
-                },
-                cmd =>
-                {
-                    // ODBC → parámetro posicional
-                    var p = cmd.CreateParameter();
-                    p.Value = submod ?? string.Empty;
-                    cmd.Parameters.Add(p);
-                }
-            );
 
-            return lista;
+        public override int Retrieve(params object?[] args)
+        {
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
+
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
+
+                var prm0 = cmd.CreateParameter();
+                prm0.Value = args[0];
+                cmd.Parameters.Add(prm0);
+
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
 
-
-
-
-
-        //        public static List<d_submodulos> GetBySubmodulo(string submod)
-        //        {
-        //            var lista = new List<d_submodulos>();
-        //            string connectionString = "DSN=tu_dsn_aqui";
-
-        //            using (var connection = new OdbcConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                var command = new OdbcCommand(@"
-        //SELECT dba.acc_submodulos.submodulo,   
-        //          dba.acc_submodulos.nombre,   
-        //          dba.acc_submodulos.bitmap  
-        //     FROM dba.acc_submodulos
-        // 	WHERE dba.acc_submodulos.submodulo = :submod
-        //                ", connection);
-        //                command.Parameters.AddWithValue("@submod", submod);
-
-        //                using (var reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        lista.Add(new d_submodulos
-        //                        {
-        //                            Submodulo = reader["submodulo"].ToString(),
-        //                            Nombre = reader["nombre"].ToString(),
-        //                            Bitmap = reader["bitmap"].ToString()
-        //                        });
-        //                    }
-        //                }
-        //            }
-
-        //            return lista;
-        //        }
     }
 }

@@ -1,5 +1,4 @@
 using Minotti.utils;
-using Minotti.Views.Menues.Controls;
 using Minotti.Views.Pbl.Views;
 using System;
 using System.Windows.Forms;
@@ -11,8 +10,6 @@ namespace Minotti.Views.Basicos
     {
         public string menuname = "m_mdi";
         public m_mdi MenuID { get; private set; }
-
-        private w_menu_arbol_lista _menu;
 
         public int WorkSpaceWidth
         {
@@ -42,18 +39,9 @@ namespace Minotti.Views.Basicos
             //    return; // 🔒 evita triple creación
 
             // PB: MenuID = create m_mdi
-            this.MenuID = new m_mdi();
+            this.MenuID = new m_mdi(this);
             this.MainMenuStrip = this.MenuID;
             this.Controls.Add(this.MenuID);
-
-            //_menu = new w_menu_arbol_lista();
-            //this.Controls.Add(_menu);
-            //_menu.Dock = DockStyle.Fill;
-
-            //_menu.ue_open_menu();
-
-
-
         }
 
         // =====================================================

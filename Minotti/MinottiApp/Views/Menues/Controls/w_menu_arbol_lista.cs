@@ -5,6 +5,7 @@
 //       Message, guo_app, f_cortar_string, f_cargar_datos_operacion, etc. YA EXISTEN migrados.
 
 using Minotti.Functions;
+using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos.Models;
 using System.Runtime.InteropServices;
@@ -54,6 +55,13 @@ namespace Minotti.Views.Menues.Controls
             this.tv_1.BeforeExpand += tv_1_BeforeExpand;
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            // PB: ultimo_nivel = FALSE
+            ultimo_nivel = false;
+        }
 
 
         public void ue_open_menu()
@@ -135,20 +143,59 @@ namespace Minotti.Views.Menues.Controls
             iAux = Random.Shared.Next(1, 8);
 
             if (iAux == 1)
-                p_menu.SetPictureName("boca.jpg");
+                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "boca.jpg"));
             else if (iAux == 2)
-                p_menu.SetPictureName("nariz.jpg");
+                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "nariz.jpg"));
             else if (iAux == 3)
-                p_menu.SetPictureName("pulmones.jpg");
+                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "pulmones.jpg"));
             else if (iAux == 4)
-                p_menu.SetPictureName("ojo.jpg");
+                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "ojo.jpg"));
             else if (iAux == 5)
-                p_menu.SetPictureName("cerebro.jpg");
+                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "cerebro.jpg"));
             else if (iAux == 6)
-                p_menu.SetPictureName("higado.jpg");
+                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "higado.jpg"));
             else if (iAux == 7)
-                p_menu.SetPictureName("neuronas.jpg");
+                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures","neuronas.jpg"));
         }
+
+         public  virtual void ue_cargar_lista()
+        {
+            TreeViewItem tvi_Actual;
+            int handle;
+
+            // Item seleccionado en el TreeView
+            handle = tv_1_SelectedItem();
+            if (handle < 1)
+                return;
+
+            tv_1_GetItem(handle, out tvi_Actual);
+
+            // En PB:
+            // dw_param.SetFilter("operacion = '" + string(tvi_Actual.Data) + "'")
+            // dw_param.Filter()
+
+            string operacion = Convert.ToString(tvi_Actual.Data) ?? "";
+            operacion = operacion.Replace("'", "''");
+
+            dw_param.SetFilter($"operacion = '{operacion}'");
+            dw_param.Filter();
+
+            // Limpio lista
+            lv_1.Items.Clear();
+
+            int rows = dw_param.RowCount();
+            for (int i = 1; i <= rows; i++)
+            {
+                var item = new ListViewItem(
+                    dw_param.GetItemString(i, "descripcion")
+                );
+
+                item.Tag = dw_param.GetItemString(i, "operacion");
+                lv_1.Items.Add(item);
+            }
+        }
+
+
 
         // ========== PB event: ue_descripcion ( string modulo,  string operacion ) ==========
         public void ue_descripcion(string modulo, string operacion)
@@ -263,11 +310,11 @@ namespace Minotti.Views.Menues.Controls
 
 
             // PB: carga de iconos en lv_1
-            lv_1.AddSmallPicture("Close_file.GIF");
-            lv_1.AddSmallPicture("Close_file.GIF");
-            lv_1.AddSmallPicture("Close_file.GIF");
-            lv_1.AddSmallPicture("Close_file.GIF");
-            lv_1.AddSmallPicture("Operacion.bmp");
+            lv_1.AddSmallPicture(FileUtils.GetAppFile("Pictures", "Close_file.GIF"));
+            lv_1.AddSmallPicture(FileUtils.GetAppFile("Pictures", "Close_file.GIF"));
+            lv_1.AddSmallPicture(FileUtils.GetAppFile("Pictures", "Close_file.GIF"));
+            lv_1.AddSmallPicture(FileUtils.GetAppFile("Pictures", "Close_file.GIF"));
+            lv_1.AddSmallPicture(FileUtils.GetAppFile("Pictures", "Operacion.bmp"));
         }
 
         // ========== PB event: ue_iniciar ==========
@@ -290,15 +337,59 @@ namespace Minotti.Views.Menues.Controls
         //    ue_cargar_lista(e.NewHandle);
         //}
 
-
-
-        private void tv_1_AfterSelect(object sender, TreeViewEventArgs e)
+        protected virtual void ue_cargar_basicas_root()
         {
-            // PB: selectionchanged
-            int newHandle = GetHandleFromNode(e.Node);
+            // Limpio lista
+            lv_1.Items.Clear();
 
-            // Parent.Event Trigger ue_cargar_lista(newhandle)
-            this.ue_cargar_lista(newHandle);
+            // PB: dw_param.SetFilter("")
+            dw_param.SetFilter(string.Empty);
+            dw_param.Filter();
+
+            // En PB, “Básicas” es un submódulo válido global
+            int rows = dw_param.RowCount();
+
+            for (int i = 1; i <= rows; i++)
+            {
+                // En PB suele filtrar por submodulo = 'BASICAS'
+                string? submodulo = dw_param.GetItemString(i, "submodulo");
+
+                if (!submodulo.Equals("BASICAS", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var item = new ListViewItem(
+                    dw_param.GetItemString(i, "descripcion")
+                );
+
+                item.Tag = dw_param.GetItemString(i, "operacion");
+                lv_1.Items.Add(item);
+            }
+        }
+
+
+        private void tv_1_AfterSelect(object? sender, TreeViewEventArgs e)
+        {
+            // 🔴 CASO ESPECIAL: nodo raíz (Minotti 2020)
+            if (e.Node.Level == 0)
+            {
+                ue_cargar_basicas_root();
+                return;
+            }
+
+            // Caso normal: nodo hoja → cargar lista
+            if (e.Node.Nodes.Count == 0)
+            {
+                ue_cargar_lista();
+            }
+        }
+
+
+        protected int tv_1_SelectedItem()
+        {
+            if (tv_1.SelectedNode == null)
+                return 0;
+
+            return GetHandleFromNode(tv_1.SelectedNode);
         }
 
 

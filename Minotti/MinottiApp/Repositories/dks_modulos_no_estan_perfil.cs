@@ -1,19 +1,19 @@
 using Minotti.Data;
+using Minotti.utils;
 using System;
-using System.Collections.Generic;
+using System.Data;
 using System.Data.Odbc;
 
 namespace Minotti.Repositories
 {
-    public class dks_modulos_no_estan_perfil
+    public class dks_modulos_no_estan_perfil : datastore
     {
-        public string Modulo { get; set; }
-        public string Nombre { get; set; }
+        // === Columnas (referenciales, como en PB) ===
+        public string? Modulo { get; set; }
+        public string? Nombre { get; set; }
 
-
-        public static List<dks_modulos_no_estan_perfil> GetByPerfil(string perf)
-        {
-            const string sql = @"
+        // === SQL EXTRADO (SIN TOCAR) ===
+        private const string SQL = @"
 SELECT dba.acc_modulos.modulo,
        dba.acc_modulos.nombre
   FROM dba.acc_modulos
@@ -24,62 +24,30 @@ SELECT dba.acc_modulos.modulo,
               AND dba.acc_modulos_perfil.modulo = dba.acc_modulos.modulo
        )";
 
-            var lista = SQLCA.ExecuteList(
-                sql,
-                reader => new dks_modulos_no_estan_perfil
-                {
-                    Modulo = reader["modulo"]?.ToString() ?? string.Empty,
-                    Nombre = reader["nombre"]?.ToString() ?? string.Empty
-                },
-                cmd =>
-                {
-                    var p = cmd.CreateParameter();
-                    p.Value = perf ?? string.Empty;
-                    cmd.Parameters.Add(p);
-                }
-            );
+        public override int Retrieve(params object?[] args)
+        {
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
 
-            return lista;
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
+
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
 
-
-
-
-        //        public static List<dks_modulos_no_estan_perfil> GetByPerfil(string perf)
-        //        {
-        //            var lista = new List<dks_modulos_no_estan_perfil>();
-        //            string connectionString = "DSN=tu_dsn_aqui";
-
-        //            using (var connection = new OdbcConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                var command = new OdbcCommand(@"
-        //SELECT dba.acc_modulos.modulo,   
-        //          dba.acc_modulos.nombre  
-        //     FROM dba.acc_modulos
-
-
-        //    WHERE NOT EXISTS (SELECT ''  
-        //                      FROM dba.acc_modulos_perfil
-        //                      WHERE dba.acc_modulos_perfil.perfil = :perf AND  
-        //                      dba.acc_modulos_perfil.modulo = dba.acc_modulos.modulo)
-        //                ", connection);
-        //                command.Parameters.AddWithValue("@perf", perf);
-
-        //                using (var reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        lista.Add(new dks_modulos_no_estan_perfil
-        //                        {
-        //                            Modulo = reader["modulo"].ToString(),
-        //                            Nombre = reader["nombre"].ToString()
-        //                        });
-        //                    }
-        //                }
-        //            }
-
-        //            return lista;
-        //        }
     }
 }

@@ -1,14 +1,11 @@
 ﻿using Minotti.Data;
-using System;
-using System.Collections.Generic;
 using System.Data.Odbc;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class d_sub_modulos_x_perfil
+    public class d_sub_modulos_x_perfil : datastore
     {
         public string? submodulo { get; set; }
         public string? nombre { get; set; }
@@ -16,7 +13,7 @@ namespace Minotti.Repositories
 
         // SQL del SRD (misma lógica). ODBC => parámetro posicional '?'
         // NO agrego ORDER BY porque el SRD no lo tiene en el SQL (solo sort=).
-        private const string SQL_RETRIEVE =
+        private const string SQL =
 @"SELECT DISTINCT dba.acc_operaciones_x_modulo.modulo + '*****' + dba.acc_operaciones_x_modulo.submodulo submodulo,
                 dba.acc_submodulos.nombre,
                 dba.acc_operaciones_x_modulo.modulo
@@ -27,38 +24,29 @@ namespace Minotti.Repositories
     AND dba.acc_operaciones_x_modulo.modulo = dba.acc_modulos_x_perfil.modulo
     AND dba.acc_modulos_x_perfil.perfil = ?";
 
-        public static List<d_sub_modulos_x_perfil> Retrieve(string perfil)
+
+
+
+        public override int Retrieve(params object?[] args)
         {
             if (SQLCA.Connection == null)
-                throw new InvalidOperationException("SQLCA.Connection es null (no inicializada).");
-
-            var list = new List<d_sub_modulos_x_perfil>();
+                throw new InvalidOperationException("SQLCA.Connection es null");
 
             try
             {
                 using var cmd = SQLCA.Connection.CreateCommand();
-                cmd.CommandText = SQL_RETRIEVE;
+                cmd.CommandText = SQL;
 
-                cmd.Parameters.Add(new OdbcParameter
-                {
-                    OdbcType = OdbcType.Char,
-                    Value = perfil
-                });
+                var prm0 = cmd.CreateParameter();
+                prm0.Value = args[0];
+                cmd.Parameters.Add(prm0);
 
-                using var rd = cmd.ExecuteReader();
-                while (rd.Read())
-                {
-                    list.Add(new d_sub_modulos_x_perfil
-                    {
-                        submodulo = rd.IsDBNull(0) ? null : rd.GetString(0),
-                        nombre = rd.IsDBNull(1) ? null : rd.GetString(1),
-                        modulo = rd.IsDBNull(2) ? null : rd.GetString(2),
-                    });
-                }
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
 
-                SQLCA.SqlCode = 0;
-                SQLCA.SqlErrText = null;
-                return list;
+                this.SetData(dt);
+                return this.RowCount();
             }
             catch (Exception ex)
             {
@@ -67,5 +55,6 @@ namespace Minotti.Repositories
                 throw;
             }
         }
+
     }
 }

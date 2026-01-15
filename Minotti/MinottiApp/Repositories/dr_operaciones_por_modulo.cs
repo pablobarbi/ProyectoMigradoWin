@@ -3,9 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class dr_operaciones_por_modulo
+
+
+
+    public class dr_operaciones_por_modulo : datastore
     {
         public string modulo { get; set; } = string.Empty;
         public string nombre_modulo { get; set; } = string.Empty;
@@ -18,7 +23,7 @@ namespace Minotti.Repositories
         public string modificacion { get; set; } = string.Empty;
 
 
-        private const string Sql = @"
+        private const string SQL = @"
 SELECT dba.acc_operaciones_x_modulo.modulo,
        dba.acc_modulos.nombre       AS nombre_modulo,
        dba.acc_modulos.bitmap       AS bitmap_modulo,
@@ -36,67 +41,33 @@ SELECT dba.acc_operaciones_x_modulo.modulo,
  ORDER BY dba.acc_modulos.nombre";
 
 
-        public static List<dr_operaciones_por_modulo> Retrieve()
+
+
+
+        public override int Retrieve(params object?[] args)
         {
-            return SQLCA.ExecuteList(
-                Sql,
-                r => new dr_operaciones_por_modulo
-                {
-                    modulo = r["modulo"]?.ToString() ?? string.Empty,
-                    nombre_modulo = r["nombre_modulo"]?.ToString() ?? string.Empty,
-                    bitmap_modulo = r["bitmap_modulo"]?.ToString() ?? string.Empty,
-                    operacion = r["operacion"]?.ToString() ?? string.Empty,
-                    nombre_operacion = r["nombre_operacion"]?.ToString() ?? string.Empty,
-                    bitmap_operacion = r["bitmap_operacion"]?.ToString() ?? string.Empty,
-                    alta = r["alta"]?.ToString() ?? string.Empty,
-                    baja = r["baja"]?.ToString() ?? string.Empty,
-                    modificacion = r["modificacion"]?.ToString() ?? string.Empty
-                },
-                cmd =>
-                {
-                    // sin parámetros
-                });
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
+
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
+
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
 
-
-//        public static List<dr_operaciones_por_modulo> GetAll()
-//        {
-//            var lista = new List<dr_operaciones_por_modulo>();
-//            string connectionString = "DSN=tu_dsn_aqui";
-
-//            using (var connection = new OdbcConnection(connectionString))
-//            {
-//                connection.Open();
-//                var command = new OdbcCommand(@"
-//SELECT dba.acc_operaciones_x_modulo.modulo,        dba.acc_modulos.nombre,        dba.acc_modulos.bitmap,        dba.acc_operaciones_x_modulo.operacion,        dba.acc_operaciones.nombre,        dba.acc_operaciones.bitmap,        upper(dba.acc_operaciones_x_modulo.alta) alta,        upper(dba.acc_operaciones_x_modulo.baja) baja,        upper(dba.acc_operaciones_x_modulo.modificacion) modificacion   FROM dba.acc_modulos,        dba.acc_operaciones,        dba.acc_operaciones_x_modulo  WHERE dba.acc_modulos.modulo = dba.acc_operaciones_x_modulo.modulo    AND dba.acc_operaciones_x_modulo.operacion = dba.acc_operaciones.operacion  ORDER BY dba.acc_modulos.nombre,        dba.acc_operaciones.nombre
-//                ", connection);
-
-
-//                using (var reader = command.ExecuteReader())
-//                {
-//                    while (reader.Read())
-//                    {
-//                        lista.Add(new dr_operaciones_por_modulo
-//                        {
-//                            Name = reader["name"]?.ToString(),
-//                            Name = reader["name"]?.ToString(),
-//                            Name = reader["name"]?.ToString(),
-//                            Name = reader["name"]?.ToString(),
-//                            Name = reader["name"]?.ToString(),
-//                            Name = reader["name"]?.ToString(),
-//                            Name = reader["name"]?.ToString(),
-//                            Name = reader["name"]?.ToString(),
-//                            Name = reader["name"]?.ToString(),
-//                            Modulo = reader["modulo"]?.ToString(),
-//                            Operacion = reader["operacion"]?.ToString(),
-//                            Nombre = reader["nombre"]?.ToString(),
-//                            Bitmap = reader["bitmap"]?.ToString()
-//                        });
-//                    }
-//                }
-//            }
-
-//            return lista;
-//        }
     }
 }

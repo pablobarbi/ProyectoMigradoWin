@@ -3,67 +3,47 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class dw_operaciones
+
+    public class dw_operaciones : datastore
     {
         public string Operacion { get; set; }
         public string Nombre { get; set; }
 
-        public static List<dw_operaciones> GetAll()
-        {
-            const string sql = @"
+
+        private const string SQL = @"
 SELECT dba.acc_operaciones.operacion,
        dba.acc_operaciones.nombre
   FROM dba.acc_operaciones
  ORDER BY dba.acc_operaciones.nombre";
 
-            var lista = SQLCA.ExecuteReaderList(
-                sql,
-                r => new dw_operaciones
-                {
-                    Operacion = r["operacion"] as string ?? string.Empty,
-                    Nombre = r["nombre"] as string ?? string.Empty
-                },
-                cmd =>
-                {
-                    // sin parámetros
-                });
+        public override int Retrieve(params object?[] args)
+        {
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
 
-            return lista;
+            try
+            {
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
+
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
 
-
-
-        //        public static List<dw_operaciones> GetAll()
-        //        {
-        //            var lista = new List<dw_operaciones>();
-        //            string connectionString = "DSN=tu_dsn_aqui";
-
-        //            using (var connection = new OdbcConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                var command = new OdbcCommand(@"
-        //SELECT dba.acc_operaciones.operacion,
-        //        dba.acc_operaciones.nombre
-        //   FROM dba.acc_operaciones
-        //  ORDER BY dba.acc_operaciones.nombre
-        //                ", connection);
-
-        //                using (var reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        lista.Add(new dw_operaciones
-        //                        {
-        //                            Operacion = reader["operacion"].ToString(),
-        //                            Nombre = reader["nombre"].ToString()
-        //                        });
-        //                    }
-        //                }
-        //            }
-
-        //            return lista;
-        //        }
     }
 }

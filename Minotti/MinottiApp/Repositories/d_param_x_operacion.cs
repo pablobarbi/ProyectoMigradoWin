@@ -1,14 +1,11 @@
 ﻿using Minotti.Data;
-using System;
-using System.Collections.Generic;
 using System.Data.Odbc;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class d_param_x_operacion
+    public class d_param_x_operacion : datastore
     {
         public string? operacion { get; set; }
         public int? orden { get; set; }
@@ -19,7 +16,7 @@ namespace Minotti.Repositories
 
         // SQL EXACTO del SRD (mismo SELECT y ORDER BY)
         // :perfil -> ? (ODBC)
-        private const string SQL_RETRIEVE =
+        private const string SQL =
 @"SELECT DISTINCT 
          dba.acc_parametros.operacion,
          dba.acc_parametros.orden,
@@ -36,41 +33,29 @@ namespace Minotti.Repositories
 ORDER BY dba.acc_parametros.operacion,
          dba.acc_parametros.orden";
 
-        public static List<d_param_x_operacion> Retrieve(string perfil)
+
+
+
+        public override int Retrieve(params object?[] args)
         {
             if (SQLCA.Connection == null)
-                throw new InvalidOperationException("SQLCA.Connection no inicializada.");
-
-            var list = new List<d_param_x_operacion>();
+                throw new InvalidOperationException("SQLCA.Connection es null");
 
             try
             {
                 using var cmd = SQLCA.Connection.CreateCommand();
-                cmd.CommandText = SQL_RETRIEVE;
+                cmd.CommandText = SQL;
 
-                cmd.Parameters.Add(new OdbcParameter
-                {
-                    OdbcType = OdbcType.Char,
-                    Value = perfil
-                });
+                var prm0 = cmd.CreateParameter();
+                prm0.Value = args[0];
+                cmd.Parameters.Add(prm0);
 
-                using var rd = cmd.ExecuteReader();
-                while (rd.Read())
-                {
-                    list.Add(new d_param_x_operacion
-                    {
-                        operacion = rd.IsDBNull(0) ? null : rd.GetString(0),
-                        orden = rd.IsDBNull(1) ? (int?)null : Convert.ToInt32(rd.GetValue(1)),
-                        titulo = rd.IsDBNull(2) ? null : rd.GetString(2),
-                        objeto = rd.IsDBNull(3) ? null : rd.GetString(3),
-                        parametros = rd.IsDBNull(4) ? null : rd.GetString(4),
-                        cierra = rd.IsDBNull(5) ? null : rd.GetString(5)
-                    });
-                }
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
 
-                SQLCA.SqlCode = 0;
-                SQLCA.SqlErrText = null;
-                return list;
+                this.SetData(dt);
+                return this.RowCount();
             }
             catch (Exception ex)
             {
@@ -79,5 +64,6 @@ ORDER BY dba.acc_parametros.operacion,
                 throw;
             }
         }
+
     }
 }

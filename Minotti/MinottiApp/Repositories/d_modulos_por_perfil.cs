@@ -3,67 +3,53 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class d_modulos_por_perfil
-    {
+
+
+
+    public class d_modulos_por_perfil : datastore{
         public string Perfil { get; set; }
         public string Modulo { get; set; }
 
 
-        public static List<d_modulos_por_perfil> GetByPerfil(string perfil)
-        {
-            const string sql = @"
+        private const string SQL = @"
 SELECT dba.acc_modulos_x_perfil.perfil,
        dba.acc_modulos_x_perfil.modulo
   FROM dba.acc_modulos_x_perfil
  WHERE dba.acc_modulos_x_perfil.perfil = ?";
 
-            var lista = SQLCA.ExecuteList(
-                sql,
-                reader => new d_modulos_por_perfil
-                {
-                    Perfil = reader["perfil"]?.ToString() ?? string.Empty,
-                    Modulo = reader["modulo"]?.ToString() ?? string.Empty
-                },
-                cmd =>
-                {
-                    // ODBC usa parámetros posicionales (?)
-                    var p = cmd.CreateParameter();
-                    p.Value = perfil ?? string.Empty;
-                    cmd.Parameters.Add(p);
-                }
-            );
 
-            return lista;
-        }
-//        public static List<d_modulos_por_perfil> GetByPerfil(string perfil)
-//        {
-//            var lista = new List<d_modulos_por_perfil>();
-//            string connectionString = "DSN=tu_dsn_aqui";
+        public override int Retrieve(params object?[] args)
+{
+    if (SQLCA.Connection == null)
+        throw new InvalidOperationException("SQLCA.Connection es null");
 
-//            using (var connection = new OdbcConnection(connectionString))
-//            {
-//                connection.Open();
-//                var command = new OdbcCommand(@"
-//SELECT dba.acc_modulos_x_perfil.perfil,//        dba.acc_modulos_x_perfil.modulo//   FROM dba.acc_modulos_x_perfil//  WHERE dba.acc_modulos_x_perfil.perfil = :perfil
-//                ", connection);
-//                command.Parameters.AddWithValue("@perfil", perfil);
+    try
+    {
+        using var cmd = SQLCA.Connection.CreateCommand();
+        cmd.CommandText = SQL;
 
-//                using (var reader = command.ExecuteReader())
-//                {
-//                    while (reader.Read())
-//                    {
-//                        lista.Add(new d_modulos_por_perfil
-//                        {
-//                            Perfil = reader["perfil"].ToString(),
-//                            Modulo = reader["modulo"].ToString()
-//                        });
-//                    }
-//                }
-//            }
+var prm0 = cmd.CreateParameter();
+prm0.Value = args[0];
+cmd.Parameters.Add(prm0);
 
-//            return lista;
-//        }
+        using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+        var dt = new DataTable();
+        da.Fill(dt);
+
+        this.SetData(dt);
+        return this.RowCount();
     }
+    catch (Exception ex)
+    {
+        SQLCA.SqlCode = -1;
+        SQLCA.SqlErrText = ex.Message;
+        throw;
+    }
+}
+
+}
 }

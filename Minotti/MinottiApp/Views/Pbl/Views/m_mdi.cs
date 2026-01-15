@@ -13,16 +13,9 @@ namespace Minotti.Views.Pbl.Views
         public m_mdi(w_mdi mdi) : this()
         {
             _mdi = mdi;
-
-            // Asociar menú al MDI
+            // Asociar menú al MDI (el Add al Controls lo hace w_mdi)
             _mdi.MainMenuStrip = this;
-            _mdi.Controls.Add(this);
-
-            _mdi.Load += Mdi_Load;
         }
-
-        
-
         public m_mdi()
         {
             InitializeComponent();
@@ -33,15 +26,7 @@ namespace Minotti.Views.Pbl.Views
         }
 
 
-        private void Mdi_Load(object? sender, EventArgs e)
-        {
-            if (_mdi == null) return;
-
-            _mdi.MainMenuStrip = this;
-
-            if (!_mdi.Controls.Contains(this))
-                _mdi.Controls.Add(this);
-        }
+        // (No necesitamos enganchar Load aquí: w_mdi ya asegura que se agregue una sola vez)
 
 
         // ===============================

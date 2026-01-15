@@ -3,19 +3,40 @@ using Minotti.Data;
 using System;
 using System.Data;
 using System.Data.Odbc;
+using Minotti.utils;
+
 
 namespace Minotti.Repositories
-{
-    public class d_agregar_subrubricas
+{ 
+    public class d_agregar_subrubricas : datastore
     {
-        public const string Sql = @"SELECT subrubricas.nombre FROM subrubricas ";
+        public const string SQL = @"SELECT subrubricas.nombre FROM subrubricas "; 
 
-        public DataTable RetrieveToDataTable()
+
+        public override int Retrieve(params object?[] args)
         {
-            return SQLCA.ExecuteDataTable(Sql, cmd =>
+            if (SQLCA.Connection == null)
+                throw new InvalidOperationException("SQLCA.Connection es null");
+
+            try
             {
-                // sin parámetros
-            });
+                using var cmd = SQLCA.Connection.CreateCommand();
+                cmd.CommandText = SQL;
+
+                using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                this.SetData(dt);
+                return this.RowCount();
+            }
+            catch (Exception ex)
+            {
+                SQLCA.SqlCode = -1;
+                SQLCA.SqlErrText = ex.Message;
+                throw;
+            }
         }
+
     }
 }

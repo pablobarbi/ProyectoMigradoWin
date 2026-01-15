@@ -3,64 +3,49 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 
+using Minotti.utils;
+using System.Data;
 namespace Minotti.Repositories
 {
-    public class dw_submodulos
-    {
+
+
+    public class dw_submodulos : datastore{
         public string Submodulo { get; set; }
         public string Nombre { get; set; }
 
 
 
-        public static List<dw_submodulos> GetAll()
-        {
-            const string sql = @"
+        private const string SQL = @"
 SELECT acc_submodulos.submodulo,
        acc_submodulos.nombre
   FROM acc_submodulos";
 
-            var lista = SQLCA.ExecuteReaderList(
-                sql,
-                r => new dw_submodulos
-                {
-                    Submodulo = r["submodulo"] as string ?? string.Empty,
-                    Nombre = r["nombre"] as string ?? string.Empty
-                },
-                cmd =>
-                {
-                    // sin parámetros
-                });
 
-            return lista;
-        }
-        //        public static List<dw_submodulos> GetAll()
-        //        {
-        //            var lista = new List<dw_submodulos>();
-        //            string connectionString = "DSN=tu_dsn_aqui";
 
-        //            using (var connection = new OdbcConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                var command = new OdbcCommand(@"
-        //SELECT acc_submodulos.submodulo,
-        //       acc_submodulos.nombre
-        //  FROM acc_submodulos
-        //                ", connection);
+        public override int Retrieve(params object?[] args)
+{
+    if (SQLCA.Connection == null)
+        throw new InvalidOperationException("SQLCA.Connection es null");
 
-        //                using (var reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        lista.Add(new dw_submodulos
-        //                        {
-        //                            Submodulo = reader["submodulo"].ToString(),
-        //                            Nombre = reader["nombre"].ToString()
-        //                        });
-        //                    }
-        //                }
-        //            }
+    try
+    {
+        using var cmd = SQLCA.Connection.CreateCommand();
+        cmd.CommandText = SQL;
 
-        //            return lista;
-        //        }
+        using var da = new OdbcDataAdapter((OdbcCommand)cmd);
+        var dt = new DataTable();
+        da.Fill(dt);
+
+        this.SetData(dt);
+        return this.RowCount();
     }
+    catch (Exception ex)
+    {
+        SQLCA.SqlCode = -1;
+        SQLCA.SqlErrText = ex.Message;
+        throw;
+    }
+}
+
+}
 }

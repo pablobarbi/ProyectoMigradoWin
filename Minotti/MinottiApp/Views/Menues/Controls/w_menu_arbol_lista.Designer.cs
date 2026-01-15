@@ -81,30 +81,35 @@ namespace Minotti.Views.Menues.Controls
             // ================= pb_confirmar =================
             this.pb_confirmar = new Button();
             this.pb_confirmar.Location = new Point(3145, 4);
-            this.pb_confirmar.Size = new Size(265, 232);
+            this.pb_confirmar.Size = new Size(150, 150);
             this.pb_confirmar.Text = "Medicamentos";
             this.pb_confirmar.TabIndex = 40;
+            this.pb_confirmar.Image = Image.FromFile(FileUtils.GetAppFile("Pictures", "medicamento.gif"));
 
             // ================= pb_borrar =================
             this.pb_borrar = new Button();
             this.pb_borrar.Location = new Point(3447, 12);
-            this.pb_borrar.Size = new Size(265, 232);
+            this.pb_borrar.Size = new Size(150, 150);
             this.pb_borrar.Text = "Pacientes";
             this.pb_borrar.TabIndex = 41;
+            this.pb_borrar.Image = Image.FromFile(FileUtils.GetAppFile("Pictures", "paciente2.jpg"));
 
             // ================= pb_agregar =================
             this.pb_agregar = new Button();
             this.pb_agregar.Location = new Point(3150, 268);
-            this.pb_agregar.Size = new Size(265, 232);
+            this.pb_agregar.Size = new Size(150, 150);
             this.pb_agregar.Text = "Capítulos";
             this.pb_agregar.TabIndex = 42;
+            this.pb_agregar.Image = Image.FromFile(FileUtils.GetAppFile("Pictures", "capitulo.jpg"));
 
             // ================= pb_imprimir =================
             this.pb_imprimir = new Button();
             this.pb_imprimir.Location = new Point(3447, 264);
-            this.pb_imprimir.Size = new Size(265, 232);
+            this.pb_imprimir.Size = new Size(150, 150);
             this.pb_imprimir.Text = "Repertorizaciones";
             this.pb_imprimir.TabIndex = 43;
+            this.pb_imprimir.Image = Image.FromFile(FileUtils.GetAppFile("Pictures", "reperto.jpg"));
+            
 
             // ================= rte_1 =================
             this.rte_1 = new TextBox();

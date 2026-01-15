@@ -11,6 +11,28 @@ using System.Windows.Forms;
 
 namespace Minotti.utils
 {
+
+    public interface IDataWindow
+    {
+        // --- Recuperación ---
+        int Retrieve(params object[] args);
+
+        // --- Datos ---
+        DataTable Data { get; }
+
+        // --- Funcionalidad DataWindow PB ---
+        void SetFilter(string filter);
+        int Filter();
+
+        int RowCount();
+        string? GetItemString(long row, string columnName);
+
+        void Destroy();
+
+        string Describe(string expr);
+    }
+
+
     // ======= Enums PB-like =======
     public enum dwbuffer
     {
@@ -310,9 +332,24 @@ namespace Minotti.utils
     /// Emulación PB-like de DataWindow. Mantiene API y nombres para que el código migrado compile.
     /// Implementación real: adaptarla luego a tu motor (SQLCA + DataTable/Dapper/etc).
     /// </summary>
-    public class datawindow : UserControl
+    public class datawindow : UserControl, IDataWindow
     {
 
+        // === IDataWindow ===
+        public DataTable Data
+        {
+            get
+            {
+                EnsurePrimaryTable();
+                return _primary!;
+            }
+        }
+
+
+
+        // ===== PB state =====
+        protected string _filter = string.Empty;
+        protected DataView? _view;
 
         // ===============================
         // Estado interno (PB engine state)
@@ -438,26 +475,39 @@ namespace Minotti.utils
         // ======= API PB-like (stubs + algunos básicos) =======
 
         // PB: Describe("DataWindow.Column.Count") etc.
-        public virtual string Describe(string expression)
+        public virtual string Describe(string expr)
         {
-            // Si querés, después lo conectamos a un parser de SRD.
-            // Por ahora, devolvemos "?" como PB cuando no existe.
-            if (string.Equals(expression, "DataWindow.Objects", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrWhiteSpace(expr))
                 return string.Empty;
 
-            if (string.Equals(expression, "DataWindow.Column.Count", StringComparison.OrdinalIgnoreCase))
-                return _primary?.Columns.Count.ToString() ?? "0";
+            expr = expr.Trim();
 
-            if (string.Equals(expression, "DataWindow.Table.SqlSelect", StringComparison.OrdinalIgnoreCase))
-                return Object.Table.SqlSelect ?? string.Empty;
+            // PB: Describe("#1.Name") => nombre de la 1ra columna del DataWindow
+            if (expr.StartsWith("#", StringComparison.Ordinal))
+            {
+                // formatos usados en tu código: "#1.Name", "#2.Name", "#3.Name"
+                int dot = expr.IndexOf('.', 1);
+                if (dot > 1)
+                {
+                    var numPart = expr.Substring(1, dot - 1);
+                    if (int.TryParse(numPart, out int n))
+                    {
+                        // Solo soportamos ".Name" porque es lo que usan tus SRW en menús
+                        var suffix = expr.Substring(dot).Trim(); // ".Name"
+                        if (suffix.Equals(".Name", StringComparison.OrdinalIgnoreCase))
+                        {
+                            EnsurePrimaryTable();
+                            if (_primary != null && n >= 1 && n <= _primary.Columns.Count)
+                                return _primary.Columns[n - 1].ColumnName; // PB es 1-based
+                        }
+                    }
+                }
 
-            if (string.Equals(expression, "DataWindow.VerticalScrollMaximum", StringComparison.OrdinalIgnoreCase))
-                return "0";
+                return string.Empty;
+            }
 
-            if (string.Equals(expression, "DataWindow.HorizontoalScrollMaximum", StringComparison.OrdinalIgnoreCase))
-                return "0";
-
-            return "?";
+            // si te piden otra cosa, devolvemos el expr tal cual (sin inventar reglas)
+            return expr;
         }
 
         // PB: Modify("col.Border = '5'")
@@ -495,35 +545,57 @@ namespace Minotti.utils
         }
 
         // PB: SetFilter / Filter()
-        public virtual int SetFilter(string filterExpression)
+        // PB: SetFilter / Filter()
+        public virtual void SetFilter(string filter)
         {
-            Object.Table.Filter = filterExpression ?? string.Empty;
-            return 1;
+            _filter = filter ?? string.Empty;
         }
 
         public virtual int Filter()
         {
-            if (_primary == null) return 0;
+            EnsurePrimaryTable();
+            if (_primary == null)
+            {
+                _view = null;
+                return -1;
+            }
+
+            var rf = (_filter ?? string.Empty).Trim();
+
+            // PB: filtro vacío => "quita filtro"
+            if (rf.Length == 0)
+            {
+                _view = null;   // sin filtro: usar _primary
+                return 1;
+            }
+
+            // Normalización básica PB -> DataView.RowFilter
+            // col="X" => col='X'
+            rf = rf.Replace("\"", "'");
 
             try
             {
-                var dv = _primary.DefaultView;
-                dv.RowFilter = Object.Table.Filter ?? string.Empty;
-                _primary = dv.ToTable();
+                var dv = new System.Data.DataView(_primary);
+                dv.RowFilter = rf;
+                _view = dv;
                 return 1;
             }
             catch
             {
+                // Si el RowFilter revienta por sintaxis, no dejamos _view en un estado raro
+                _view = null;
                 return -1;
-            }
-            finally
-            {
-                TriggerRowFocusChanged();
             }
         }
 
         // PB: RowCount(), GetRow(), SetRow()
-        public virtual int RowCount() => _primary?.Rows.Count ?? 0;
+        public virtual int RowCount()
+        {
+            EnsurePrimaryTable();
+            if (_primary == null) return 0;
+            return _view != null ? _view.Count : _primary.Rows.Count;
+        }
+
         public virtual int RowCount(dwbuffer buffer)
         {
             return buffer switch
@@ -540,7 +612,7 @@ namespace Minotti.utils
         }
 
         // PB: Retrieve(...)
-        public virtual long Retrieve(params object?[] args)
+        public virtual int Retrieve(params object?[] args)
         {
             // Stub: el retrieve real depende de tu motor (SQLCA).
             // Mantengo eventos y retorno típico.
@@ -838,39 +910,71 @@ namespace Minotti.utils
         public virtual int SetItemStatus(long row, int column, dwbuffer buffer, dwitemstatus status) => 1;
 
         // ======= Helpers =======
-        public  object? GetItemRaw(long row, int column)
+        public object? GetItemRaw(long row, int column)
         {
             EnsurePrimaryTable();
             if (_primary == null) return null;
 
             int r = (int)row;
-            if (r <= 0 || r > _primary.Rows.Count) return null;
-            if (column <= 0 || column > _primary.Columns.Count) return null;
+            int c = column;
 
-            var val = _primary.Rows[r - 1][column - 1];
-            return val == DBNull.Value ? null : val;
+            if (r <= 0) return null;
+            if (c <= 0) return null;
+
+            if (_view != null)
+            {
+                if (r > _view.Count) return null;
+                if (c > _primary.Columns.Count) return null;
+
+                var drv = _view[r - 1];
+                var val = drv.Row[c - 1];
+                return val == DBNull.Value ? null : val;
+            }
+            else
+            {
+                if (r > _primary.Rows.Count) return null;
+                if (c > _primary.Columns.Count) return null;
+
+                var val = _primary.Rows[r - 1][c - 1];
+                return val == DBNull.Value ? null : val;
+            }
         }
+
 
         public object? GetItemRaw(long row, string columnName)
         {
-            if (string.IsNullOrWhiteSpace(columnName))
-                return null;
-
             EnsurePrimaryTable();
-            if (_primary == null)
-                return null;
+            if (_primary == null) return null;
 
             int r = (int)row;
-            if (r <= 0 || r > _primary.Rows.Count)
-                return null;
+            if (r <= 0) return null;
 
-            // Buscar columna por nombre (PB-style, case-insensitive)
-            if (!_primary.Columns.Contains(columnName))
-                return null;
+            if (string.IsNullOrWhiteSpace(columnName)) return null;
 
-            var val = _primary.Rows[r - 1][columnName];
-            return val == DBNull.Value ? null : val;
+            // Case-insensitive como PB
+            string col = _primary.Columns
+                .Cast<DataColumn>()
+                .FirstOrDefault(dc => dc.ColumnName.Equals(columnName, StringComparison.OrdinalIgnoreCase))
+                ?.ColumnName ?? string.Empty;
+
+            if (col.Length == 0) return null;
+
+            if (_view != null)
+            {
+                if (r > _view.Count) return null;
+
+                var val = _view[r - 1][col];
+                return val == DBNull.Value ? null : val;
+            }
+            else
+            {
+                if (r > _primary.Rows.Count) return null;
+
+                var val = _primary.Rows[r - 1][col];
+                return val == DBNull.Value ? null : val;
+            }
         }
+
 
 
 

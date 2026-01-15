@@ -62,7 +62,7 @@ namespace Minotti.Views.Basicos
                 SizeMode = PictureBoxSizeMode.StretchImage,
                 BorderStyle = BorderStyle.None,
                 TabStop = false,
-                ImageLocation = FileUtils.ResolveImage("tapa1.BMP")
+                ImageLocation = FileUtils.GetAppFile("Pictures", "tapa1.BMP")
             };
 
             // =====================================================

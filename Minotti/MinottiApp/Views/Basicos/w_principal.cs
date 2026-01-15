@@ -26,6 +26,45 @@ namespace Minotti.Views.Basicos
         // PB: Boolean ib_acomodar = FALSE
         public  bool ib_acomodar = false; /* Indica si la ventana debe o no reacomodar los objetos en el resize */
 
+        // === Helpers PB ===
+        // PB: UpperBound(array)
+        protected static int UpperBound<T>(T[]? array) => array?.Length ?? 0;
+
+        /// <summary>
+        /// Emula TriggerEvent("ue_xxx") de PowerBuilder llamando a un método con el mismo nombre.
+        /// Se usa principalmente desde menús y lógica migrada.
+        /// </summary>
+        public void TriggerEvent(string eventName, params object?[] args)
+        {
+            if (string.IsNullOrWhiteSpace(eventName)) return;
+
+            var flags = System.Reflection.BindingFlags.Instance |
+                       System.Reflection.BindingFlags.Public |
+                       System.Reflection.BindingFlags.NonPublic |
+                       System.Reflection.BindingFlags.IgnoreCase;
+
+            var mi = GetType().GetMethod(eventName, flags);
+            if (mi == null) return;
+
+            mi.Invoke(this, args);
+        }
+
+        /// <summary>
+        /// Emula PostEvent("ue_xxx") de PB: ejecuta el evento en el message loop.
+        /// </summary>
+        public void PostEvent(string eventName, params object?[] args)
+        {
+            if (IsHandleCreated)
+            {
+                BeginInvoke(new Action(() => TriggerEvent(eventName, args)));
+            }
+            else
+            {
+                // si aún no hay handle, lo ejecuta directo
+                TriggerEvent(eventName, args);
+            }
+        }
+
         private const int WM_SETREDRAW = 0x000B;
 
         [DllImport("user32.dll")]
