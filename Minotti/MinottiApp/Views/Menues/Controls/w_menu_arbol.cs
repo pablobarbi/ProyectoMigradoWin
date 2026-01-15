@@ -189,93 +189,98 @@ namespace Minotti.Views.Menues.Controls
 
 
 
-        public virtual void ue_cargar_nivel(int incremento)
-        {
-            int cantidad, nuevo_nivel, i_Aux, nuevo_item;
-            TreeViewItem tvi_Actual;
-            TreeViewItem tvi_Nuevo;
-            string sAux = "";
+        //public void ue_cargar_nivel(int incremento)
+        //{
+        //    int cantidad, nuevo_nivel, i_Aux, nuevo_item;
+        //    TreeViewItem tvi_Actual;
+        //    TreeViewItem tvi_Nuevo;
+        //    string sAux = "";
 
-            // PB: tv_1.GetItem(incremento, tvi_Actual)
-            tv_1_GetItem(incremento, out tvi_Actual);
+        //    // PB: tv_1.GetItem(incremento, tvi_Actual)
+        //    tv_1_GetItem(incremento, out tvi_Actual);
 
-            // PB:
-            // If tvi_Actual.Level >= UpperBound(s_nvl[]) OR
-            //    (not(ultimo_nivel) AND tvi_Actual.Level = UpperBound(s_nvl[]) - 1) Then Return
-            if (tvi_Actual.Level >= UpperBound(s_nvl) ||
-                (!ultimo_nivel && tvi_Actual.Level == UpperBound(s_nvl) - 1))
-                return;
+        //    // PB:
+        //    // If tvi_Actual.Level >= UpperBound(s_nvl[]) OR
+        //    //    (not(ultimo_nivel) AND tvi_Actual.Level = UpperBound(s_nvl[]) - 1) Then Return
+        //    if (tvi_Actual.Level >= UpperBound(s_nvl) ||
+        //        (!ultimo_nivel && tvi_Actual.Level == UpperBound(s_nvl) - 1))
+        //        return;
 
-            nuevo_nivel = tvi_Actual.Level + 1;
+        //    nuevo_nivel = tvi_Actual.Level + 1;
 
-            // PB:
-            // If nuevo_nivel > 1 Then
-            //   SetFilter( Describe('#3.Name') + '="' + string(tvi_Actual.Data) + '"' )
-            //   Filter()
-            // End If
-            if (nuevo_nivel > 1)
-            {
-                var dw = s_nvl[nuevo_nivel].dw;
+        //    // PB:
+        //    // If nuevo_nivel > 1 Then
+        //    //   SetFilter( Describe('#3.Name') + '="' + string(tvi_Actual.Data) + '"' )
+        //    //   Filter()
+        //    // End If
+        //    if (nuevo_nivel > 1)
+        //    {
+        //        var dw = s_nvl[nuevo_nivel].dw;
 
-                // 🔴 CRÍTICO: resetear filtros anteriores (PB lo hace implícito)
-                dw.SetFilter(string.Empty);
-                dw.Filter();
+        //        // 🔴 CRÍTICO: resetear filtros anteriores (PB lo hace implícito)
+        //        dw.SetFilter(string.Empty);
+        //        dw.Filter();
 
-                string colPadre = dw.Describe("#3.Name");
-                string padreVal = Convert.ToString(tvi_Actual.Data) ?? "";
+        //        string colPadre = dw.Describe("#3.Name");
+        //        string padreVal = Convert.ToString(tvi_Actual.Data) ?? "";
 
-                padreVal = padreVal.Replace("'", "''");
+        //        padreVal = padreVal.Replace("'", "''");
 
-                dw.SetFilter($"{colPadre} = '{padreVal}'");
-                dw.Filter();
-            }
-
-
-            cantidad = s_nvl[nuevo_nivel].dw.RowCount();
-
-            // PB: For i_Aux = 1 To cantidad
-            for (i_Aux = 1; i_Aux <= cantidad; i_Aux++)
-            {
-                sAux = "";
-
-                // PB: If nuevo_nivel = UpperBound(s_nvl[]) Then sAux = GetItemString('modulo') + ' - '
-                if (nuevo_nivel == UpperBound(s_nvl))
-                    sAux = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "modulo") + " - ";
-
-                string colKey = s_nvl[nuevo_nivel].dw.Describe("#1.Name");
-                string colDesc = s_nvl[nuevo_nivel].dw.Describe("#2.Name");
-
-                tvi_Nuevo = new TreeViewItem
-                {
-                    Data = sAux + s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, colKey),
-                    Label = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, colDesc),
-                    PictureIndex = nuevo_nivel,
-                    SelectedPictureIndex = (nuevo_nivel == 1) ? 1 : 4,
-                    Children = !(nuevo_nivel == UpperBound(s_nvl) ||
-                                 (!ultimo_nivel && nuevo_nivel == UpperBound(s_nvl) - 1))
-                };
+        //        dw.SetFilter($"{colPadre} = '{padreVal}'");
+        //        dw.Filter();
+        //    }
 
 
+        //    cantidad = s_nvl[nuevo_nivel].dw.RowCount();
 
-                nuevo_item = tv_1_InsertItemLast(incremento, tvi_Nuevo);
+        //    // PB: For i_Aux = 1 To cantidad
+        //    for (i_Aux = 1; i_Aux <= cantidad; i_Aux++)
+        //    {
+        //        sAux = "";
 
-                if (nuevo_item < 1)
-                {
-                    MessageBox.Show("Error insertando item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-                else if (nuevo_item == 1)
-                {
-                    tv_1_ExpandItem(nuevo_item);
-                    tv_1_SelectItem(nuevo_item);
-                }
-            }
-        }
+        //        // PB: If nuevo_nivel = UpperBound(s_nvl[]) Then sAux = GetItemString('modulo') + ' - '
+        //        if (nuevo_nivel == UpperBound(s_nvl))
+        //            sAux = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "modulo") + " - ";
+
+        //        string colKey = s_nvl[nuevo_nivel].dw.Describe("#1.Name");
+        //        string colDesc = s_nvl[nuevo_nivel].dw.Describe("#2.Name");
+
+        //        tvi_Nuevo = new TreeViewItem
+        //        {
+        //            Data = sAux + s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, colKey),
+        //            Label = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, colDesc),
+        //            PictureIndex = nuevo_nivel,
+        //            SelectedPictureIndex = (nuevo_nivel == 1) ? 1 : 4,
+        //            Children = !(nuevo_nivel == UpperBound(s_nvl) ||
+        //                         (!ultimo_nivel && nuevo_nivel == UpperBound(s_nvl) - 1))
+        //        };
 
 
 
+        //        nuevo_item = tv_1_InsertItemLast(incremento, tvi_Nuevo);
+
+        //        if (nuevo_item < 1)
+        //        {
+        //            MessageBox.Show("Error insertando item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        //        }
+        //        else if (nuevo_item == 1)
+        //        {
+        //            tv_1_ExpandItem(nuevo_item);
+        //            tv_1_SelectItem(nuevo_item);
+        //        }
+        //    }
+        //}
 
 
-        // ===== PB event: ue_iniciar =====
+
+
+
+        // ===== PB event: ue_iniciar =====  
+
+
+
+        
+
         public virtual void ue_iniciar()
         {
             if (!ib_iniciado)
@@ -381,7 +386,7 @@ namespace Minotti.Views.Menues.Controls
         }
 
 
-        private int tv_1_InsertItemLast(int parentHandle, TreeViewItem newItem)
+        protected int tv_1_InsertItemLast(int parentHandle, TreeViewItem newItem)
         {
             TreeNode parentNode;
 
@@ -414,13 +419,13 @@ namespace Minotti.Views.Menues.Controls
             return handle;
         }
 
-        private void tv_1_ExpandItem(int handle)
+        protected void tv_1_ExpandItem(int handle)
         {
             var node = FindNodeByHandle(tv_1.Nodes, handle);
             node?.Expand();
         }
 
-        private void tv_1_SelectItem(int handle)
+        protected void tv_1_SelectItem(int handle)
         {
             var node = FindNodeByHandle(tv_1.Nodes, handle);
             if (node != null) tv_1.SelectedNode = node;
@@ -453,9 +458,102 @@ namespace Minotti.Views.Menues.Controls
             return null;
         }
 
-        // Small internal structures
-       
+        public virtual void ue_cargar_nivel(int incremento)
+        {
+            int cantidad, nuevo_nivel, i_Aux, nuevo_item;
+            TreeViewItem tvi_Actual;
+            TreeViewItem tvi_Nuevo;
+            string sAux = "";
 
+            // PB: tv_1.GetItem(incremento, tvi_Actual)
+            tv_1_GetItem(incremento, out tvi_Actual);
+
+            if (tvi_Actual.Level >= UpperBound(s_nvl) ||
+                (!ultimo_nivel && tvi_Actual.Level == UpperBound(s_nvl) - 1))
+                return;
+
+            nuevo_nivel = tvi_Actual.Level + 1;
+
+            // Filtro por padre
+            if (nuevo_nivel > 1)
+            {
+                var dw = s_nvl[nuevo_nivel].dw;
+
+                dw.SetFilter(string.Empty);
+                dw.Filter();
+
+                string colPadre = dw.Describe("#3.Name");
+                string padreVal = Convert.ToString(tvi_Actual.Data) ?? "";
+
+                // ⚠️ Si es del tipo "modulo - operacion", cortamos el módulo
+                if (padreVal.Contains(" - "))
+                    padreVal = f_cortar_string.fcortar_string(padreVal, "-");
+
+                padreVal = padreVal.Replace("'", "''");
+                dw.SetFilter($"{colPadre} = '{padreVal}'");
+                dw.Filter();
+            }
+
+            cantidad = s_nvl[nuevo_nivel].dw.RowCount();
+
+            for (i_Aux = 1; i_Aux <= cantidad; i_Aux++)
+            {
+                sAux = "";
+
+                if (nuevo_nivel == UpperBound(s_nvl))
+                    sAux = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "modulo") + " - ";
+
+                string colKey = s_nvl[nuevo_nivel].dw.Describe("#1.Name");
+                string colDesc = s_nvl[nuevo_nivel].dw.Describe("#3.Name");
+
+                //tvi_Nuevo = new TreeViewItem
+                //{
+                //    Data = sAux + s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, colKey),
+                //    Label = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, colDesc),
+                //    PictureIndex = nuevo_nivel,
+                //    SelectedPictureIndex = (nuevo_nivel == 1) ? 1 : 4,
+                //    Children = !(nuevo_nivel == UpperBound(s_nvl) ||
+                //                 (!ultimo_nivel && nuevo_nivel == UpperBound(s_nvl) - 1))
+                //};
+
+
+                string modulo = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "modulo");
+                string submodulo = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, "submodulo");
+                string nombre = s_nvl[nuevo_nivel].dw.GetItemString(i_Aux, colDesc);
+
+                tvi_Nuevo = new TreeViewItem
+                {
+                    // Guardamos como Data el valor que necesita el filtro de dw_param
+                    Data = $"{modulo}*****{submodulo}",
+                    Label = nombre,
+                    PictureIndex = nuevo_nivel,
+                    SelectedPictureIndex = (nuevo_nivel == 1) ? 1 : 4,
+                    Children = !(nuevo_nivel == UpperBound(s_nvl) ||
+                                 (!ultimo_nivel && nuevo_nivel == UpperBound(s_nvl) - 1))
+                };
+
+
+
+
+
+
+                nuevo_item = tv_1_InsertItemLast(incremento, tvi_Nuevo);
+
+                if (nuevo_item < 1)
+                {
+                    MessageBox.Show("Error insertando item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+                else if (nuevo_item == 1)
+                {
+                    tv_1_ExpandItem(nuevo_item);
+                    tv_1_SelectItem(nuevo_item);
+                }
+            }
+        }
+
+
+
+        // Small internal structures
         private static class NodeHandleGenerator
         {
             private static int _h = 0;

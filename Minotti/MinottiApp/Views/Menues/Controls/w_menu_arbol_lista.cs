@@ -69,131 +69,167 @@ namespace Minotti.Views.Menues.Controls
             ue_leer_parametros();
 
             // Carga SOLO nivel raíz
-            ue_cargar_nivel(0);
+            this.ue_cargar_nivel(0);
+        }
+
+
+        public override void ue_cargar_nivel(int incremento)
+        {
+            int cantidad, nuevo_nivel, i_Aux, nuevo_item;
+            TreeViewItem tvi_Actual;
+            TreeViewItem tvi_Nuevo;
+            string sAux = "";
+
+            // Obtener el ítem actual (desde handle → TreeViewItem)
+            tv_1_GetItem(incremento, out tvi_Actual);
+
+            if (tvi_Actual.Level >= UpperBound(s_nvl) ||
+                (!ultimo_nivel && tvi_Actual.Level == UpperBound(s_nvl) - 1))
+                return;
+
+            nuevo_nivel = tvi_Actual.Level + 1;
+
+            // Filtrar siguiente nivel si corresponde
+            if (nuevo_nivel > 1)
+            {
+                var dw = s_nvl[nuevo_nivel].dw;
+                dw.SetFilter(string.Empty);
+                dw.Filter();
+
+                string colPadre = dw.Describe("#3.Name");
+                string valorPadre = Convert.ToString(tvi_Actual.Data) ?? "";
+                valorPadre = valorPadre.Replace("'", "''");
+
+                dw.SetFilter($"{colPadre} = '{valorPadre}'");
+                dw.Filter();
+            }
+
+            var dw_nivel = s_nvl[nuevo_nivel].dw;
+            string colClave = dw_nivel.Describe("#1.Name");
+            string colNombre = dw_nivel.Describe("#2.Name");
+
+            cantidad = dw_nivel.RowCount();
+
+            for (i_Aux = 1; i_Aux <= cantidad; i_Aux++)
+            {
+                string clave = dw_nivel.GetItemString(i_Aux, colClave);
+                string nombre = dw_nivel.GetItemString(i_Aux, colNombre);
+
+                tvi_Nuevo = new TreeViewItem
+                {
+                    Data = clave,
+                    Label = nombre,
+                    PictureIndex = nuevo_nivel,
+                    SelectedPictureIndex = (nuevo_nivel == 1) ? 1 : 4,
+                    Children = !(nuevo_nivel == UpperBound(s_nvl) ||
+                                 (!ultimo_nivel && nuevo_nivel == UpperBound(s_nvl) - 1))
+                };
+
+                nuevo_item = tv_1_InsertItemLast(incremento, tvi_Nuevo);
+
+                if (nuevo_item < 1)
+                {
+                    MessageBox.Show("Error insertando item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+                else if (nuevo_item == 1)
+                {
+                    tv_1_ExpandItem(nuevo_item);
+                    tv_1_SelectItem(nuevo_item);
+                }
+            }
+
+            // 🔁 En w_menu_arbol_lista podés extender esto con lógica para el ListView si estás en último nivel.
         }
 
 
         // ========== PB event: ue_cargar_lista ( integer handle ) ==========
-        public void ue_cargar_lista(int handle)
-        {
-            int cantidad, nuevo_nivel;
-            PBTreeViewItem tvi_Actual;
-            PBListViewItemExtensions lvi_Nueva;
-            int iAux;
-            string sAux;
-
-            // Determina el nivel en el que está y lee los datos del ítem abierto
-            tv_1.GetItem(handle, out tvi_Actual);
-            if (tvi_Actual.Level == UpperBound(s_nvl)) return;
-
-            nuevo_nivel = tvi_Actual.Level + 1;
-            if (nuevo_nivel == UpperBound(s_nvl))
-                puede_ejecutar = true;
-            else
-                puede_ejecutar = false;
-
-            if (tvi_Actual.Level > 1)
-            {
-                s_nvl[nuevo_nivel].dw.SetFilter(
-                    s_nvl[nuevo_nivel].dw.Describe("#3.Name") + "=\"" + Convert.ToString(tvi_Actual.Data) + "\""
-                );
-                s_nvl[nuevo_nivel].dw.Filter();
-            }
-
-            cantidad = s_nvl[nuevo_nivel].dw.RowCount();
-
-            // Borra todos los ítems de la lista
-            lv_1.DeleteColumns();
-            lv_1.DeleteItems();
-
-            // Define las columnas de la lista
-            lv_1.AddColumn(s_nvl[nuevo_nivel].titulo, ListViewColumnAlignment.Left, 3000);
-            //lv_1.AddColumn("Código", Right!, 500)
-
-            // Agrega los ítems a la lista en base a los datos del Data Store
-            for (iAux = 1; iAux <= cantidad; iAux++)
-            {
-                // Si está en el nivel de operaciones, en el Data pone Modulo - Operacion
-                if (nuevo_nivel == UpperBound(s_nvl))
-                    sAux = s_nvl[nuevo_nivel].dw.GetItemString(iAux, "modulo") + " - ";
-                else
-                    sAux = "";
-
-                lvi_Nueva = new PBListViewItemExtensions();
-                lvi_Nueva.Data = sAux + s_nvl[nuevo_nivel].dw.GetItemString(iAux, s_nvl[nuevo_nivel].dw.Describe("#1.Name"));
-                lvi_Nueva.Label =
-                    s_nvl[nuevo_nivel].dw.GetItemString(iAux, s_nvl[nuevo_nivel].dw.Describe("#2.Name")) +
-                    "\t" + Convert.ToString(lvi_Nueva.Data);
-
-                lvi_Nueva.PictureIndex = 2 * nuevo_nivel - 1;
-                lvi_Nueva.StatePictureIndex = 2 * nuevo_nivel;
-
-                if (lv_1.AddItem(lvi_Nueva) < 1)
-                {
-                    MessageBox.Show(
-                        "No se pudo añadir un item " + lvi_Nueva.Label + "en la lista",
-                        "Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation
-                    );
-                }
-            }
-
-            // PB: iAux = rand(7)  (1..7)
-            iAux = Random.Shared.Next(1, 8);
-
-            if (iAux == 1)
-                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "boca.jpg"));
-            else if (iAux == 2)
-                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "nariz.jpg"));
-            else if (iAux == 3)
-                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "pulmones.jpg"));
-            else if (iAux == 4)
-                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "ojo.jpg"));
-            else if (iAux == 5)
-                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "cerebro.jpg"));
-            else if (iAux == 6)
-                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", "higado.jpg"));
-            else if (iAux == 7)
-                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures","neuronas.jpg"));
-        }
-
-         public  virtual void ue_cargar_lista()
+        public virtual void ue_cargar_lista(int handle)
         {
             TreeViewItem tvi_Actual;
-            int handle;
+            int nuevo_nivel;
+            string colPadre, colKey, colDesc;
+            string valorPadre;
+            int cantidad;
 
-            // Item seleccionado en el TreeView
-            handle = tv_1_SelectedItem();
-            if (handle < 1)
-                return;
-
+            // 1. Obtener el nodo actual desde el handle
             tv_1_GetItem(handle, out tvi_Actual);
 
-            // En PB:
-            // dw_param.SetFilter("operacion = '" + string(tvi_Actual.Data) + "'")
-            // dw_param.Filter()
+            // 2. Calcular el nivel siguiente (el que contiene las operaciones a listar)
+            if (tvi_Actual.Level >= UpperBound(s_nvl)) return;
+            nuevo_nivel = tvi_Actual.Level + 1;
 
-            string operacion = Convert.ToString(tvi_Actual.Data) ?? "";
-            operacion = operacion.Replace("'", "''");
-
-            dw_param.SetFilter($"operacion = '{operacion}'");
-            dw_param.Filter();
-
-            // Limpio lista
+            // 3. Limpiar el ListView
             lv_1.Items.Clear();
 
-            int rows = dw_param.RowCount();
-            for (int i = 1; i <= rows; i++)
-            {
-                var item = new ListViewItem(
-                    dw_param.GetItemString(i, "descripcion")
-                );
+            // 4. Acceder al DataWindow correspondiente al nuevo_nivel
+            var dw = s_nvl[nuevo_nivel].dw;
 
-                item.Tag = dw_param.GetItemString(i, "operacion");
+            // 5. Filtro: columna #3 = Data del ítem seleccionado
+            colPadre = dw.Describe("#3.Name");
+            valorPadre = Convert.ToString(tvi_Actual.Data) ?? "";
+            valorPadre = valorPadre.Replace("'", "''");
+
+            dw.SetFilter($"{colPadre} = '{valorPadre}'");
+            dw.Filter();
+
+            cantidad = dw.RowCount();
+
+            // 6. Obtener nombres de columnas visibles
+            colKey = dw.Describe("#1.Name");
+            colDesc = dw.Describe("#2.Name");
+
+            for (int i = 1; i <= cantidad; i++)
+            {
+                string operacion = dw.GetItemString(i, colKey);
+                string nombre = dw.GetItemString(i, colDesc);
+
+                var item = new ListViewItem(nombre)
+                {
+                    Tag = operacion
+                };
+
                 lv_1.Items.Add(item);
             }
         }
+
+
+        public virtual void ue_cargar_lista()
+        {
+            lv_1.Items.Clear();
+
+            if (dw_param == null) return;
+
+            var nodo = tv_1.SelectedNode;
+            if (nodo == null) return;
+
+            string? submodulo = (string?)(((Minotti.Structures.NodeTag)nodo.Tag).Data ?? "");
+            if (string.IsNullOrEmpty(submodulo)) return;
+
+            dw_param.SetFilter($"submodulo = '{submodulo}'");
+            dw_param.Filter();
+
+            int rowCount = dw_param.RowCount();
+            if (rowCount == 0) return;
+
+            // PB: columna visible es #2
+            string colDesc = dw_param.Describe("#3.Name");
+
+            // PB: operacion suele ser #1
+            string colOperacion = dw_param.Describe("#1.Name");
+
+            for (int i = 1; i <= rowCount; i++)
+            {
+                string nombre = dw_param.GetItemString(i, colDesc);
+                string operacion = dw_param.GetItemString(i, colOperacion);
+
+                lv_1.Items.Add(new ListViewItem(nombre)
+                {
+                    Tag = operacion
+                });
+            }
+        }
+
+
 
 
 
@@ -369,18 +405,10 @@ namespace Minotti.Views.Menues.Controls
 
         private void tv_1_AfterSelect(object? sender, TreeViewEventArgs e)
         {
-            // 🔴 CASO ESPECIAL: nodo raíz (Minotti 2020)
-            if (e.Node.Level == 0)
-            {
-                ue_cargar_basicas_root();
-                return;
-            }
+            if (e.Node == null) return;
 
-            // Caso normal: nodo hoja → cargar lista
-            if (e.Node.Nodes.Count == 0)
-            {
-                ue_cargar_lista();
-            }
+            int handle = GetHandleFromNode(e.Node); // método interno que recupera el int handle
+            ue_cargar_lista(handle);
         }
 
 
