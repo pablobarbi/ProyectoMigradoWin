@@ -147,6 +147,7 @@
 		<Compile Include="utils\DynamicEventInvoker.cs" />
 		<Compile Include="utils\FileUtils.cs" />
 		<Compile Include="utils\GlobalHelpers.cs" />
+		<Compile Include="utils\IFormularioConOperacion.cs" />
 		<Compile Include="utils\ListExtensions.cs" />
 		<Compile Include="utils\Message.cs" />
 		<Compile Include="utils\MessageBox.cs" />

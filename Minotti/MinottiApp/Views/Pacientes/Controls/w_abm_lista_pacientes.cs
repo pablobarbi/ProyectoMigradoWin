@@ -51,7 +51,7 @@ namespace Minotti.Views.Pacientes.Controls
         // ========================
         // ue_leer_parametros
         // ========================
-        public override void ue_leer_parametros()
+        protected override void ue_leer_parametros()
         {
             base.ue_leer_parametros();
 

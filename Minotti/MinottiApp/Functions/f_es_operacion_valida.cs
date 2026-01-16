@@ -4,6 +4,7 @@ using Minotti;
 using Minotti.Data;
 using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Models;
+using Minotti.Views.Pbl.Views;
 using MinottiApp.utils;
 using System;
 using System.Data;

@@ -78,7 +78,7 @@ namespace Minotti.Views.Abm.Controls
                 + dw_buscar.uof_largo() + 80;
         }
 
-        public override void ue_leer_parametros()
+        protected override void ue_leer_parametros()
         {
             base.ue_leer_parametros();
 

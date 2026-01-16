@@ -2,11 +2,7 @@
 using Minotti.Data;
 using Minotti.Structures;
 using Minotti.utils;
-using Minotti.Views.Basicos;
-using System;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Windows.Forms;
+using Minotti.Views.Pbl.Views;
 
 namespace Minotti.Views.Capitulos.Controls
 {
@@ -29,13 +25,13 @@ namespace Minotti.Views.Capitulos.Controls
             this.Load += (_, _) => ue_iniciar();
 
             // PB: close destruye datastores
-            this.FormClosing += (_, _) => close();
+            this.FormClosing += (_, _) => Close();
         }
 
         // =====================================================
         // PB: event ue_leer_parametros
         // =====================================================
-        public override void ue_leer_parametros()
+        protected override void ue_leer_parametros()
         {
             base.ue_leer_parametros();
 
@@ -221,9 +217,9 @@ namespace Minotti.Views.Capitulos.Controls
         // =====================================================
         // PB: event close
         // =====================================================
-        protected virtual void close()
+        protected virtual void Close()
         {
-            base.close();
+            base.Close();
 
             // Destruye los Data Stores creados en el Open
             for (int iAux = 1; iAux <= UpperBound(s_nvl); iAux++)

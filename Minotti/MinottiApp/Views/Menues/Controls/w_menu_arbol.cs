@@ -5,8 +5,6 @@
 
 using Minotti.Functions;
 using Minotti.Structures;
-using System;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Menues.Controls
 {

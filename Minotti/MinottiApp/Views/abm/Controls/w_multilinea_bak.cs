@@ -116,12 +116,12 @@ namespace Minotti.Views.Abm.Controls
 
         public void activate()
         {
-            base.activate();
+            base.Activate();
 
           PBGlobals.m_mdi.m_insertar.Enabled = false;
         }
 
-        public void ue_ajustar_tamaño()
+        public override void ue_ajustar_tamaño()
         {
             base.ue_ajustar_tamaño();
 
@@ -254,7 +254,7 @@ namespace Minotti.Views.Abm.Controls
 
         public void close()
         {
-            base.close();
+            base.Close();
 
             if (dw_1 != null && !dw_1.IsDisposed)
                 CloseUserObject(dw_1);

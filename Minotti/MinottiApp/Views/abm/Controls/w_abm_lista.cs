@@ -83,7 +83,7 @@ namespace Minotti.Views.Abm.Controls
         }
 
         // event ue_leer_parametros
-        public override void ue_leer_parametros()
+        protected override void ue_leer_parametros()
         {
             base.ue_leer_parametros();
 
@@ -182,7 +182,7 @@ namespace Minotti.Views.Abm.Controls
         }
 
         // event ue_dw_detalle
-        public override void ue_dw_detalle()
+        protected override void ue_dw_detalle()
         {
             base.ue_dw_detalle();
 
@@ -254,10 +254,22 @@ namespace Minotti.Views.Abm.Controls
         private static bool IsValid(object? o) => o != null;
 
         private string wf_ProxParam(ref string param) => base.wf_proxparam(param);
-        private void OpenUserObject(object target, string name) => base.OpenUserObject(target, name);
-        private void CloseUserObject(object target) => base.CloseUserObject(target);
+        //private void OpenUserObject(object target, string name) => base.OpenUserObject(target, name);
+        //private void CloseUserObject(object target) => base.CloseUserObject(target);
 
+        protected void OpenUserObject(object obj, string dataobject)
+        {
+            // implementación que crea y configura el UserObject
+        }
 
+        protected void CloseUserObject(object obj)
+        {
+            if (obj is Control c)
+            {
+                this.Controls.Remove(c);
+                c.Dispose();
+            }
+        }
 
         // ===============================================================
         // PB Event: ue_dw_button_clicked

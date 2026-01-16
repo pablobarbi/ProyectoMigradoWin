@@ -54,6 +54,8 @@ namespace Minotti.Views.Menues.Controls
             //tv_1.ItemPopulate += tv_1_ItemPopulate;
             this.tv_1.AfterSelect += tv_1_AfterSelect;
             this.tv_1.BeforeExpand += tv_1_BeforeExpand;
+
+            this.Shown += (_, __) => ue_optar(); // Llama al ue_optar apenas se muestra
         }
 
         protected override void OnLoad(EventArgs e)
@@ -357,14 +359,20 @@ namespace Minotti.Views.Menues.Controls
             if (lv_1 == null)
                 return;
 
+            // 🔹 Asegurar ImageList
+            if (lv_1.SmallImageList == null)
+                lv_1.SmallImageList = new ImageList();
 
-            // PB: carga de iconos en lv_1
-            lv_1.AddSmallPicture(FileUtils.GetAppFile("Pictures", "Close_file.GIF"));
-            lv_1.AddSmallPicture(FileUtils.GetAppFile("Pictures", "Close_file.GIF"));
-            lv_1.AddSmallPicture(FileUtils.GetAppFile("Pictures", "Close_file.GIF"));
-            lv_1.AddSmallPicture(FileUtils.GetAppFile("Pictures", "Close_file.GIF"));
-            lv_1.AddSmallPicture(FileUtils.GetAppFile("Pictures", "Operacion.bmp"));
+            // 🔹 Cargar imágenes
+            lv_1.SmallImageList.Images.Clear(); // por si se llama más de una vez
+
+            lv_1.SmallImageList.Images.Add(Image.FromFile(FileUtils.GetAppFile("Pictures", "Close_file.GIF")));
+            lv_1.SmallImageList.Images.Add(Image.FromFile(FileUtils.GetAppFile("Pictures", "Close_file.GIF")));
+            lv_1.SmallImageList.Images.Add(Image.FromFile(FileUtils.GetAppFile("Pictures", "Close_file.GIF")));
+            lv_1.SmallImageList.Images.Add(Image.FromFile(FileUtils.GetAppFile("Pictures", "Close_file.GIF")));
+            lv_1.SmallImageList.Images.Add(Image.FromFile(FileUtils.GetAppFile("Pictures", "Operacion.bmp")));
         }
+
 
         // ========== PB event: ue_iniciar ==========
         public override void ue_iniciar()
@@ -416,13 +424,44 @@ namespace Minotti.Views.Menues.Controls
         }
 
 
-        private void tv_1_AfterSelect(object? sender, TreeViewEventArgs e)
+        private void tv_1_AfterSelectOld(object? sender, TreeViewEventArgs e)
         {
             if (e.Node == null) return;
 
             int handle = GetHandleFromNode(e.Node); // método interno que recupera el int handle
             ue_cargar_lista(handle);
         }
+
+
+        private void tv_1_AfterSelect(object? sender, TreeViewEventArgs e)
+        {
+            if (e.Node == null) return;
+
+            // 🔹 Muestra imagen aleatoria en el PictureBox (como PB)
+            try
+            {
+                int iAux = Random.Shared.Next(1, 8);
+
+                string[] imagenes = new[]
+                {
+            "boca.jpg", "maradona.jpg", "pelusa.jpg", "gallina.jpg",
+            "carrizo.jpg", "tabarez.jpg", "bochini.jpg"
+        };
+
+                string imagen = imagenes[iAux - 1];
+                p_menu.SetPictureName(FileUtils.GetAppFile("Pictures", imagen));
+            }
+            catch (Exception ex)
+            {
+                // Podés loggear si querés, o dejarlo silencioso
+                Console.WriteLine($"[Imagen Aleatoria] Error: {ex.Message}");
+            }
+
+            // 🔹 Carga el contenido del ListView según el nodo seleccionado
+            int handle = GetHandleFromNode(e.Node);
+            ue_cargar_lista(handle);
+        }
+
 
 
         protected int tv_1_SelectedItem()

@@ -168,7 +168,7 @@ namespace Minotti.Views.Abm.Controls
             }
         }
 
-        public override void ue_leer_parametros()
+        protected override void ue_leer_parametros()
         {
             base.ue_leer_parametros();
 
@@ -183,7 +183,21 @@ namespace Minotti.Views.Abm.Controls
             ******************************************************************************/
 
             /* Lee el detalle */
-            OpenUserObject(dw_2, this.wf_proxparam( param, 4));
+            //OpenUserObject(dw_2, this.wf_proxparam( param, 4));
+
+            string dataObject = this.wf_proxparam(param, 4);
+
+            dw_2 = new uo_dw();
+            dw_2.uof_setdataobject(dataObject);
+            dw_2.SetTransObject(SQLCA.Instance);
+            dw_2.Retrieve(uo_app.Instance.at_usuario.Perfil); // si aplica
+
+            dw_2.Dock = DockStyle.Fill;
+            dw_2.Name = "dw_2";
+
+            this.Controls.Add(dw_2); // o a algún panel/contenedor
+            this.Controls.SetChildIndex(dw_2, 0); // si querés que quede al frente
+
             dw_2.uof_setdataobject(this.wf_proxparam( param));
             dw_2.SetTransObject(SQLCA.Instance);
 
@@ -281,7 +295,12 @@ namespace Minotti.Views.Abm.Controls
             base.close();
 
             if (dw_2 != null && !dw_2.IsDisposed)
-                CloseUserObject(dw_2);
+            {
+                dw_2.Dispose();
+                dw_2 = null;
+                //CloseUserObject(dw_2);
+            }
+
         }
     }
 }

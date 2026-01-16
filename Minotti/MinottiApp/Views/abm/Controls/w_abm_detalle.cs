@@ -120,7 +120,7 @@ namespace Minotti.Views.Abm.Controls
         }
 
         // event ue_leer_parametros
-        public override void ue_leer_parametros()
+        protected override void ue_leer_parametros()
         {
             base.ue_leer_parametros();
 
@@ -157,7 +157,7 @@ namespace Minotti.Views.Abm.Controls
         // event close
         public virtual void close()
         {
-            base.close();
+            base.Close();
 
             if (IsValid(dw_1)) CloseUserObject(dw_1);
         }
@@ -165,7 +165,7 @@ namespace Minotti.Views.Abm.Controls
         // event activate
         public void activate()
         {
-            base.activate();
+            base.Activate();
             PBGlobals.m_mdi.m_insertar.Enabled = false;
         }
 

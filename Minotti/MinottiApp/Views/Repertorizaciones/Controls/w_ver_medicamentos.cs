@@ -1,5 +1,6 @@
 using Minotti.Data;
 using Minotti.Views.Basicos;
+using Minotti.Views.Pbl.Views;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -28,7 +29,7 @@ namespace Minotti.Views.Repertorizaciones.Controls
         // =================================================
         // PB: ue_leer_parametros
         // =================================================
-        public override void ue_leer_parametros()
+        protected override void ue_leer_parametros()
         {
             base.ue_leer_parametros();
 

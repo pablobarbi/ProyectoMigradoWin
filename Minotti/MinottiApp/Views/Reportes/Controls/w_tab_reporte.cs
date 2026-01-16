@@ -16,7 +16,7 @@ namespace Minotti.Views.Reportes.Controls
         // event ue_leer_parametros(); call super::ue_leer_parametros;
         // /* La unica accion permitida para esta ventana es la consulta de datos */
         // is_Accion = 'C'
-        public override void ue_leer_parametros()
+        protected override void ue_leer_parametros()
         {
             base.ue_leer_parametros();
 

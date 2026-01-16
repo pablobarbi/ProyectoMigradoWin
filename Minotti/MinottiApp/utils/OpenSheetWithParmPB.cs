@@ -1,6 +1,7 @@
 ﻿using Minotti;
 using Minotti.utils;
 using Minotti.Views.Basicos.Models;
+using Minotti.Views.Pbl.Views;
 using System;
 using System.Linq;
 using System.Windows.Forms;
@@ -148,6 +149,34 @@ namespace MinottiApp.utils
             }
             return null;
         }
+
+
+
+        public static int OpenSheetWithParm<TForm>(
+    TForm form,
+    object parametro,
+    string titulo,
+    Form mdiParent,
+    int colgar,
+    PBOpenMode modo
+) where TForm : Form
+        {
+            // Intenta setear PowerObjectParm, at_op o lo que sea
+            if (form is w_operacion wop && parametro is cat_operacion op)
+                wop.at_op = op;
+
+            // También podés usar interfaz común si hay más formularios
+            else if (form is IFormularioConOperacion conOp && parametro is cat_operacion op2)
+                conOp.Operacion = op2;
+
+            form.MdiParent = mdiParent;
+            form.Text = titulo;
+
+            form.Show();
+            return 1;
+        }
+
+
 
     }
 

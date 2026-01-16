@@ -1,6 +1,7 @@
 using Minotti.Data;
 using Minotti.Structures;
 using Minotti.utils;
+using Minotti.Views.Basicos.Controls;
 using Minotti.Views.Basicos.Models;
 using System;
  
@@ -88,7 +89,7 @@ namespace Minotti.Views.Reportes.Controls
         // =========================
         // PB: event ue_leer_parametros (ANCESTOR SCRIPT OVERRIDE)
         // =========================
-        public override void ue_leer_parametros()
+        protected override void ue_leer_parametros()
         {
             // NO llamo base.ue_leer_parametros() porque PB overridea y copia script para título.
             // --- Copiado de w_operacion para título ---
@@ -107,16 +108,41 @@ namespace Minotti.Views.Reportes.Controls
             at_op = (cat_operacion)utils.Message.PowerObjectParm;
             ls_Param = at_op.uof_getparametros();
 
+            string dataObject = string.Empty;
             // Si tiene parámetros, carga la datawindow correspondiente
             if (wf_cantparam(ls_Param) > 6)
             {
-                OpenUserObject(dw_param, wf_proxparam(ls_Param));
-                dw_param.uof_setdataobject(wf_proxparam(ls_Param));
+                //OpenUserObject(dw_param, wf_proxparam(ls_Param));
+                //dw_param.uof_setdataobject(wf_proxparam(ls_Param));
+                //dw_param.SetTransObject(SQLCA.Instance);
+
+                dataObject = wf_proxparam(ls_Param);
+                dw_param = new uo_dw();
+                dw_param.uof_setdataobject(dataObject);
                 dw_param.SetTransObject(SQLCA.Instance);
+                dw_param.Retrieve(uo_app.Instance.at_usuario.Perfil); // si es necesario
+
+                dw_param.Name = "dw_param";
+                dw_param.Dock = DockStyle.Top;
+
+                this.Controls.Add(dw_param);
             }
 
             // Carga la DataWindow de datos
-            OpenUserObject(dw_reporte, wf_proxparam(ls_Param));
+            //OpenUserObject(dw_reporte, wf_proxparam(ls_Param));
+
+            dataObject = wf_proxparam(ls_Param);
+
+            dw_reporte = new uo_dw();
+            dw_reporte.uof_setdataobject(dataObject);
+            dw_reporte.SetTransObject(SQLCA.Instance);
+            dw_reporte.Retrieve(uo_app.Instance.at_usuario.Perfil); // si aplica
+
+            dw_reporte.Name = "dw_reporte";
+            dw_reporte.Dock = DockStyle.Fill;
+
+            this.Controls.Add(dw_reporte);
+            this.Controls.SetChildIndex(dw_reporte, 0); // opcional: posición visual
 
             // Asignar a vble de instancia el dataobject de la dw que aparece por pantalla caso positivo
             is_drcon = wf_proxparam(ls_Param);

@@ -3,9 +3,8 @@ using Minotti.Functions;
 using Minotti.utils;
 using Minotti.Views.Basicos.Controls;
 using Minotti.Views.Basicos.Models;
+using Minotti.Views.Pbl.Views;
 using MinottiApp.utils;
-using System;
-using System.Windows.Forms;
 
 
 namespace Minotti.Views.Basicos
@@ -319,10 +318,15 @@ namespace Minotti.Views.Basicos
         /// <summary>
         /// PB: ue_dw_detalle (documentado, vacío en el ancestro)
         /// </summary>
-        public  virtual void ue_dw_detalle()
+        protected virtual void ue_dw_detalle()
         {
             // Herencias lo implementan si necesitan abrir detalles.
         }
+
+
+        protected virtual void ue_dw_detalle(uo_dw arg_objeto) { }
+
+
 
         // =====================================================
         // Funciones wf_* (métodos públicos)
@@ -387,8 +391,9 @@ namespace Minotti.Views.Basicos
             // PB:
             // w_operacion wAux
             // Retorno = OpenSheetWithParm (wAux, at_det, at_det.uof_GetObjeto(), ParentWindow(), guo_app.Menu.Colgar, Original!)
-            var wAux = new w_operacion();
+            var wAux = new w_operacion();            
             string objeto = at_det.uof_getobjeto();
+            wAux.Operacion = at_det;
 
             int retorno = OpenSheetWithParmPB.OpenSheetWithParm(
                 wAux,
@@ -475,7 +480,7 @@ namespace Minotti.Views.Basicos
         // PB events (stubs)
         public virtual void ue_preparar_siguiente() { }
         // Overload con parámetro para tu llamada: base.ue_preparar_siguiente(at_det)
-        public virtual void ue_preparar_siguiente(object? at_det)
+        public virtual void ue_preparar_siguiente(ref cat_operacion? at_det)
         {
             // En PB, call super::ue_preparar_siguiente no “hace magia” si el super está vacío.
             // No inventamos lógica: por defecto no hace nada.
@@ -533,6 +538,17 @@ namespace Minotti.Views.Basicos
                 return self;
 
             throw new InvalidOperationException("ParentWindow (w_principal) no encontrado en la jerarquía.");
+        }
+
+        protected new bool ProcessCmdKey(ref System.Windows.Forms.Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape)
+            {
+                PostEvent("ue_cancelar");
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
     } 

@@ -1,6 +1,7 @@
 using Minotti.Data;
 using Minotti.utils;
 using Minotti.Views.Basicos;
+using Minotti.Views.Basicos.Controls;
 using Minotti.Views.Pbl.Views;
 using System;
 using System.Reflection;
@@ -112,7 +113,7 @@ namespace Minotti.Views.Reportes.Controls
         // =========================
         // event ue_dw_detalle
         // =========================
-        public override void ue_dw_detalle(object arg_objeto)
+        protected override void ue_dw_detalle(uo_dw arg_objeto)
         {
             base.ue_dw_detalle(arg_objeto);
 
@@ -136,7 +137,7 @@ namespace Minotti.Views.Reportes.Controls
         {
             base.ue_iniciar();
 
-            this.SetPointer( Structures.Pointer.HourGlass);
+            PBUtils.SetPointer( Structures.Pointer.HourGlass);
 
             if (IsValid(dw_param))
             {
@@ -165,20 +166,44 @@ namespace Minotti.Views.Reportes.Controls
         // =========================
         // event ue_leer_parametros
         // =========================
-        public override void ue_leer_parametros()
+        protected override void ue_leer_parametros()
         {
             base.ue_leer_parametros();
 
             string param = at_op.uof_getparametros();
 
+            string dataObject = string.Empty; 
             if (wf_cantparam(param) > 4)
             {
-                OpenUserObject(dw_param, wf_proxparam(param));
-                dw_param.uof_setdataobject(wf_proxparam(param));
+                //OpenUserObject(dw_param, wf_proxparam(param));
+                //dw_param.uof_setdataobject(wf_proxparam(param));
+                //dw_param.SetTransObject(SQLCA.Instance); 
+                dataObject = wf_proxparam(param);
+                dw_param = new uo_dw();
+                dw_param.uof_setdataobject(dataObject);
                 dw_param.SetTransObject(SQLCA.Instance);
+                dw_param.Retrieve(uo_app.Instance.at_usuario.Perfil); // si es necesario
+
+                dw_param.Name = "dw_param";
+                dw_param.Dock = DockStyle.Top;
+
+                this.Controls.Add(dw_param);
             }
 
-            OpenUserObject(dw_reporte, wf_proxparam(param));
+            //OpenUserObject(dw_reporte, wf_proxparam(param));
+            dataObject = wf_proxparam(param);
+
+            dw_reporte = new uo_dw();
+            dw_reporte.uof_setdataobject(dataObject);
+            dw_reporte.SetTransObject(SQLCA.Instance);
+            dw_reporte.Retrieve(uo_app.Instance.at_usuario.Perfil); // si aplica
+
+            dw_reporte.Name = "dw_reporte";
+            dw_reporte.Dock = DockStyle.Fill;
+
+            this.Controls.Add(dw_reporte);
+            this.Controls.SetChildIndex(dw_reporte, 0); // opcional: posición visual
+
             dw_reporte.uof_setdataobject(wf_proxparam(param));
             dw_reporte.SetTransObject(SQLCA.Instance);
             dw_reporte.uof_setdwimpresion(wf_proxparam(param));
@@ -225,8 +250,8 @@ namespace Minotti.Views.Reportes.Controls
 
             string[] parametros = Array.Empty<string>();
 
-            this.SetPointer( Structures.Pointer.HourGlass);
-
+            PBUtils.SetPointer( Structures.Pointer.HourGlass);
+            
             if (IsValid(dw_param))
             {
                 if (dw_param.AcceptText() != 1)
@@ -271,8 +296,14 @@ namespace Minotti.Views.Reportes.Controls
         {
             base.OnFormClosed(e);
 
-            if (IsValid(dw_param)) CloseUserObject(dw_param);
-            if (IsValid(dw_reporte)) CloseUserObject(dw_reporte);
+            if (IsValid(dw_param))
+            {
+                dw_param.Dispose();                
+            }
+            if (IsValid(dw_reporte))
+            {
+                dw_reporte.Dispose();
+            }
         }
 
         public virtual void ue_preprocesar()

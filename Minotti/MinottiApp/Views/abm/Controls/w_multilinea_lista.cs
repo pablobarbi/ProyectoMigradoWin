@@ -2,6 +2,7 @@ using Minotti.Data;
 using Minotti.utils;
 using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Controls;
+using Minotti.Views.Pbl.Views;
 using System;
 using System.Windows.Forms;
 
@@ -53,7 +54,7 @@ namespace Minotti.Views.Abm.Controls
         // events
         // -------------------------------------------------
 
-        public void ue_retrieve()
+        protected override void ue_retrieve()
         {
             base.ue_retrieve();
 
@@ -247,7 +248,7 @@ namespace Minotti.Views.Abm.Controls
 
         public void close()
         {
-            base.close();
+            base.Close();
 
             if (dw_1 != null && !dw_1.IsDisposed)
                 CloseUserObject(dw_1);
