@@ -14,7 +14,7 @@ namespace Minotti.Functions
         /// Devuelve la porción izquierda (Trim) y en 'parametro' deja el resto (Trim).
         /// Si no se encuentra el separador, devuelve 'parametro' (Trim) y vacía 'parametro'.
         /// </summary>
-        public static string fcortar_string(string parametro, string separador)
+        public static string fcortar_string(ref string parametro, string separador)
         {
             parametro ??= string.Empty;
             separador ??= string.Empty;

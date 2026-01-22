@@ -20,7 +20,7 @@ namespace Minotti.Views.Informes.Controls
         // PB: event ue_iniciar (ANCESTOR SCRIPT OVERRIDE)
         // "dejo a la datawindow de cabecera como parametro"
         // =====================================================
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             // NO llama a super (en PB no hay call super en este ue_iniciar)
             // cargo la DW de encabezado.

@@ -119,7 +119,7 @@ namespace Minotti.Views.Basicos
 
 
         // ue_iniciar
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             // PB:
             // tab_1.Event Trigger ue_iniciar(is_Accion, at_op.s_det[])

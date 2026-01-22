@@ -36,6 +36,7 @@ namespace Minotti.Views.Abm.Controls
             if (dw_buscar == null || dw_buscar.IsDisposed)
             {
                 dw_buscar = new uo_dw();
+                this.ue_leer_parametros();
                 this.Controls.Add(dw_buscar);
             }
         }
@@ -57,6 +58,12 @@ namespace Minotti.Views.Abm.Controls
 
         public override void ue_acomodar_objetos()
         {
+
+            // PB: si no hay DW no acomodar nada
+            if (dw_1 == null || dw_buscar == null)
+                return;
+
+
             int largo_dw1 = this.wf_largo_disponible() - s_esp.borde - dw_buscar.uof_largo();
 
             dw_1.Width = Math.Min(dw_1.uof_ancho(), this.wf_ancho_disponible());
@@ -72,6 +79,11 @@ namespace Minotti.Views.Abm.Controls
 
         public override void ue_ajustar_tamaño()
         {
+
+            if (dw_1 == null || dw_buscar == null || s_esp == null)
+                return;
+
+
             this.Width = dw_1.uof_ancho() + s_esp.ancho + 2 * s_esp.borde;
             this.Height =
                 dw_1.uof_largo() + s_esp.largo + 2 * s_esp.borde
@@ -159,7 +171,7 @@ namespace Minotti.Views.Abm.Controls
             return 0;
         }
 
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             base.ue_iniciar();
 
@@ -205,8 +217,10 @@ namespace Minotti.Views.Abm.Controls
                     }
 
                     ult_campo = dw_buscar.uof_ultimo_campo_visible();
-                    tamaño = Convert.ToInt32(dw_buscar.Describe(ult_campo + ".Width "));
-                    scroll = dw_1.Width - Convert.ToInt32(dw_buscar.Describe(ult_campo + ".X ")) - tamaño;
+                    //tamaño = Convert.ToInt32(dw_buscar.Describe(ult_campo + ".Width "));
+                    tamaño = PBUtils.ToInt32PB(dw_buscar.Describe(ult_campo + ".Width "));
+                    //scroll = dw_1.Width - Convert.ToInt32(dw_buscar.Describe(ult_campo + ".X ")) - tamaño;
+                    scroll = dw_1.Width - PBUtils.ToInt32PB(dw_buscar.Describe(ult_campo + ".X ")) - tamaño;
                     tamaño = tamaño + scroll - 5;
 
                     dw_buscar.Modify(ult_campo + ".Width= " + tamaño);

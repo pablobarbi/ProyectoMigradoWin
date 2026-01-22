@@ -48,7 +48,7 @@ namespace Minotti.Views.Repertorizaciones.Controls
         // =========================
         // PB: ue_iniciar
         // =========================
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             base.ue_iniciar();
 

@@ -1,4 +1,5 @@
 using Minotti.Data;
+using Minotti.Functions;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos.Controls;
@@ -185,7 +186,7 @@ namespace Minotti.Views.Abm.Controls
             /* Lee el detalle */
             //OpenUserObject(dw_2, this.wf_proxparam( param, 4));
 
-            string dataObject = this.wf_proxparam(param, 4);
+            string dataObject = f_proxparam.fproxparam(ref param, 4);
 
             dw_2 = new uo_dw();
             dw_2.uof_setdataobject(dataObject);
@@ -198,11 +199,11 @@ namespace Minotti.Views.Abm.Controls
             this.Controls.Add(dw_2); // o a algún panel/contenedor
             this.Controls.SetChildIndex(dw_2, 0); // si querés que quede al frente
 
-            dw_2.uof_setdataobject(this.wf_proxparam( param));
+            dw_2.uof_setdataobject(f_proxparam.fproxparam(ref param));
             dw_2.SetTransObject(SQLCA.Instance);
 
             /* Lee la cantidad de líneas del detalle */
-            dw_2.cant_filas = Convert.ToInt32(this.wf_proxparam( param));
+            dw_2.cant_filas = Convert.ToInt32(f_proxparam.fproxparam(ref param));
 
             dw_2.Border = true;
             dw_2.BorderStyle = BorderStyle.Fixed3D;
@@ -220,7 +221,7 @@ namespace Minotti.Views.Abm.Controls
             }
         }
 
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             base.ue_iniciar();
 

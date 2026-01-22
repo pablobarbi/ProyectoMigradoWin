@@ -15,7 +15,7 @@ namespace Minotti.Views.Basicos
     {
         // Controles PB
         // uo_dw dw_1
-        public uo_dw dw_1;
+        //public uo_dw dw_1;
 
         // str_w_seleccion s_w_sel
         public str_w_seleccion s_w_sel;

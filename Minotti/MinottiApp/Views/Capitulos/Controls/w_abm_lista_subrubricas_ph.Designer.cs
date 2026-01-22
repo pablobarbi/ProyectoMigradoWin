@@ -164,7 +164,7 @@ namespace Minotti.Views.Capitulos.Controls
 
         #endregion
 
-        private uo_dw dw_1;
+        //private uo_dw dw_1;
         private uo_dw dw_buscar;
 
         private System.Windows.Forms.Button cb_mas_subrubrica;

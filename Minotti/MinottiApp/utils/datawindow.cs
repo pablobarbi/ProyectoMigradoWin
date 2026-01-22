@@ -1,7 +1,9 @@
 ﻿using Minotti.Data;
+using Minotti.Metadata;
 using Minotti.Structures;
 using Minotti.Views.Basicos.Controls;
 using Minotti.Views.Reportes.Controls;
+using MinottiApp.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -475,30 +477,48 @@ namespace Minotti.utils
         // ======= API PB-like (stubs + algunos básicos) =======
 
         // PB: Describe("DataWindow.Column.Count") etc.
-        public virtual string Describe(string expr)
+        public virtual string DescribeOld(string expr)
         {
             if (string.IsNullOrWhiteSpace(expr))
                 return string.Empty;
 
             expr = expr.Trim();
 
-            // PB: Describe("#1.Name") => nombre de la 1ra columna del DataWindow
+            // ========= 1) PB: "#N.Name" =========
             if (expr.StartsWith("#", StringComparison.Ordinal))
             {
-                // formatos usados en tu código: "#1.Name", "#2.Name", "#3.Name"
                 int dot = expr.IndexOf('.', 1);
                 if (dot > 1)
                 {
                     var numPart = expr.Substring(1, dot - 1);
                     if (int.TryParse(numPart, out int n))
                     {
-                        // Solo soportamos ".Name" porque es lo que usan tus SRW en menús
-                        var suffix = expr.Substring(dot).Trim(); // ".Name"
+                        string suffix = expr.Substring(dot).Trim(); // ".Name"
+                        EnsurePrimaryTable();
+                        if (_primary == null) return string.Empty;
+
                         if (suffix.Equals(".Name", StringComparison.OrdinalIgnoreCase))
                         {
-                            EnsurePrimaryTable();
-                            if (_primary != null && n >= 1 && n <= _primary.Columns.Count)
-                                return _primary.Columns[n - 1].ColumnName; // PB es 1-based
+                            if (n >= 1 && n <= _primary.Columns.Count)
+                                return _primary.Columns[n - 1].ColumnName;
+                        }
+
+                        if (suffix.Equals(".ColType", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (n >= 1 && n <= _primary.Columns.Count)
+                                return _primary.Columns[n - 1].DataType.Name;
+                        }
+
+                        if (suffix.Equals(".TabSequence", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // PB devuelve número → por ahora devolver index
+                            return n.ToString();
+                        }
+
+                        if (suffix.Equals(".Visible", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // asumimos todo visible
+                            return "1";
                         }
                     }
                 }
@@ -506,9 +526,275 @@ namespace Minotti.utils
                 return string.Empty;
             }
 
-            // si te piden otra cosa, devolvemos el expr tal cual (sin inventar reglas)
-            return expr;
+            // ========= 2) DataWindow.Column.Count =========
+            if (expr.Equals("DataWindow.Column.Count", StringComparison.OrdinalIgnoreCase))
+            {
+                EnsurePrimaryTable();
+                return _primary?.Columns.Count.ToString() ?? "0";
+            }
+
+            // ========= 3) DataWindow.Processing =========
+            // PB usa 0,1,2,3,4 (dw tabular/grid/group/etc.)
+            if (expr.Equals("DataWindow.Processing", StringComparison.OrdinalIgnoreCase))
+            {
+                return "0"; // tabular por defecto
+            }
+
+            // ========= fallback =========
+            return string.Empty;
         }
+
+        public virtual string Describe(string expr)
+        {
+            if (string.IsNullOrWhiteSpace(expr))
+                return string.Empty;
+
+            expr = expr.Trim();
+
+            // =========================================================
+            // Metadata (solo si existe)
+            // =========================================================
+            IDataWindowMetadata? meta = null;
+            List<DataWindowColumn>? metaCols = null;
+
+            if (!string.IsNullOrWhiteSpace(this.DataObject) &&
+                MetadataFactory.Exists(this.DataObject))
+            {
+                meta = MetadataFactory.Get(this.DataObject);
+                metaCols = meta?.Columns;
+            }
+
+            // Helper: obtener SQL del metadata (sql / SQL / Sql)
+            string GetMetadataSql()
+            {
+                if (meta == null) return string.Empty;
+
+                var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase;
+                var prop = meta.GetType()
+                               .GetProperties(flags)
+                               .FirstOrDefault(p =>
+                                   p.Name.Equals("sql", StringComparison.OrdinalIgnoreCase));
+
+                return prop?.GetValue(meta) as string ?? string.Empty;
+            }
+
+            // =========================================================
+            // 1) PB: "#N.*"
+            // =========================================================
+            if (expr.StartsWith("#", StringComparison.Ordinal))
+            {
+                int dot = expr.IndexOf('.', 1);
+                if (dot > 1 && int.TryParse(expr.Substring(1, dot - 1), out int n))
+                {
+                    string suffix = expr.Substring(dot).Trim();
+                    int idx = n - 1;
+
+                    // Prefer metadata
+                    if (metaCols != null && idx >= 0 && idx < metaCols.Count)
+                    {
+                        var c = metaCols[idx];
+
+                        if (suffix.Equals(".Name", StringComparison.OrdinalIgnoreCase))
+                            return c.Nombre ?? string.Empty;
+
+                        if (suffix.Equals(".ColType", StringComparison.OrdinalIgnoreCase))
+                            return c.Tipo ?? string.Empty;
+
+                        if (suffix.Equals(".TabSequence", StringComparison.OrdinalIgnoreCase))
+                            return (c.TabOrder ?? n).ToString();
+
+                        if (suffix.Equals(".Visible", StringComparison.OrdinalIgnoreCase))
+                            return "1";
+
+                        if (suffix.Equals(".Key", StringComparison.OrdinalIgnoreCase))
+                            return (c.EsClave || c.EsClavePrimaria) ? "YES" : "NO";
+
+                        if (suffix.Equals(".Criteria.Dialog", StringComparison.OrdinalIgnoreCase))
+                            return "NO";
+
+                        if (suffix.Equals(".Edit.Style", StringComparison.OrdinalIgnoreCase))
+                            return !string.IsNullOrWhiteSpace(c.ObjetoSeleccion) ? "DDDW" : "EDIT";
+
+                        if (
+                            suffix.Equals(".Edit.Required", StringComparison.OrdinalIgnoreCase) ||
+                            suffix.Equals(".DDLB.Required", StringComparison.OrdinalIgnoreCase) ||
+                            suffix.Equals(".DDDW.Required", StringComparison.OrdinalIgnoreCase) ||
+                            suffix.Equals(".EditMask.Required", StringComparison.OrdinalIgnoreCase)
+                        )
+                            return c.EsRequerido ? "YES" : "NO";
+                    }
+
+                    // Fallback a DataTable
+                    EnsurePrimaryTable();
+                    if (_primary != null && idx >= 0 && idx < _primary.Columns.Count)
+                    {
+                        if (suffix.Equals(".Name", StringComparison.OrdinalIgnoreCase))
+                            return _primary.Columns[idx].ColumnName;
+
+                        if (suffix.Equals(".ColType", StringComparison.OrdinalIgnoreCase))
+                            return _primary.Columns[idx].DataType.Name;
+
+                        if (suffix.Equals(".TabSequence", StringComparison.OrdinalIgnoreCase))
+                            return n.ToString();
+
+                        if (suffix.Equals(".Visible", StringComparison.OrdinalIgnoreCase))
+                            return "1";
+                    }
+                }
+
+                return string.Empty;
+            }
+
+            // =========================================================
+            // 2) DataWindow.Column.Count
+            // =========================================================
+            if (expr.Equals("DataWindow.Column.Count", StringComparison.OrdinalIgnoreCase))
+            {
+                if (metaCols != null)
+                    return metaCols.Count.ToString();
+
+                EnsurePrimaryTable();
+                return _primary?.Columns.Count.ToString() ?? "0";
+            }
+
+            // =========================================================
+            // 3) DataWindow.Objects
+            // =========================================================
+            if (expr.Equals("DataWindow.Objects", StringComparison.OrdinalIgnoreCase))
+            {
+                if (meta == null)
+                    return string.Empty;
+
+                var objs = new List<string>();
+
+                if (metaCols != null)
+                    objs.AddRange(metaCols
+                        .Where(c => !string.IsNullOrWhiteSpace(c.Nombre))
+                        .Select(c => c.Nombre));
+
+                if (meta.Estilos?.Length > 0) objs.Add("xx_estilos_edicion");
+                if (meta.SeleccionFila?.Length > 0) objs.Add("xx_recuperar_fk");
+                if (!string.IsNullOrWhiteSpace(meta.Operaciones)) objs.Add("xx_operaciones");
+                if (meta.UsaUsuario) objs.Add("usr_upd");
+                if (meta.UsaFecha) objs.Add("fec_upd");
+
+                return string.Join("\t", objs);
+            }
+
+            // =========================================================
+            // 4) <col>_t.Text
+            // =========================================================
+            if (expr.EndsWith("_t.Text", StringComparison.OrdinalIgnoreCase))
+            {
+                if (metaCols == null) return string.Empty;
+
+                string colName = expr[..^"_t.Text".Length];
+                return metaCols.FirstOrDefault(c =>
+                           string.Equals(c.Nombre, colName, StringComparison.OrdinalIgnoreCase))
+                       ?.Titulo ?? string.Empty;
+            }
+
+            // =========================================================
+            // 5) xx_*.Text
+            // =========================================================
+            if (expr.EndsWith(".Text", StringComparison.OrdinalIgnoreCase) && meta != null)
+            {
+                string obj = expr[..^".Text".Length];
+
+                if (obj.Equals("xx_estilos_edicion", StringComparison.OrdinalIgnoreCase))
+                    return meta.Estilos != null ? string.Join(",", meta.Estilos) : string.Empty;
+
+                if (obj.Equals("xx_recuperar_fk", StringComparison.OrdinalIgnoreCase))
+                    return meta.SeleccionFila != null ? string.Join(",", meta.SeleccionFila) : string.Empty;
+
+                if (obj.Equals("xx_operaciones", StringComparison.OrdinalIgnoreCase))
+                    return meta.Operaciones ?? string.Empty;
+            }
+
+            // =========================================================
+            // 6) DataWindow.Table.*
+            // =========================================================
+            if (
+                expr.Equals("DataWindow.Table.Retrieve", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.Table.SQL", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.Table.Sql", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.Table.SqlSelect", StringComparison.OrdinalIgnoreCase)
+            )
+                return GetMetadataSql();
+
+            if (expr.Equals("DataWindow.Table.Sort", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+
+            // =========================================================
+            // 7) Layout / Scroll / Heights
+            // =========================================================
+            if (
+                expr.Equals("DataWindow.VerticalScrollMaximum", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.HorizontalScrollMaximum", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.HorizontoalScrollMaximum", StringComparison.OrdinalIgnoreCase)
+            )
+                return "0";
+
+            if (
+                expr.Equals("DataWindow.Header.Height", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.Summary.Height", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.Footer.Height", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.Detail.Height", StringComparison.OrdinalIgnoreCase)
+            )
+                return "0";
+
+            if (expr.Equals("DataWindow.FirstRowOnPage", StringComparison.OrdinalIgnoreCase))
+                return "1";
+
+            // =========================================================
+            // 8) Processing
+            // =========================================================
+            if (expr.Equals("DataWindow.Processing", StringComparison.OrdinalIgnoreCase))
+                return "0";
+
+            // =========================================================
+            // 9) Print (PB-like defaults)
+            // =========================================================
+            if (expr.Equals("DataWindow.Print.DocumentName", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+
+            if (expr.Equals("DataWindow.Printer", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+
+            if (expr.Equals("DataWindow.Print.Collate", StringComparison.OrdinalIgnoreCase))
+                return "NO";
+
+            if (expr.Equals("DataWindow.Print.Page.Range", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+
+            if (expr.Equals("DataWindow.Print.Page.RangeInclude", StringComparison.OrdinalIgnoreCase))
+                return "A";
+
+            if (
+                expr.Equals("DataWindow.Print.Margin.Top", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.Print.Margin.Bottom", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.Print.Margin.Left", StringComparison.OrdinalIgnoreCase) ||
+                expr.Equals("DataWindow.Print.Margin.Right", StringComparison.OrdinalIgnoreCase)
+            )
+                return "0";
+
+            // =========================================================
+            // fallback PB
+            // =========================================================
+            return string.Empty;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
         // PB: Modify("col.Border = '5'")
         public virtual int Modify(string expression)
@@ -614,19 +900,57 @@ namespace Minotti.utils
         // PB: Retrieve(...)
         public virtual int Retrieve(params object?[] args)
         {
-            // Stub: el retrieve real depende de tu motor (SQLCA).
-            // Mantengo eventos y retorno típico.
             RetrieveStart?.Invoke();
 
-            // No invento SQL: si no hay tabla, queda vacío
+            // 1) Asegurar estructura
             EnsurePrimaryTable();
             _primary!.Clear();
 
-         
+            // =========================================================
+            // 2) Obtener SQL del DataWindow (orden PB real)
+            //    1. DataWindow.Table.Retrieve   (SRD retrieve="")
+            //    2. DataWindow.Table.SQL
+            //    3. DataWindow.Table.SqlSelect
+            // =========================================================
+            string sql = Describe("DataWindow.Table.Retrieve");
+
+            if (string.IsNullOrWhiteSpace(sql) || sql == "?")
+            {
+                sql = Describe("DataWindow.Table.SQL");
+            }
+
+            if (string.IsNullOrWhiteSpace(sql) || sql == "?")
+            {
+                sql = Describe("DataWindow.Table.SqlSelect");
+            }
+
+            // Si no hay SQL, PB no rompe: devuelve 0 filas
+            if (string.IsNullOrWhiteSpace(sql))
+            {
+                RetrieveEnd?.Invoke();
+                return 0;
+            }
+
+            // =========================================================
+            // 3) Ejecutar contra SQLCA
+            // =========================================================
+            var dt = SQLCA.ExecuteDataTable(sql, args);
+
+            // =========================================================
+            // 4) Cargar filas en el Primary buffer
+            // =========================================================
+            foreach (DataRow row in dt.Rows)
+            {
+                _primary.ImportRow(row);
+            }
+
             RetrieveEnd?.Invoke();
             TriggerRowFocusChanged();
+
             return RowCount();
         }
+
+
 
         // PB: GetItemString/Number/Decimal/Date/DateTime/Time
         public virtual string GetItemString(long row, int column)

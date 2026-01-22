@@ -10,6 +10,8 @@ namespace Minotti
     public static class guo_app
     {
         public static uo_app Instance { get; private set; } = null!;
+        public static application? App => Instance?.App;
+
 
         public static void Attach(uo_app app)
         {

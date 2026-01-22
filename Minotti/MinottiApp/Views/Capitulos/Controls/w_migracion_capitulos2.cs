@@ -71,7 +71,7 @@ namespace Minotti.Views.Capitulos.Controls
         // =====================================================
         // PB: event ue_iniciar
         // =====================================================
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             base.ue_iniciar();
             ue_cargar_nivel(0);

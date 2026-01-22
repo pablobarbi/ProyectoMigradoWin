@@ -86,8 +86,50 @@ namespace Minotti.utils
                 return 0;
 
             return col.Count;
-        } 
-       
+        }
+
+        public static Type? BuscarTipoFormulario(string objeto)
+        {
+            string[] posiblesNamespaces = new[]
+            {
+        "Minotti.Views.Abm",
+        "Minotti.Views.Accesos",
+        "Minotti.Views.Basicos",
+        "Minotti.Views.Capitulos",
+        "Minotti.Views.conect_anywhere",
+        "Minotti.Views.Informes",
+        "Minotti.Views.Menues",
+        "Minotti.Views.Migracion",
+        "Minotti.Views.Pacientes",
+        "Minotti.Views.Pbl",
+        "Minotti.Views.Repertorizaciones",
+        "Minotti.Views.Reportes",
+    };
+
+            foreach (var ns in posiblesNamespaces)
+            {
+                var tipo = Type.GetType($"{ns}.Controls.{objeto}")
+                         ?? Type.GetType($"{ns}.{objeto}");
+
+                if (tipo != null)
+                    return tipo;
+            }
+
+            return null;
+        }
+
+        public static int ToInt32PB(object value)
+        {
+            if (value == null)
+                return 0;
+
+            var s = value.ToString().Trim();
+            if (s == string.Empty)
+                return 0;
+
+            return int.TryParse(s, out var i) ? i : 0;
+        }
+
     }
 }
 

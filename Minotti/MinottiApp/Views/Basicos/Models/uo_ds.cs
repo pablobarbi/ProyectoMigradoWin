@@ -117,7 +117,7 @@ namespace Minotti.Views.Basicos.Models
             {
                 // f_cortar_string: mismo contrato que PB: 
                 // toma el primer token hasta delimitador y recorta param.
-                string sAux = f_cortar_string.fcortar_string(param, "\t");
+                string sAux = f_cortar_string.fcortar_string(ref param, "\t");
 
                 // Si existe un objeto llamado "usr_upd", se registra usuario
                 if (sAux == "usr_upd")

@@ -504,7 +504,7 @@ namespace Minotti.Views.Menues.Controls
             if (puede_ejecutar)
             {
                 sAux = Convert.ToString(lvi_Actual.Data);
-                Modulo = f_cortar_string.fcortar_string(sAux, "-");
+                Modulo = f_cortar_string.fcortar_string(ref sAux, "-");
                 Operacion = sAux;
 
                 // Parent.Event Post ue_descripcion(Modulo, Operacion)
@@ -532,13 +532,13 @@ namespace Minotti.Views.Menues.Controls
             {
                 // tag.Data = "modulo*****submodulo"
                 var s = tag.Data?.ToString() ?? "";
-                modulo = f_cortar_string.fcortar_string(s, "*****");
+                modulo = f_cortar_string.fcortar_string(ref s, "*****");
             }
             else
             {
                 // fallback: intentá cortarlo directo del Text
                 var s = tv_1.SelectedNode.Text;
-                modulo = f_cortar_string.fcortar_string(s, " - ");
+                modulo = f_cortar_string.fcortar_string(ref s, " - ");
             }
 
             if (string.IsNullOrEmpty(modulo) || string.IsNullOrEmpty(operacion))

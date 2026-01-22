@@ -62,7 +62,7 @@ namespace Minotti.Views.Capitulos.Controls
 
         #endregion
 
-        private uo_dw dw_1;
+        //private uo_dw dw_1;
         private uo_dw dw_2;
         private uo_dw dw_3;
     }

@@ -226,7 +226,7 @@ namespace Minotti.Views.Repertorizaciones.Controls
         }
 
         // PB: event ue_iniciar; call super::ue_iniciar; wf_armar_sintomas()
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             base.ue_iniciar();
             wf_armar_sintomas();

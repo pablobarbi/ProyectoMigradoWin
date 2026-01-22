@@ -386,7 +386,7 @@ namespace Minotti.Views.Basicos
             return false;
         }
 
-        public int wf_abrir_detalle(cat_operacion at_det)
+        public int wf_abrir_detalleOld(cat_operacion at_det)
         {
             // PB:
             // w_operacion wAux
@@ -406,6 +406,47 @@ namespace Minotti.Views.Basicos
 
             return retorno;
         }
+
+
+
+        public virtual int wf_abrir_detalle(cat_operacion at_op)
+        {
+            string objeto = at_op.uof_getobjeto(); // ← Esto te da el nombre: "w_reperto_capitulos", etc.
+
+            // Buscá el tipo (debe estar en el mismo ensamblado, o dar el namespace completo)
+            //Type? tipoFormulario = Type.GetType($"Minotti.Views.{objeto}") // adaptá el namespace si hace falta
+            //                      ?? Type.GetType($"Minotti.Views.Repertorizaciones.Controls.{objeto}")
+            //                      ?? Type.GetType($"Minotti.Views.ABM.Controls.{objeto}")
+            //                      ?? Type.GetType($"Minotti.Views.Pbl.Views.{objeto}");
+
+
+            Type? tipoFormulario = PBUtils.BuscarTipoFormulario(objeto);
+            if (tipoFormulario == null)
+            {
+                MessageBox.Show($"No se encontró el formulario '{objeto}'.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return -1;
+            }
+
+            // Instanciá y casteá como formulario
+            if (Activator.CreateInstance(tipoFormulario) is not Form form)
+            {
+                MessageBox.Show($"Error al crear instancia del formulario '{objeto}'.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return -2;
+            }
+
+            // Pasá el cat_operacion
+            if (form is IFormularioConOperacion formConOperacion)
+            {
+                formConOperacion.Operacion = at_op;
+            }
+
+            // Abrí como sheet (modo MDI)
+            form.MdiParent = this.MdiParent;
+            form.Show();
+
+            return 1;
+        }
+
 
         // =====================================================
         // Mapeo de eventos de WinForms a lógica PB

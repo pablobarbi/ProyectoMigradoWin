@@ -17,7 +17,7 @@
 		<Compile Remove="DataWindows\**" />
 		<Compile Remove="Loaders\**" />
 		<Compile Remove="Menus\**" />
-		<Compile Remove="Metadata\**" />
+		<Compile Remove="Metadata\Generated - Copy\**" />
 		<Compile Remove="Models\**" />
 		<Compile Remove="PowerBuilderMeta\**" />
 		<Compile Remove="Reports\**" />
@@ -35,7 +35,7 @@
 		<EmbeddedResource Remove="DataWindows\**" />
 		<EmbeddedResource Remove="Loaders\**" />
 		<EmbeddedResource Remove="Menus\**" />
-		<EmbeddedResource Remove="Metadata\**" />
+		<EmbeddedResource Remove="Metadata\Generated - Copy\**" />
 		<EmbeddedResource Remove="Models\**" />
 		<EmbeddedResource Remove="PowerBuilderMeta\**" />
 		<EmbeddedResource Remove="Reports\**" />
@@ -53,7 +53,7 @@
 		<None Remove="DataWindows\**" />
 		<None Remove="Loaders\**" />
 		<None Remove="Menus\**" />
-		<None Remove="Metadata\**" />
+		<None Remove="Metadata\Generated - Copy\**" />
 		<None Remove="Models\**" />
 		<None Remove="PowerBuilderMeta\**" />
 		<None Remove="Reports\**" />

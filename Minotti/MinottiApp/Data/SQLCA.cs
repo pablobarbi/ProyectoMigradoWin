@@ -233,35 +233,51 @@ namespace Minotti.Data
 
             configure?.Invoke(cmd);
 
+            var dt = new DataTable();
+
             try
             {
                 if (Connection!.State != ConnectionState.Open)
                     Connection.Open();
 
+                using var adapter = new OdbcDataAdapter(cmd);
+                adapter.Fill(dt);
+
                 SqlCode = 0;
                 SqlErrText = null;
-
-                var dt = new DataTable();
-                using (var adapter = new OdbcDataAdapter(cmd))
-                {
-                    adapter.Fill(dt);
-                }
-
-                return dt;
             }
             catch (OdbcException ex)
             {
+                // ===============================
+                // PB behavior:
+                // - NO lanzar excepción
+                // - devolver DataTable vacío
+                // ===============================
                 SqlCode = ex.ErrorCode;
                 SqlErrText = ex.Message;
-                throw;
+
+                dt.Clear();
+
+                // traza silenciosa (no UI)
+                System.Diagnostics.Debug.WriteLine(
+                    $"[SQLCA] ExecuteDataTable OdbcException: {ex.Message}"
+                );
             }
             catch (Exception ex)
             {
                 SqlCode = -1;
                 SqlErrText = ex.Message;
-                throw;
+
+                dt.Clear();
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"[SQLCA] ExecuteDataTable Exception: {ex.Message}"
+                );
             }
+
+            return dt;
         }
+
 
         public static DataTable ExecuteDataTable(string sql, params OdbcParameter[] parameters)
         {
@@ -283,11 +299,42 @@ namespace Minotti.Data
         {
             if (cmd == null) throw new ArgumentNullException(nameof(cmd));
 
-            using var da = new OdbcDataAdapter(cmd);
             var dt = new DataTable();
-            da.Fill(dt);
+
+            try
+            {
+                using var da = new OdbcDataAdapter(cmd);
+                da.Fill(dt);
+
+                SqlCode = 0;
+                SqlErrText = null;
+            }
+            catch (OdbcException ex)
+            {
+                SqlCode = ex.ErrorCode;
+                SqlErrText = ex.Message;
+
+                dt.Clear();
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"[SQLCA] ExecuteDataTable(cmd) OdbcException: {ex.Message}"
+                );
+            }
+            catch (Exception ex)
+            {
+                SqlCode = -1;
+                SqlErrText = ex.Message;
+
+                dt.Clear();
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"[SQLCA] ExecuteDataTable(cmd) Exception: {ex.Message}"
+                );
+            }
+
             return dt;
         }
+
 
         // Atajo para queries sin params
         public static DataTable ExecuteDataTable(string sql)
@@ -302,8 +349,10 @@ namespace Minotti.Data
             using var cmd = CreateCommand(sql);
             foreach (var v in values)
                 AddParam(cmd, v);
+
             return ExecuteDataTable(cmd);
         }
+
 
         // ===================== NON QUERY (Insert/Update/Delete) =====================
 

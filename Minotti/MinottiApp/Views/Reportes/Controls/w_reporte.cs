@@ -1,4 +1,5 @@
 using Minotti.Data;
+using Minotti.Functions;
 using Minotti.utils;
 using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Controls;
@@ -133,7 +134,7 @@ namespace Minotti.Views.Reportes.Controls
         // =========================
         // event ue_iniciar
         // =========================
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             base.ue_iniciar();
 
@@ -178,7 +179,7 @@ namespace Minotti.Views.Reportes.Controls
                 //OpenUserObject(dw_param, wf_proxparam(param));
                 //dw_param.uof_setdataobject(wf_proxparam(param));
                 //dw_param.SetTransObject(SQLCA.Instance); 
-                dataObject = wf_proxparam(param);
+                dataObject = f_proxparam.fproxparam(ref param);
                 dw_param = new uo_dw();
                 dw_param.uof_setdataobject(dataObject);
                 dw_param.SetTransObject(SQLCA.Instance);
@@ -191,7 +192,7 @@ namespace Minotti.Views.Reportes.Controls
             }
 
             //OpenUserObject(dw_reporte, wf_proxparam(param));
-            dataObject = wf_proxparam(param);
+            dataObject = f_proxparam.fproxparam(ref param);
 
             dw_reporte = new uo_dw();
             dw_reporte.uof_setdataobject(dataObject);
@@ -204,9 +205,9 @@ namespace Minotti.Views.Reportes.Controls
             this.Controls.Add(dw_reporte);
             this.Controls.SetChildIndex(dw_reporte, 0); // opcional: posición visual
 
-            dw_reporte.uof_setdataobject(wf_proxparam(param));
+            dw_reporte.uof_setdataobject(f_proxparam.fproxparam(ref param));
             dw_reporte.SetTransObject(SQLCA.Instance);
-            dw_reporte.uof_setdwimpresion(wf_proxparam(param));
+            dw_reporte.uof_setdwimpresion(f_proxparam.fproxparam(ref param));
 
             dw_reporte.Border = true;
             dw_reporte.BorderStyle = BorderStyle.Fixed3D;

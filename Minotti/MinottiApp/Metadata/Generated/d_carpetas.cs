@@ -1,0 +1,136 @@
+using System;
+using System.Collections.Generic;
+using Minotti.Metadata;
+
+namespace Minotti.Metadata.Generated
+{
+    public class d_carpetas : IDataWindowMetadata
+    {
+        public string DataObject => "d_carpetas";
+
+        public List<DataWindowColumn> Columns { get; } = new()
+        {
+            new DataWindowColumn
+{
+    Nombre = "nombre",
+    DbName = "acc_carpetas.nombre",
+    Tipo = "char(8)",
+    EsClave = true,
+    UpdateWhereClause = true,
+    TabOrder = 10,
+},
+
+            new DataWindowColumn
+{
+    Nombre = "pagina",
+    DbName = "acc_carpetas.pagina",
+    Tipo = "long",
+    EsClave = true,
+    UpdateWhereClause = true,
+    TabOrder = 20,
+},
+
+            new DataWindowColumn
+{
+    Nombre = "titulo",
+    DbName = "acc_carpetas.titulo",
+    Tipo = "char(80)",
+    UpdateWhereClause = true,
+    TabOrder = 30,
+},
+
+            new DataWindowColumn
+{
+    Nombre = "objeto",
+    DbName = "acc_carpetas.objeto",
+    Tipo = "char(40)",
+    UpdateWhereClause = true,
+    TabOrder = 40,
+},
+
+            new DataWindowColumn
+{
+    Nombre = "parametros",
+    DbName = "acc_carpetas.parametros",
+    Tipo = "char(255)",
+    UpdateWhereClause = true,
+    TabOrder = 50,
+},
+
+            new DataWindowColumn
+{
+    Nombre = "bitmap",
+    DbName = "acc_carpetas.bitmap",
+    Tipo = "char(40)",
+    UpdateWhereClause = true,
+    TabOrder = 60,
+}
+        };
+
+        // PB: table.retrieve
+        public string Sql => @"SELECT dba.acc_carpetas.nombre,
+       dba.acc_carpetas.pagina,
+       dba.acc_carpetas.titulo,
+       dba.acc_carpetas.objeto,
+       dba.acc_carpetas.parametros,
+       dba.acc_carpetas.bitmap
+  FROM dba.acc_carpetas
+ WHERE dba.acc_carpetas.nombre = :carpeta
+ ORDER BY dba.acc_carpetas.pagina ASC";
+
+        // PB: table.update
+        public string Update => @"dba.acc_carpetas";
+
+        // PB: table.updatewhere (0/1)
+        public int UpdateWhere => 1;
+
+        // PB: table.updatekeyinplace (yes/no)
+        public bool UpdateKeyInPlace => false;
+
+        public string[] Estilos => Array.Empty<string>();
+        public string[] SeleccionFila => Array.Empty<string>();
+        public string Operaciones => string.Empty;
+
+        // Inferidos (conservador) por presencia de columnas técnicas
+        public bool UsaUsuario => false;
+        public bool UsaFecha => false;
+
+        // SRD completo (lossless) por si todavía no existe property en C#
+        public string SrdRaw => @"$PBExportHeader$d_carpetas.srd
+release 5;
+datawindow(units=0 timer_interval=0 color=16777215 processing=0 print.documentname="""" print.orientation = 0 print.margin.left = 110 print.margin.right = 110 print.margin.top = 97 print.margin.bottom = 97 print.paper.source = 0 print.paper.size = 0 print.prompt=no )
+header(height=77 color=""536870912"" )
+summary(height=1 color=""536870912"" )
+footer(height=1 color=""536870912"" )
+detail(height=89 color=""536870912"" )
+table(column=(type=char(8) update=yes updatewhereclause=yes key=yes name=nombre dbname=""acc_carpetas.nombre"" )
+ column=(type=long update=yes updatewhereclause=yes key=yes name=pagina dbname=""acc_carpetas.pagina"" )
+ column=(type=char(80) update=yes updatewhereclause=yes name=titulo dbname=""acc_carpetas.titulo"" )
+ column=(type=char(40) update=yes updatewhereclause=yes name=objeto dbname=""acc_carpetas.objeto"" )
+ column=(type=char(255) update=yes updatewhereclause=yes name=parametros dbname=""acc_carpetas.parametros"" )
+ column=(type=char(40) update=yes updatewhereclause=yes name=bitmap dbname=""acc_carpetas.bitmap"" )
+ retrieve=""SELECT dba.acc_carpetas.nombre,
+       dba.acc_carpetas.pagina,
+       dba.acc_carpetas.titulo,
+       dba.acc_carpetas.objeto,
+       dba.acc_carpetas.parametros,
+       dba.acc_carpetas.bitmap
+  FROM dba.acc_carpetas
+ WHERE dba.acc_carpetas.nombre = :carpeta
+ ORDER BY dba.acc_carpetas.pagina ASC
+"" update=""dba.acc_carpetas"" updatewhere=1 updatekeyinplace=no arguments=((""carpeta"", string)) )
+text(band=header alignment=""2"" text=""Nombre""border=""0"" color=""0"" x=""5"" y=""4"" height=""65"" width=""247""  name=nombre_t  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+text(band=header alignment=""2"" text=""Pagina""border=""0"" color=""0"" x=""257"" y=""4"" height=""65"" width=""330""  name=pagina_t  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+text(band=header alignment=""2"" text=""Titulo""border=""0"" color=""0"" x=""590"" y=""4"" height=""65"" width=""2222""  name=titulo_t  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+text(band=header alignment=""2"" text=""Objeto""border=""0"" color=""0"" x=""2817"" y=""4"" height=""65"" width=""1125""  name=objeto_t  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+text(band=header alignment=""2"" text=""Parametros""border=""0"" color=""0"" x=""3946"" y=""4"" height=""65"" width=""2743""  name=parametros_t  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+text(band=header alignment=""2"" text=""Bitmap""border=""0"" color=""0"" x=""6693"" y=""4"" height=""65"" width=""1130""  name=bitmap_t  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+column(band=detail id=1 alignment=""0"" tabsequence=10 border=""0"" color=""0"" x=""5"" y=""4"" height=""77"" width=""247"" format=""[general]""  name=nombre edit.limit=8 edit.case=any edit.autoselect=yes edit.autohscroll=yes  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+column(band=detail id=2 alignment=""1"" tabsequence=20 border=""0"" color=""0"" x=""257"" y=""4"" height=""77"" width=""330"" format=""[general]""  name=pagina edit.limit=0 edit.case=any edit.autoselect=yes edit.autohscroll=yes  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+column(band=detail id=3 alignment=""0"" tabsequence=30 border=""0"" color=""0"" x=""590"" y=""4"" height=""77"" width=""2222"" format=""[general]""  name=titulo edit.limit=80 edit.case=any edit.autoselect=yes edit.autohscroll=yes  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+column(band=detail id=4 alignment=""0"" tabsequence=40 border=""0"" color=""0"" x=""2817"" y=""4"" height=""77"" width=""1125"" format=""[general]""  name=objeto edit.limit=40 edit.case=any edit.autoselect=yes edit.autohscroll=yes  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+column(band=detail id=5 alignment=""0"" tabsequence=50 border=""0"" color=""0"" x=""3946"" y=""4"" height=""77"" width=""2743"" format=""[general]""  name=parametros edit.limit=255 edit.case=any edit.autoselect=yes edit.autohscroll=yes  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+column(band=detail id=6 alignment=""0"" tabsequence=60 border=""0"" color=""0"" x=""6693"" y=""4"" height=""77"" width=""1130"" format=""[general]""  name=bitmap edit.limit=40 edit.case=any edit.autoselect=yes edit.autohscroll=yes  font.face=""Arial"" font.height=""-10"" font.weight=""400""  font.family=""2"" font.pitch=""2"" font.charset=""0"" background.mode=""1"" background.color=""536870912"" )
+";
+    }
+}

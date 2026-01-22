@@ -12,7 +12,7 @@ namespace Minotti.Views.Basicos
     public partial class w_ver_datos : w_response
     {
         // Controles PB
-        private uo_dw dw_1;
+        //private uo_dw dw_1;
         private str_w_seleccion s_w_sel;
         private stp_w_seleccion stp;
 
@@ -135,7 +135,7 @@ namespace Minotti.Views.Basicos
         }
 
         // ue_iniciar
-        public  override void ue_iniciar()
+        protected  override void ue_iniciar()
         {
             base.ue_iniciar();
 

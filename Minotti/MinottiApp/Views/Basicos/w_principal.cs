@@ -14,8 +14,25 @@ namespace Minotti.Views.Basicos
 
     public partial class w_principal : Form
     {
+
+        protected void EnsureDw1()
+        {
+            if (dw_1 == null)
+            {
+                dw_1 = new uo_dw
+                {
+                    Name = "dw_1",
+                    Location = new Point(12, 12),
+                    Size = new Size(1000, 500)
+                };
+                this.Controls.Add(dw_1);
+            }
+        }
+
+
+
         // PB: st_espacios s_esp
-        public  st_espacios s_esp;  /* Medidas a agregar en alto, ancho y bordes de ventanas */
+        public st_espacios s_esp;  /* Medidas a agregar en alto, ancho y bordes de ventanas */
 
         // PB: st_tamaño_minimo s_min
         public  st_tamaño_minimo s_min; /* Tamaño mínimo con el que se puede abrir la ventana */
@@ -25,6 +42,8 @@ namespace Minotti.Views.Basicos
 
         // PB: Boolean ib_acomodar = FALSE
         public  bool ib_acomodar = false; /* Indica si la ventana debe o no reacomodar los objetos en el resize */
+
+        public uo_dw dw_1;
 
         // === Helpers PB ===
         // PB: UpperBound(array)
@@ -129,7 +148,7 @@ namespace Minotti.Views.Basicos
         }
 
         // event ue_iniciar()
-        public  virtual void ue_iniciar()
+        protected  virtual void ue_iniciar()
         {
             // Implementación en hijas
         }
@@ -225,17 +244,17 @@ namespace Minotti.Views.Basicos
         // =================== wf_proxparam ===================
 
         // public function string wf_proxparam (ref string param)
-        public  string wf_proxparam(string param)
+        public  string wf_proxparamOld(string param)
         {
             /*
             Llama a esta misma función pidiendo el siguiente parámetro.
             Sirve para hacer opcional el segundo parámetro
             */
-            return wf_proxparam(param, 1);
+            return wf_proxparamOld(param, 1);
         }
 
         // public function string wf_proxparam (ref string param, integer orden_buscado)
-        public  string wf_proxparam(string param, int orden_buscado)
+        public  string wf_proxparamOld(string param, int orden_buscado)
         {
             /* Elimina los n primeros parametros del string que viene en param */
             int iFin;
@@ -275,44 +294,46 @@ namespace Minotti.Views.Basicos
         // =================== Eventos open / resize / close ===================
 
         // PB: event open
-        protected  override void OnLoad(EventArgs e)
+        protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            /* Si la ventana no tiene título, le pone el título de la aplicación */
+            // Inicializa dw_1 SOLO si es null
+            if (this.dw_1 == null)
+            {
+                this.dw_1 = new uo_dw
+                {
+                    Name = "dw_1",
+                    Location = new Point(12, 12),
+                    Size = new Size(1000, 500)
+                };
+                this.Controls.Add(dw_1);
+            }
+
             if (string.IsNullOrEmpty(this.Text))
             {
                 try
                 {
-                    // This.Title = guo_app.App.DisplayName
-                    //TODO: completar con guo_app
-                    this.Text = "TODO"; // guo_app.App.DisplayName;
+                    this.Text = guo_app.App?.DisplayName ?? "Minotti";
                 }
-                catch
-                {
-                    // Si todavía no tenés guo_app migrado, que no reviente
-                }
+                catch { }
             }
 
-            // SetPointer(HourGlass!)
             Cursor.Current = Cursors.WaitCursor;
-
-            // This.SetRedraw(FALSE)
             this.SuspendLayout();
 
-            //// This.TriggerEvent("ue_leer_parametros")
-            //this.ue_leer_parametros();
-
-            // This.TriggerEvent("ue_optar")
             this.ue_optar();
 
-            // This.TriggerEvent("ue_ajustar_tamaño")
-            this.ue_ajustar_tamaño();
+            // 🔄 Antes lo tenías mal ordenado
+            // Estás usando dw_1 antes de que exista
 
-            // This.TriggerEvent("ue_llevar_al_minimo")
+            this.ue_iniciar();               // ← ahora primero inicializa todo
+            this.ue_ajustar_tamaño();       // ← y ahora sí, dw_1 existe
+            this.ue_acomodar_objetos();
+
             this.ue_llevar_al_minimo();
+            this.ue_leer_parametros();
 
-            /* PostEvent("ue_ajustar_posicion") */
             if (ib_ajustar_posicion)
             {
                 this.BeginInvoke(new Action(() =>
@@ -326,22 +347,13 @@ namespace Minotti.Views.Basicos
 
             ib_acomodar = true;
 
-            // This.TriggerEvent("ue_acomodar_objetos")
-            this.ue_acomodar_objetos();
-
-            // This.TriggerEvent("ue_iniciar")
-            this.ue_iniciar();
-
-            // If isvalid(This) Then This.SetRedraw(TRUE)
-            if (!this.IsDisposed)
-            {
-                this.ResumeLayout(true);
-                Cursor.Current = Cursors.Default;
-            }
+            this.ResumeLayout(true);
+            Cursor.Current = Cursors.Default;
         }
 
+
         // PB: event resize
-        protected  override void OnResize(EventArgs e)
+        protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
 

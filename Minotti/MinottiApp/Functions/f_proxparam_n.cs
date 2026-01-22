@@ -30,7 +30,7 @@ namespace Minotti.Functions
             string token = string.Empty;
             for (int i = 1; i <= n; i++)
             {
-                token = Minotti.Functions.f_cortar_string.fcortar_string(s, separador);
+                token = Minotti.Functions.f_cortar_string.fcortar_string(ref s, separador);
                 if (i < n && s.Length == 0)
                 {
                     // Se agotaron los parámetros antes de llegar a N

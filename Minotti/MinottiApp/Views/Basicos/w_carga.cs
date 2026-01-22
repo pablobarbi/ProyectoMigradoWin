@@ -112,7 +112,7 @@ namespace Minotti.Views.Basicos
         // -----------------------------------------
         // PB event ue_iniciar
         // -----------------------------------------
-        public virtual void ue_iniciar()
+        protected virtual void ue_iniciar()
         {
             base.ue_iniciar();
 

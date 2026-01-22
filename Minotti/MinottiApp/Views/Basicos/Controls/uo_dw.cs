@@ -1,15 +1,16 @@
 ﻿using Minotti.Data;
+using Minotti.Metadata;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos.Menues;
 using Minotti.Views.Basicos.Models;
 using Minotti.Views.Reportes.Controls;
+using MinottiApp.Metadata;
 using MinottiApp.utils;
-using System;
+using System.Data;
 using System.Globalization;
-using System.Linq;
-using System.Windows.Forms;
 using Message = Minotti.utils.Message;
+
 
 namespace Minotti.Views.Basicos.Controls
 {
@@ -46,6 +47,10 @@ namespace Minotti.Views.Basicos.Controls
                 // PB lo usaba solo para comportamiento visual
             }
         }
+        // ===========================
+        // PB: datastore asociado al DW
+        // ===========================
+        protected datastore? ds;
 
         // ===== variables =====
         // private:
@@ -70,7 +75,8 @@ namespace Minotti.Views.Basicos.Controls
         public bool ib_avisar_primer_fila_activa = true;         /* ue_cambio_fila en primer foco */
         public bool rb_menu = false;                             /* Menú botón derecho */
 
-        public uo_app guo_app = new uo_app();
+        public uo_app guo_app => uo_app.Instance!;
+
 
         private RowFocusIndicator _rowFocusIndicator = RowFocusIndicator.None;
 
@@ -449,63 +455,91 @@ namespace Minotti.Views.Basicos.Controls
         // =====================================================================
         //  MÉTODOS uof_* / wf_*
         // =====================================================================
-
+         
         public void uof_setdataobject(string data_object)
         {
-            int iAux, jAux, campos, m;
+            int iAux, jAux = 1, campos, m;
             string param, sAux, sEstilos = "", sSeleccionFila = "", sOperacion = "", operacion_nivel;
-            bool flag_seleccionfila = false, flag_operacion = true;
+            bool flag_seleccionfila = false;
+            bool flag_operacion = true;
 
             datawindowchild dwc;
             string[] s_arg = Array.Empty<string>();
             string[] s_tipo = Array.Empty<string>();
 
+            // ===========================
+    // 🔴 FIX: cargar SRD
+    // ===========================
+    this.ds = MetadataFactory.CreateDataStore(data_object);
+    this.DataObject = data_object;
+    this.EnsurePrimaryTable();
+
+            // Cantidad de valores iniciales guardados
             campos = guo_app.ds_valor_inicial.RowCount();
 
-            // Carga DataObject
+            // Asigna DataObject
             this.DataObject = data_object;
 
-            // limpia dataobject impresión
+            // Limpia dataobject de impresión
             this.dw_impresion = "";
 
+            // Reset flags y layout
             flag_estilos_en_dw = false;
             sangria = 1000;
             ancho = 0;
             ib_registrar_usuario = false;
 
-            // Recorre objetos
+            // ============================
+            // Recorre objetos del DataWindow
+            // ============================
             param = this.Describe("DataWindow.Objects");
+
             while (Len(param) > 0)
             {
-                sAux = f_cortar_string(param, "~t");
+                sAux = f_cortar_string(ref param, "~t");
 
+                // xx_estilos_edicion
                 if (sAux == "xx_estilos_edicion")
                 {
                     flag_estilos_en_dw = true;
                     sEstilos = Lower(this.Describe(sAux + ".Text"));
                 }
 
+                // Visible -> sangría
                 if (this.Describe(sAux + ".Visible") == "1")
                 {
                     iAux = PBInt(this.Describe(sAux + ".X"));
                     if (iAux == 0)
-                        iAux = Math.Min(PBInt(this.Describe(sAux + ".X1")), PBInt(this.Describe(sAux + ".X2")));
+                        iAux = Math.Min(
+                            PBInt(this.Describe(sAux + ".X1")),
+                            PBInt(this.Describe(sAux + ".X2"))
+                        );
+
                     sangria = Math.Min(sangria, iAux);
                 }
 
+                // Ancho
                 iAux = PBInt(this.Describe(sAux + ".X")) + PBInt(this.Describe(sAux + ".Width"));
                 if (iAux == 0)
-                    iAux = Math.Max(PBInt(this.Describe(sAux + ".X1")), PBInt(this.Describe(sAux + ".X2")));
+                    iAux = Math.Max(
+                        PBInt(this.Describe(sAux + ".X1")),
+                        PBInt(this.Describe(sAux + ".X2"))
+                    );
+
                 ancho = Math.Max(ancho, iAux);
 
-                if (sAux == "usr_upd") ib_registrar_usuario = true;
+                // usr_upd
+                if (sAux == "usr_upd")
+                    ib_registrar_usuario = true;
 
+                // xx_recuperar_fk
                 if (sAux == "xx_recuperar_fk")
                 {
                     flag_seleccionfila = true;
                     sSeleccionFila = this.Describe(sAux + ".Text");
                 }
 
+                // xx_operaciones
                 if (sAux == "xx_operaciones")
                 {
                     flag_operacion = true;
@@ -513,21 +547,30 @@ namespace Minotti.Views.Basicos.Controls
                 }
             }
 
+            // ============================
             // Columnas
+            // ============================
             int cnt = PBInt(this.Describe("DataWindow.Column.Count"));
-            if (at_col.Length < cnt + 1) Array.Resize(ref at_col, cnt + 1);
 
-            jAux = 1;
+            if (at_col.Length < cnt + 1)
+                Array.Resize(ref at_col, cnt + 1);
+
             ii_claves = Array.Empty<int>();
 
             for (iAux = 1; iAux <= cnt; iAux++)
             {
+                if (at_col[iAux] == null)
+                    at_col[iAux] = new cat_columna();
+
+
+
                 at_col[iAux].Nombre = this.Describe("#" + iAux + ".Name");
                 at_col[iAux].Titulo = this.Describe(at_col[iAux].Nombre + "_t.Text");
                 at_col[iAux].Tipo = Left(this.Describe("#" + iAux + ".Coltype"), 5);
                 at_col[iAux].TabOrder = this.Describe("#" + iAux + ".TabSequence");
 
-                at_col[iAux].Estilo = f_cortar_string(sEstilos, ",");
+                // Estilos
+                at_col[iAux].Estilo = f_cortar_string(ref sEstilos, ",");
                 if (at_col[iAux].Estilo == "")
                 {
                     if (at_col[iAux].Nombre == ust_seg.usuario || at_col[iAux].Nombre == ust_seg.fecha)
@@ -536,24 +579,32 @@ namespace Minotti.Views.Basicos.Controls
                         at_col[iAux].Estilo = "v";
                 }
 
+                // Selección fila
                 if (flag_seleccionfila)
-                    at_col[iAux].Objeto_seleccion = f_cortar_string(sSeleccionFila, ",");
+                    at_col[iAux].Objeto_seleccion = f_cortar_string(ref sSeleccionFila, ",");
 
+                // Operaciones F12
                 if (flag_operacion)
                 {
-                    operacion_nivel = f_cortar_string( sOperacion, ",");
-                    at_col[iAux].Operacion = f_cortar_string( operacion_nivel, "|");
+                    operacion_nivel = f_cortar_string(ref sOperacion, ",");
+                    at_col[iAux].Operacion = f_cortar_string(ref operacion_nivel, "|");
                     at_col[iAux].Nivel_operacion = operacion_nivel;
                 }
 
+                // Filtro
                 if (Upper(this.Describe("#" + iAux + ".Criteria.Dialog")) == "YES")
                 {
                     at_col[iAux].Filtro = true;
                     this.Modify("#" + iAux + ".Criteria.Dialog=NO");
                 }
-                else at_col[iAux].Filtro = false;
+                else
+                {
+                    at_col[iAux].Filtro = false;
+                }
 
+                // Requerido
                 at_col[iAux].Requerido = false;
+
                 switch (Upper(this.Describe("#" + iAux + ".Edit.Style")))
                 {
                     case "EDIT":
@@ -579,7 +630,6 @@ namespace Minotti.Views.Basicos.Controls
                             this.Modify("#" + iAux + ".DDDW.Required=NO");
                         }
 
-                        // Nuevo: carga DWC si tiene args
                         this.GetChild(at_col[iAux].Nombre, out dwc);
                         if (f_Get_dwc_argumentos(dwc, ref s_arg, ref s_tipo) > 0)
                             f_cargar_dwc(dwc, s_arg);
@@ -595,24 +645,42 @@ namespace Minotti.Views.Basicos.Controls
                         break;
                 }
 
+                // Claves
                 if (Upper(this.Describe("#" + iAux + ".Key")) == "YES")
                 {
-                    if (ii_claves.Length < jAux + 1) Array.Resize(ref ii_claves, jAux + 1);
+                    if (ii_claves.Length < jAux + 1)
+                        Array.Resize(ref ii_claves, jAux + 1);
+
                     ii_claves[jAux] = iAux;
                     jAux++;
                 }
 
+                // Valor inicial
                 if (campos > 0)
                 {
-                    m = guo_app.ds_valor_inicial.Find("campo = '" + at_col[iAux].Nombre + "'", 1, campos);
+                    m = guo_app.ds_valor_inicial.Find(
+                        "campo = '" + at_col[iAux].Nombre + "'",
+                        1,
+                        campos
+                    );
+
                     if (m > 0)
                     {
-                        this.Modify(at_col[iAux].Nombre + ".Initial='" +
-                                    guo_app.ds_valor_inicial.GetItemString(m, "valor_inicial") + "'");
+                        this.Modify(
+                            at_col[iAux].Nombre +
+                            ".Initial='" +
+                            guo_app.ds_valor_inicial.GetItemString(m, "valor_inicial") +
+                            "'"
+                        );
                     }
                 }
             }
         }
+
+
+
+
+
 
         public int uof_cant_parametros()
         {
@@ -988,6 +1056,15 @@ namespace Minotti.Views.Basicos.Controls
 
         public int uof_ancho(bool scroll)
         {
+            if (this.ds == null)
+                return 0;
+
+            if (string.IsNullOrEmpty(this.ds.DataObject))
+                return 0;
+
+            if (this.ds.RowCount() == 0)
+                return 0;
+
             int ancho_mdi = guo_app.uof_getmdi().WorkSpaceWidth;
 
             int iAux = ancho + sangria + 25;
@@ -1003,25 +1080,72 @@ namespace Minotti.Views.Basicos.Controls
 
         public int uof_ancho() => uof_ancho(true);
 
-        public int uof_largo()
+        public int uof_largoOld()
         {
-            int largo =
+            int largo_int =
                 PBInt(this.Describe("DataWindow.Header.Height")) +
                 PBInt(this.Describe("DataWindow.Summary.Height")) +
                 PBInt(this.Describe("DataWindow.Footer.Height")) +
                 PBInt(this.Describe("DataWindow.Detail.Height")) * this.cant_filas +
                 20;
 
-            int ancho_mdi = 0, largo_mdi = 0;
-            guo_app.uof_getmdi().wf_getareatrabajo(out ancho_mdi,out largo_mdi);
+            int ancho = 0, largo = 0;
+            guo_app.uof_getmdi().wf_getareatrabajo(out ancho,out largo);
 
             if (this.Describe("DataWindow.Processing") == "3" ||
                 this.Describe("DataWindow.Processing") == "4" ||
-                largo_mdi - 250 < largo)
-                return largo_mdi;
+                largo - 250 < largo_int)
+                return largo;
 
             return largo;
         }
+
+
+
+        public int uof_largo()
+        {
+            int ancho = 0;
+            int largo = 0;
+
+            // === PB: obtener área de trabajo MDI ===
+            // Pero en el arranque puede no existir todavía → null-safe
+            var mdi = guo_app.wMdi;
+
+            if (mdi == null)
+            {
+                // Valor por defecto MSI/PB-like
+                ancho = 1024;
+                largo = 768;
+            }
+            else
+            {
+                mdi.wf_getareatrabajo(out ancho, out largo);
+            }
+
+            // === Ajuste final según columnas / filas como PB ===
+
+            EnsurePrimaryTable();
+
+            int filas = 0;
+            if (_primary != null)
+                filas = _primary.Rows.Count;
+
+            int altoFila = 22;   // razonable PB por defecto
+            int altoBase = 120;  // padding, header, barra scroll, etc.
+
+            int altoFinal = filas * altoFila + altoBase;
+
+            // Si la ventana necesita más
+            if (altoFinal < 200)
+                altoFinal = 200;
+
+            // Si el MDI es más chico, usar el MDI
+            if (altoFinal > largo - 100)
+                altoFinal = largo - 100;
+
+            return altoFinal;
+        }
+
 
         public int uof_largo(int a_cant_filas)
         {
@@ -1213,7 +1337,7 @@ namespace Minotti.Views.Basicos.Controls
 
             while (Len(cadena) > 0)
             {
-                sAux = f_cortar_string(cadena, "~t");
+                sAux = f_cortar_string(ref cadena, "~t");
 
                 int iAux = PBInt(this.Describe(sAux + ".X")) + PBInt(this.Describe(sAux + ".Width"));
                 if (iAux == 0)
@@ -1385,7 +1509,7 @@ namespace Minotti.Views.Basicos.Controls
         private static bool KeyDown(Keys k) => (Control.ModifierKeys & k) == k;
 
         // Estas funciones son externas en tu PB, acá solo las invoco (no las invento):
-        private static string f_cortar_string(string s, string sep) => Minotti.Functions.f_cortar_string.fcortar_string(s, sep);
+        private static string f_cortar_string(ref string s, string sep) => Minotti.Functions.f_cortar_string.fcortar_string(ref s, sep);
         private static int f_Get_dw_argumentos(uo_dw dw, string[] s_arg, string[] s_tipo) => Minotti.Functions.f_get_dw_argumentos.fget_dw_argumentos(dw, ref s_arg, ref s_tipo);
         private static int f_Get_dwc_argumentos(datawindowchild dwc, ref string[] s_arg, ref string[] s_tipo) => Minotti.Functions.f_get_dw_argumentos.fget_dw_argumentos(dwc, ref s_arg, ref s_tipo);
         private static void f_fijar_parametros(string[] s_arg, ref string[] parametros) => Minotti.Functions.f_fijar_parametros.ffijar_parametros(s_arg, ref parametros);

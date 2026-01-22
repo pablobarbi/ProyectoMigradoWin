@@ -8,6 +8,7 @@ using Minotti.Views.Menues.Controls;
 using Minotti.Views.Pbl.Views;
 using MinottiApp.utils;
 using System;
+using System.Data.Odbc;
 using System.Windows.Forms;
 
 namespace Minotti
@@ -248,6 +249,49 @@ namespace Minotti
         {
             return at_usuario;
         }
+
+        public override int ue_cargar_datos_iniciales()
+        {
+            if (ds_valor_inicial == null)
+            {
+                ds_valor_inicial = new datastore();
+                ds_valor_inicial.SetTransObject(SQLCA.Instance);
+                ds_valor_inicial.DataObject = "d_valor_inicial";
+            }
+
+            try
+            {
+                ds_valor_inicial.Retrieve();
+            }
+            catch (OdbcException)
+            {
+                // PB behavior:
+                // Si la tabla no existe o no hay datos,
+                // el sistema continúa con RowCount = 0
+                ds_valor_inicial.Reset();
+            }
+            catch (Exception)
+            {
+                ds_valor_inicial.Reset();
+            }
+
+            return 1;
+        }
+
+        public override int ue_cargar_datos_invisibles()
+        {
+            if (ds_campos_invisibles == null)
+            {
+                ds_campos_invisibles = new datastore();
+                ds_campos_invisibles.SetTransObject(SQLCA.Instance);
+                ds_campos_invisibles.DataObject = "d_campos_invisibles";
+                ds_campos_invisibles.Retrieve();
+            }
+
+            return 1;
+        }
+
+
         public void uof_setusuario(cat_usuario usuario)
         {
             at_usuario = usuario ?? new cat_usuario();
@@ -292,6 +336,15 @@ namespace Minotti
 
             return 1;
         }
+
+        public override void ue_close()
+        {
+            ds_valor_inicial = null;
+            ds_campos_invisibles = null;
+            ds_param_sistema = null;
+            ds_datos_usuarios = null;
+        }
+
 
 
     }

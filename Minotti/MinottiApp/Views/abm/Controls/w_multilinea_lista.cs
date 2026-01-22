@@ -1,4 +1,5 @@
 using Minotti.Data;
+using Minotti.Functions;
 using Minotti.utils;
 using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Controls;
@@ -11,7 +12,7 @@ namespace Minotti.Views.Abm.Controls
     public partial class w_multilinea_lista : w_operacion
     {
         /* Variables */
-        public uo_dw dw_1;
+        //public uo_dw dw_1;
         public uo_seleccion uo_lista;
         public string[] is_claves;
 
@@ -86,8 +87,8 @@ namespace Minotti.Views.Abm.Controls
             ******************************************************************************/
 
             /* Cabecera */
-            OpenUserObject(dw_1, this.wf_proxparam(param));
-            dw_1.uof_setdataobject(this.wf_proxparam( param));
+            OpenUserObject(dw_1, f_proxparam.fproxparam(ref param));
+            dw_1.uof_setdataobject(f_proxparam.fproxparam(ref param));
             dw_1.SetTransObject(SQLCA.Instance);
             dw_1.cant_filas = 1;
 
@@ -96,7 +97,7 @@ namespace Minotti.Views.Abm.Controls
             uo_lista.ue_leer_parametros(param);
         }
 
-        public void ue_iniciar()
+        protected void ue_iniciar()
         {
             base.ue_iniciar();
 

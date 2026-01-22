@@ -1,4 +1,5 @@
 using Minotti.Data;
+using Minotti.Functions;
 using Minotti.utils;
 using Minotti.Views.Basicos.Controls;
 using System;
@@ -10,7 +11,7 @@ namespace Minotti.Views.Abm.Controls
     public partial class w_abm_lista : w_abm_detalle
     {
         /* Controles */
-        public uo_dw dw_1;
+        //public uo_dw dw_1;
         
         // Protected:
         protected bool flag_alta = false;
@@ -114,7 +115,7 @@ namespace Minotti.Views.Abm.Controls
         }
 
         // event ue_iniciar
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             base.ue_iniciar();
 
@@ -253,7 +254,7 @@ namespace Minotti.Views.Abm.Controls
         private static bool IsNull(object? o) => o == null;
         private static bool IsValid(object? o) => o != null;
 
-        private string wf_ProxParam(ref string param) => base.wf_proxparam(param);
+        private string wf_ProxParam(ref string param) => f_proxparam.fproxparam(ref param);
         //private void OpenUserObject(object target, string name) => base.OpenUserObject(target, name);
         //private void CloseUserObject(object target) => base.CloseUserObject(target);
 

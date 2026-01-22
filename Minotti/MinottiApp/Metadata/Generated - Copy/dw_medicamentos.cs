@@ -1,0 +1,53 @@
+using System;
+using System.Collections.Generic;
+using Minotti.Metadata;
+
+namespace Minotti.Metadata.Generated
+{
+    public class dw_medicamentos : IDataWindowMetadata
+    {
+        public string DataObject => "dw_medicamentos";
+
+        public List<DataWindowColumn> Columns => new()
+        {
+            new DataWindowColumn("medicamento", "char(10)")
+            {
+                DbName = "medicamentos.medicamento",
+                EsClave = true,
+                EsClavePrimaria = true,
+                EsIdentity = false,
+                UpdateWhereClause = true,
+                EsRequerido = false,
+                TabOrder = 32766,
+            }
+        };
+
+        // PB: table.retrieve
+        public string Sql => @"
+SELECT medicamentos.medicamento
+  FROM medicamentos
+ ORDER BY medicamentos.medicamento
+";
+
+        // Aliases (compatibilidad)
+        public string sql => Sql;
+        public string SQL => Sql;
+
+        // PB: table.update (puede venir vacío en DW read-only)
+        public string Update => @"medicamentos";
+
+        // PB: table.updatewhere (0/1)
+        public int UpdateWhere => 1;
+
+        // PB: table.updatekeyinplace (yes/no)
+        public bool UpdateKeyInPlace => false;
+
+        public string[] Estilos => Array.Empty<string>();
+        public string[] SeleccionFila => Array.Empty<string>();
+
+        public string Operaciones => string.Empty;
+
+        public bool UsaUsuario => false;
+        public bool UsaFecha => false;
+    }
+}

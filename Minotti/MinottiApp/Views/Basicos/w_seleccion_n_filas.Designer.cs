@@ -10,7 +10,7 @@ namespace Minotti.Views.Basicos
         private System.ComponentModel.IContainer components = null;
 
         // PB: uo_dw dw_1
-        private uo_dw dw_1;
+        //private uo_dw dw_1;
 
         protected  override void Dispose(bool disposing)
         {

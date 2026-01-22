@@ -95,7 +95,7 @@ namespace Minotti.Views.Capitulos.Controls
             ib_cerrar_al_grabar = false;
         }
 
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             base.ue_iniciar();
 

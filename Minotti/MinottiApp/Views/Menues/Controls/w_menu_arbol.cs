@@ -485,7 +485,7 @@ namespace Minotti.Views.Menues.Controls
 
                 // ⚠️ Si es del tipo "modulo - operacion", cortamos el módulo
                 if (padreVal.Contains(" - "))
-                    padreVal = f_cortar_string.fcortar_string(padreVal, "-");
+                    padreVal = f_cortar_string.fcortar_string(ref padreVal, "-");
 
                 padreVal = padreVal.Replace("'", "''");
                 dw.SetFilter($"{colPadre} = '{padreVal}'");

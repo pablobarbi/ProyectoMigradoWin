@@ -1,10 +1,12 @@
 using Minotti.Data;
+using Minotti.Functions;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Controls;
 using Minotti.Views.Pbl.Views;
 using System;
+using System.Drawing.Printing;
 using System.Windows.Forms;
 
 namespace Minotti.Views.Abm.Controls
@@ -12,7 +14,7 @@ namespace Minotti.Views.Abm.Controls
     public partial class w_multilinea_bak : w_operacion
     {
         /* Controles */
-        public uo_dw dw_1;
+        //public uo_dw dw_1;
         public uo_dw dw_2;
 
         public Button pb_1;
@@ -185,7 +187,7 @@ namespace Minotti.Views.Abm.Controls
                 dw_1.ResetUpdate();
         }
 
-        public void ue_iniciar()
+        protected void ue_iniciar()
         {
             base.ue_iniciar();
 
@@ -222,16 +224,16 @@ namespace Minotti.Views.Abm.Controls
                           cantidad de lineas en detalle
             ******************************************************************************/
 
-            OpenUserObject(dw_1, this.wf_proxparam(param));
-            dw_1.uof_setdataobject(this.wf_proxparam( param));
+            OpenUserObject(dw_1, f_proxparam.fproxparam(ref param));
+            dw_1.uof_setdataobject(f_proxparam.fproxparam(ref param));
             dw_1.SetTransObject(SQLCA.Instance);
 
-            OpenUserObject( dw_2, this.wf_proxparam( param));
-            dw_2.uof_setdataobject(this.wf_proxparam( param));
+            OpenUserObject( dw_2, f_proxparam.fproxparam(ref param));
+            dw_2.uof_setdataobject(f_proxparam.fproxparam(ref param));
             dw_2.SetTransObject(SQLCA.Instance);
 
-            dw_1.cant_filas = Convert.ToInt32(this.wf_proxparam(param));
-            dw_2.cant_filas = Convert.ToInt32(this.wf_proxparam(param));
+            dw_1.cant_filas = Convert.ToInt32(f_proxparam.fproxparam(ref param));
+            dw_2.cant_filas = Convert.ToInt32(f_proxparam.fproxparam(ref param));
 
             dw_1.Border = true;
             dw_1.BorderStyle = BorderStyle.Fixed3D;

@@ -1,4 +1,5 @@
 using Minotti.Data;
+using Minotti.Functions;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos;
@@ -18,7 +19,7 @@ namespace Minotti.Views.Abm.Controls
 
 
         /* Controles */
-        public uo_dw dw_1;
+        //public uo_dw dw_1;
         public st_at_det at_det = new st_at_det();
         public w_abm_detalle()
         {
@@ -87,7 +88,7 @@ namespace Minotti.Views.Abm.Controls
         }
 
         // event ue_iniciar
-        public override void ue_iniciar()
+        protected override void ue_iniciar()
         {
             base.ue_iniciar();
 
@@ -134,6 +135,8 @@ namespace Minotti.Views.Abm.Controls
                            cantidad de lineas en lista
             ******************************************************************************/
             /* Lee el nombre de la DataWindow de detalle, descartando los 3 primeros parámetros */
+
+            if (dw_1 == null) dw_1 = new uo_dw();
             OpenUserObject(dw_1, wf_ProxParam(ref param));
             dw_1.uof_setdataobject(wf_ProxParam(ref param));
             dw_1.SetTransObject(SQLCA.Instance);
@@ -261,7 +264,7 @@ namespace Minotti.Views.Abm.Controls
         }
 
         // Estas 3 normalmente existen en w_operacion; acá las dejo como “llamado”:
-        private string wf_ProxParam(ref string param) => base.wf_proxparam(param);
+        private string wf_ProxParam(ref string param) => f_proxparam.fproxparam(ref param);
         private void OpenUserObject(object target, string name) => base.OpenUserObject(target, name);
         private void CloseUserObject(object target) => base.CloseUserObject(target);
 

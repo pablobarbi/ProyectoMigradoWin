@@ -1,4 +1,5 @@
 using Minotti.Data;
+using Minotti.Functions;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos.Controls;
@@ -116,7 +117,7 @@ namespace Minotti.Views.Reportes.Controls
                 //dw_param.uof_setdataobject(wf_proxparam(ls_Param));
                 //dw_param.SetTransObject(SQLCA.Instance);
 
-                dataObject = wf_proxparam(ls_Param);
+                dataObject = f_proxparam.fproxparam(ref ls_Param);
                 dw_param = new uo_dw();
                 dw_param.uof_setdataobject(dataObject);
                 dw_param.SetTransObject(SQLCA.Instance);
@@ -131,7 +132,7 @@ namespace Minotti.Views.Reportes.Controls
             // Carga la DataWindow de datos
             //OpenUserObject(dw_reporte, wf_proxparam(ls_Param));
 
-            dataObject = wf_proxparam(ls_Param);
+            dataObject = f_proxparam.fproxparam(ref ls_Param);
 
             dw_reporte = new uo_dw();
             dw_reporte.uof_setdataobject(dataObject);
@@ -145,33 +146,33 @@ namespace Minotti.Views.Reportes.Controls
             this.Controls.SetChildIndex(dw_reporte, 0); // opcional: posición visual
 
             // Asignar a vble de instancia el dataobject de la dw que aparece por pantalla caso positivo
-            is_drcon = wf_proxparam(ls_Param);
+            is_drcon = f_proxparam.fproxparam(ref ls_Param);
             dw_reporte.uof_setdataobject(is_drcon);
             dw_reporte.SetTransObject(SQLCA.Instance);
 
             // Asignar a vble de instancia el dataobject de la dw de impresion caso positivo
-            is_dlcon = wf_proxparam(ls_Param);
+            is_dlcon = f_proxparam.fproxparam(ref ls_Param);
             dw_reporte.uof_setdwimpresion(is_dlcon);
 
             dw_reporte.Border = true;
             dw_reporte.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 
             // Lee la cantidad de líneas que va a mostrar
-            ls_Numerico = wf_proxparam( ls_Param);
+            ls_Numerico =   f_proxparam.fproxparam(ref ls_Param);
 
             if (PBUtils.IsNumber(ls_Numerico))
             {
                 dw_reporte.cant_filas = ToInt(ls_Numerico);
 
                 // luego vienen las DW opcionales sin registros
-                is_drsin = wf_proxparam(ls_Param);
-                is_dlsin = wf_proxparam(ls_Param);
+                is_drsin = f_proxparam.fproxparam(ref ls_Param);
+                is_dlsin = f_proxparam.fproxparam(ref ls_Param);
             }
             else
             {
                 // si no es número, ese param era la dw sin registros
                 is_drsin = ls_Numerico;
-                is_dlsin = wf_proxparam(ls_Param);
+                is_dlsin = f_proxparam.fproxparam(ref ls_Param);
             }
 
             // Si se debe abrir otra ventana de detalles, resalta la fila seleccionada

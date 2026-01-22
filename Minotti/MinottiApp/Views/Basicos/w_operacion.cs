@@ -1,3 +1,4 @@
+using Minotti.Data;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos;
@@ -21,6 +22,7 @@ namespace Minotti.Views.Pbl.Views
         public bool ib_actualizar_anterior = true;
         public bool ib_volver_anterior = true;
 
+       
 
         public cat_operacion Operacion
         {
@@ -271,6 +273,41 @@ namespace Minotti.Views.Pbl.Views
                 ctrl.Dispose();
             }
         }
+
+
+        protected override void ue_iniciar()
+        {
+            base.ue_iniciar();
+
+            if (dw_1 == null)
+            {
+                dw_1 = new uo_dw();
+                dw_1.Name = "dw_1";
+                dw_1.Location = new Point(12, 12);
+                dw_1.Size = new Size(1000, 500);
+                this.Controls.Add(dw_1);
+            }
+
+            // PB: usa el objeto del nivel actual (Orden)
+            if (at_op != null && at_op.uof_nivelvalido(at_op.Orden))
+            {
+                string objeto = at_op.uof_getobjeto();        // PB equiv: at_op.at_nvl[Orden].Objeto
+                string parametros = at_op.uof_getparametros(); // idem
+
+                if (!string.IsNullOrEmpty(objeto))
+                {
+                    dw_1.DataObject = objeto;
+                    dw_1.SetTransObject(SQLCA.Instance);
+
+                    if (!string.IsNullOrEmpty(parametros))
+                        dw_1.Retrieve(parametros);
+                    else
+                        dw_1.Retrieve();
+                }
+            }
+        }
+
+
 
     }
 }

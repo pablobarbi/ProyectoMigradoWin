@@ -25,7 +25,7 @@ namespace Minotti.Views.Reportes.Controls
         public Button pb_siguiente = null!;
         public Button pb_ultimo = null!;
 
-        public uo_dw dw_1 = null!;
+        //public uo_dw dw_1 = null!;
 
         protected override void Dispose(bool disposing)
         {
