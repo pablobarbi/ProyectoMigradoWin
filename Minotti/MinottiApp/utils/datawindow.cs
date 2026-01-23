@@ -662,15 +662,34 @@ namespace Minotti.utils
             // =========================================================
             if (expr.Equals("DataWindow.Objects", StringComparison.OrdinalIgnoreCase))
             {
+                // 🔴 PB-like fallback:
+                // Si NO hay metadata (TreeView, DW dinámico, etc.)
+                // NO devolvemos vacío, volvemos al comportamiento clásico
                 if (meta == null)
-                    return string.Empty;
+                {
+                    EnsurePrimaryTable();
 
+                    if (_primary == null || _primary.Columns.Count == 0)
+                        return string.Empty;
+
+                    // PB devolvía los objetos (columnas) tab-separados
+                    return string.Join(
+                        "\t",
+                        _primary.Columns
+                            .Cast<DataColumn>()
+                            .Select(c => c.ColumnName)
+                    );
+                }
+
+                // --- Metadata path (DW real con SRD migrado) ---
                 var objs = new List<string>();
 
                 if (metaCols != null)
-                    objs.AddRange(metaCols
-                        .Where(c => !string.IsNullOrWhiteSpace(c.Nombre))
-                        .Select(c => c.Nombre));
+                    objs.AddRange(
+                        metaCols
+                            .Where(c => !string.IsNullOrWhiteSpace(c.Nombre))
+                            .Select(c => c.Nombre)
+                    );
 
                 if (meta.Estilos?.Length > 0) objs.Add("xx_estilos_edicion");
                 if (meta.SeleccionFila?.Length > 0) objs.Add("xx_recuperar_fk");
@@ -680,6 +699,7 @@ namespace Minotti.utils
 
                 return string.Join("\t", objs);
             }
+
 
             // =========================================================
             // 4) <col>_t.Text

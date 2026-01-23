@@ -191,13 +191,17 @@ namespace MinottiApp.Metadata
 
         public static IDataWindowMetadata Get(string dataObject)
         {
-            if (!Exists(dataObject))
-                throw new KeyNotFoundException(
-                    $"No se encontró metadata para el DataObject '{dataObject}'."
-                );
+            if (string.IsNullOrWhiteSpace(dataObject))
+                return EmptyMetadata.Instance;
 
-            return _map[dataObject];
+            if (_map.TryGetValue(dataObject, out var meta) && meta != null)
+                return meta;
+
+            // PB-like: no existe metadata → seguimos circuito
+            return EmptyMetadata.Instance;
         }
+
+
 
 
         /// <summary>
@@ -226,6 +230,7 @@ namespace MinottiApp.Metadata
 
             return _map.ContainsKey(dataObject);
         }
+
 
     }
 }

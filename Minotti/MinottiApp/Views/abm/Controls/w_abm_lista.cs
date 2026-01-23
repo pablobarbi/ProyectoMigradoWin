@@ -19,7 +19,7 @@ namespace Minotti.Views.Abm.Controls
         public w_abm_lista()
         {
             InitializeComponent();
-            
+            //this.Visible = false;   // 👈 clave
         }
 
         // event activate

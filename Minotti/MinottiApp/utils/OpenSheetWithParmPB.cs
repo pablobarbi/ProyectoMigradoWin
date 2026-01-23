@@ -1,5 +1,6 @@
 ﻿using Minotti;
 using Minotti.utils;
+using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Models;
 using Minotti.Views.Pbl.Views;
 using System;
@@ -47,46 +48,55 @@ namespace MinottiApp.utils
                 // PB: Message.PowerObjectParm = parm
                 MessagePB.PowerObjectParm = parm;
 
-                // Instancio la ventana
+                // Validaciones
                 if (objeto == null)
                     return -1;
 
                 if (!typeof(Form).IsAssignableFrom(objeto))
                     return -1;
 
+                // Instanciar la ventana
                 var frm = (Form?)Activator.CreateInstance(objeto);
                 if (frm == null)
                     return -1;
 
-                // Si hay MDI, lo cuelgo como hijo (PB OpenSheet)
+                // Asignar MDI Parent (PB OpenSheet)
                 if (mdi != null)
                 {
-                    // En PB es sheet, en WinForms: MdiParent
                     frm.MdiParent = mdi;
                 }
 
-                // Si tu framework PB-migrado tiene un "open" o "ue_leer_parametros",
-                // NO lo asumo: cada Form lo puede disparar en Load/Shown.
+                // Mostrar el formulario
                 frm.Show();
+
+                // 🔴 AVISO CLAVE: mostrar MDI Client cuando se abre un sheet
+                if (mdi is w_principal wp)
+                {
+                    wp.ShowMdiClient();
+                }
 
                 return 1;
             }
             catch (Exception ex)
             {
-                // Si querés comportamiento PB: MessageBox y -1
-                MessageBoxPB.MessageBox("Error", ex.Message, MessageBoxIcon.Error, MessageBoxButtons.OK);
+                MessageBoxPB.MessageBox(
+                    "Error",
+                    ex.Message,
+                    MessageBoxIcon.Error,
+                    MessageBoxButtons.OK);
+
                 return -1;
             }
         }
 
 
         public static int OpenSheetWithParm(
-    object? wAux,
-    object? parm,
-    string objeto,
-    Form? mdi,
-    object? menuColgar,
-    PBOpenMode mode)
+            object? wAux,
+            object? parm,
+            string objeto,
+            Form? mdi,
+            object? menuColgar,
+            PBOpenMode mode)
         {
             if (string.IsNullOrWhiteSpace(objeto))
                 return -1;
@@ -94,14 +104,15 @@ namespace MinottiApp.utils
             // 1) Resolver Type por nombre (busca en todos los assemblies cargados)
             Type? t = ResolveTypeByName(objeto);
 
-            // 2) Si no encontró, intentar con namespace típico del proyecto (ajustalo si tuyo difiere)
+            // 2) Fallback por namespace típico del proyecto
             if (t == null && !objeto.Contains("."))
-                t = ResolveTypeByName("Minotti.Views." + objeto) ?? ResolveTypeByName("Minotti." + objeto);
+                t = ResolveTypeByName("Minotti.Views." + objeto)
+                    ?? ResolveTypeByName("Minotti." + objeto);
 
             if (t == null)
                 return -1;
 
-            // Reusar la implementación existente
+            // Reusar implementación principal
             return OpenSheetWithParm(wAux, parm, t, mdi, menuColgar, mode);
         }
 
@@ -128,8 +139,6 @@ namespace MinottiApp.utils
 
         private static Type? ResolveTypeByName(string typeName)
         {
-            // Si viene como "w_algo" y el type está como "Minotti.Views....w_algo"
-            // buscamos por Name y por FullName
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
                 Type? t = asm.GetType(typeName, throwOnError: false, ignoreCase: true);
@@ -140,32 +149,31 @@ namespace MinottiApp.utils
                     t = asm.GetTypes().FirstOrDefault(x =>
                         string.Equals(x.Name, typeName, StringComparison.OrdinalIgnoreCase) ||
                         string.Equals(x.FullName, typeName, StringComparison.OrdinalIgnoreCase));
+
                     if (t != null) return t;
                 }
                 catch
                 {
-                    // algunos assemblies pueden fallar en GetTypes()
+                    // Algunos assemblies pueden fallar en GetTypes()
                 }
             }
+
             return null;
         }
 
 
-
         public static int OpenSheetWithParm<TForm>(
-    TForm form,
-    object parametro,
-    string titulo,
-    Form mdiParent,
-    int colgar,
-    PBOpenMode modo
-) where TForm : Form
+            TForm form,
+            object parametro,
+            string titulo,
+            Form mdiParent,
+            int colgar,
+            PBOpenMode modo
+        ) where TForm : Form
         {
-            // Intenta setear PowerObjectParm, at_op o lo que sea
+            // Seteo de parámetros PB-like
             if (form is w_operacion wop && parametro is cat_operacion op)
                 wop.at_op = op;
-
-            // También podés usar interfaz común si hay más formularios
             else if (form is IFormularioConOperacion conOp && parametro is cat_operacion op2)
                 conOp.Operacion = op2;
 
@@ -173,12 +181,17 @@ namespace MinottiApp.utils
             form.Text = titulo;
 
             form.Show();
+
+            // 🔴 AVISO CLAVE: mostrar MDI Client
+            if (mdiParent is w_principal wp)
+            {
+                wp.ShowMdiClient();
+            }
+
             return 1;
         }
-
-
-
     }
+
 
 
     public static class PBWindow

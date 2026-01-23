@@ -1,4 +1,4 @@
-using Minotti.Data;
+Ôªøusing Minotti.Data;
 using Minotti.utils;
 using Minotti.Views.Basicos.Controls;
 using Minotti.Views.Pbl.Views;
@@ -22,10 +22,15 @@ namespace Minotti.Views.Abm.Controls
         public w_abm_lista_seleccion()
         {
             InitializeComponent();
-
+            //this.Visible = false;   // üëà clave
             // PB create/destroy lo resolvemos con eventos WinForms sin duplicar Dispose.
             this.Load += (_, __) => OnCreatePB();
-            this.FormClosing += (_, __) => close(); // ya tenÌas close()
+            this.FormClosing += (_, __) => close(); // ya ten√≠as close()
+            this.Shown += (s, e) =>
+            {
+                this.WindowState = FormWindowState.Maximized;
+                this.Visible = true;
+            };
         }
 
         private void OnCreatePB()
@@ -40,6 +45,18 @@ namespace Minotti.Views.Abm.Controls
                 this.Controls.Add(dw_buscar);
             }
         }
+
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+
+            // Mostrar reci√©n cuando todo est√° inicializado
+            this.WindowState = FormWindowState.Maximized;
+            this.Visible = true;
+        }
+
+
 
         // --------------------------------------------------------------------
         // events
@@ -77,7 +94,7 @@ namespace Minotti.Views.Abm.Controls
             dw_buscar.Top = dw_1.Top + dw_1.Height + s_esp.borde;
         }
 
-        public override void ue_ajustar_tamaÒo()
+        public override void ue_ajustar_tama√±o()
         {
 
             if (dw_1 == null || dw_buscar == null || s_esp == null)
@@ -146,7 +163,7 @@ namespace Minotti.Views.Abm.Controls
                         case "datet":
                         case "time":
                             //condicion = $"{dwo.name}= {item}";
-                            colName = dw_buscar.uof_current_column_name(); // o dw_1 seg˙n corresponda
+                            colName = dw_buscar.uof_current_column_name(); // o dw_1 seg√∫n corresponda
                             if (string.IsNullOrEmpty(colName)) return 0;
 
                             condicion = $"{colName} = {item}";
@@ -175,7 +192,7 @@ namespace Minotti.Views.Abm.Controls
         {
             base.ue_iniciar();
 
-            int tope, iAux, tamaÒo, scroll, current_col;
+            int tope, iAux, tama√±o, scroll, current_col;
             string col, ult_campo, nombre;
 
             if (at_op.Accion != "A")
@@ -217,13 +234,13 @@ namespace Minotti.Views.Abm.Controls
                     }
 
                     ult_campo = dw_buscar.uof_ultimo_campo_visible();
-                    //tamaÒo = Convert.ToInt32(dw_buscar.Describe(ult_campo + ".Width "));
-                    tamaÒo = PBUtils.ToInt32PB(dw_buscar.Describe(ult_campo + ".Width "));
-                    //scroll = dw_1.Width - Convert.ToInt32(dw_buscar.Describe(ult_campo + ".X ")) - tamaÒo;
-                    scroll = dw_1.Width - PBUtils.ToInt32PB(dw_buscar.Describe(ult_campo + ".X ")) - tamaÒo;
-                    tamaÒo = tamaÒo + scroll - 5;
+                    //tama√±o = Convert.ToInt32(dw_buscar.Describe(ult_campo + ".Width "));
+                    tama√±o = PBUtils.ToInt32PB(dw_buscar.Describe(ult_campo + ".Width "));
+                    //scroll = dw_1.Width - Convert.ToInt32(dw_buscar.Describe(ult_campo + ".X ")) - tama√±o;
+                    scroll = dw_1.Width - PBUtils.ToInt32PB(dw_buscar.Describe(ult_campo + ".X ")) - tama√±o;
+                    tama√±o = tama√±o + scroll - 5;
 
-                    dw_buscar.Modify(ult_campo + ".Width= " + tamaÒo);
+                    dw_buscar.Modify(ult_campo + ".Width= " + tama√±o);
 
                     current_col = dw_buscar.wf_settaborder_campos_visibles();
                     if (current_col > 0) dw_buscar.SetColumn(current_col);
@@ -243,7 +260,7 @@ namespace Minotti.Views.Abm.Controls
             // PB: on destroy -> destroy(this.dw_buscar)
             if (dw_buscar != null && !dw_buscar.IsDisposed)
             {
-                // Si tu framework usa DestroyUserObject o similar, usalo ac·.
+                // Si tu framework usa DestroyUserObject o similar, usalo ac√°.
                 dw_buscar.Dispose();
             }
         } 

@@ -294,22 +294,87 @@ namespace Minotti.Views.Basicos
         // =================== Eventos open / resize / close ===================
 
         // PB: event open
+        //protected override void OnLoadOld(EventArgs e)
+        //{
+        //    base.OnLoad(e);
+
+        //    // ============================
+        //    // Inicializa dw_1 SOLO si es null
+        //    // ============================
+        //    if (this.dw_1 == null)
+        //    {
+        //        this.dw_1 = new uo_dw
+        //        {
+        //            Name = "dw_1",
+        //            Location = new Point(12, 12),
+        //            Size = new Size(1000, 500)
+        //        };
+        //        this.Controls.Add(dw_1);
+        //    }
+
+        //    // ============================
+        //    // Título de la ventana
+        //    // ============================
+        //    if (string.IsNullOrEmpty(this.Text))
+        //    {
+        //        try
+        //        {
+        //            this.Text = guo_app.App?.DisplayName ?? "Minotti";
+        //        }
+        //        catch { }
+        //    }
+
+        //    Cursor.Current = Cursors.WaitCursor;
+        //    this.SuspendLayout();
+
+        //    // ============================
+        //    // Inicialización PB-like
+        //    // ============================
+        //    this.ue_optar();
+
+        //    this.ue_iniciar();          // inicializa lógica
+        //    this.ue_ajustar_tamaño();   // ajusta tamaños con dw_1 ya creado
+        //    this.ue_acomodar_objetos();
+
+        //    this.ue_llevar_al_minimo();
+        //    this.ue_leer_parametros();
+
+        //    if (ib_ajustar_posicion)
+        //    {
+        //        this.BeginInvoke(new Action(() =>
+        //        {
+        //            if (!this.IsDisposed)
+        //            {
+        //                this.ue_ajustar_posicion();
+        //            }
+        //        }));
+        //    }
+
+        //    ib_acomodar = true;
+
+        //    this.ResumeLayout(true);
+        //    Cursor.Current = Cursors.Default;
+        //}
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            // Inicializa dw_1 SOLO si es null
-            if (this.dw_1 == null)
+            // ============================
+            // Ocultar MDI Client al inicio (PB-like)
+            // ============================
+            foreach (Control c in this.Controls)
             {
-                this.dw_1 = new uo_dw
+                if (c is MdiClient mdi)
                 {
-                    Name = "dw_1",
-                    Location = new Point(12, 12),
-                    Size = new Size(1000, 500)
-                };
-                this.Controls.Add(dw_1);
+                    mdi.Visible = false;     // 🔴 CLAVE
+                    mdi.BackColor = this.BackColor;
+                }
             }
 
+            // ============================
+            // Título de la ventana
+            // ============================
             if (string.IsNullOrEmpty(this.Text))
             {
                 try
@@ -322,15 +387,13 @@ namespace Minotti.Views.Basicos
             Cursor.Current = Cursors.WaitCursor;
             this.SuspendLayout();
 
+            // ============================
+            // Inicialización PB-like
+            // ============================
             this.ue_optar();
-
-            // 🔄 Antes lo tenías mal ordenado
-            // Estás usando dw_1 antes de que exista
-
-            this.ue_iniciar();               // ← ahora primero inicializa todo
-            this.ue_ajustar_tamaño();       // ← y ahora sí, dw_1 existe
+            this.ue_iniciar();
+            this.ue_ajustar_tamaño();
             this.ue_acomodar_objetos();
-
             this.ue_llevar_al_minimo();
             this.ue_leer_parametros();
 
@@ -345,12 +408,21 @@ namespace Minotti.Views.Basicos
                 }));
             }
 
-            ib_acomodar = true;
-
             this.ResumeLayout(true);
             Cursor.Current = Cursors.Default;
         }
 
+        public void ShowMdiClient()
+        {
+            foreach (Control c in this.Controls)
+            {
+                if (c is MdiClient mdi)
+                {
+                    mdi.Visible = true;
+                    mdi.BringToFront();
+                }
+            }
+        }
 
         // PB: event resize
         protected override void OnResize(EventArgs e)
