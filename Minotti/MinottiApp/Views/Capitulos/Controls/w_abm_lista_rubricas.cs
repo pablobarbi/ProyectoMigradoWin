@@ -1,10 +1,7 @@
 
 using Minotti.Data;
 using Minotti.Functions;
-using Minotti.Repositories;
 using Minotti.Views.Abm.Controls;
-using System;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Capitulos.Controls
 {

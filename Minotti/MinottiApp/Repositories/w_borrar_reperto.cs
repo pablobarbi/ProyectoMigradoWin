@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Minotti.Repositories
 {
-    public static class w_borrar_reperto_dal
+    public static class w_borrar_reperto
     {
         // PB:
         // DELETE FROM reperto_parcial

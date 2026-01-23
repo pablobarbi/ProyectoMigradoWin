@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Minotti.Repositories
 {
-    public static class w_carga_reperto_parcial_dal
+    public static class w_carga_reperto_parcial
     {
         // PB:
         // INSERT INTO reperto_parcial (...)

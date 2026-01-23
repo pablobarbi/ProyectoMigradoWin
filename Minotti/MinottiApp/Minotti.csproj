@@ -18,6 +18,7 @@
 		<Compile Remove="Loaders\**" />
 		<Compile Remove="Menus\**" />
 		<Compile Remove="Metadata\Generated - Copy\**" />
+		<Compile Remove="Metadata\GeneratedSru\**" />
 		<Compile Remove="Models\**" />
 		<Compile Remove="PowerBuilderMeta\**" />
 		<Compile Remove="Reports\**" />
@@ -36,6 +37,7 @@
 		<EmbeddedResource Remove="Loaders\**" />
 		<EmbeddedResource Remove="Menus\**" />
 		<EmbeddedResource Remove="Metadata\Generated - Copy\**" />
+		<EmbeddedResource Remove="Metadata\GeneratedSru\**" />
 		<EmbeddedResource Remove="Models\**" />
 		<EmbeddedResource Remove="PowerBuilderMeta\**" />
 		<EmbeddedResource Remove="Reports\**" />
@@ -54,6 +56,7 @@
 		<None Remove="Loaders\**" />
 		<None Remove="Menus\**" />
 		<None Remove="Metadata\Generated - Copy\**" />
+		<None Remove="Metadata\GeneratedSru\**" />
 		<None Remove="Models\**" />
 		<None Remove="PowerBuilderMeta\**" />
 		<None Remove="Reports\**" />
@@ -141,6 +144,7 @@
 		<Compile Include="utils\Application.cs" />
 		<Compile Include="utils\ArrayHelpers.cs" />
 		<Compile Include="utils\ContextInformation.cs" />
+		<Compile Include="utils\ControlExtensions.cs" />
 		<Compile Include="utils\DataStoreWrapper.cs" />
 		<Compile Include="utils\datawindow.cs" />
 		<Compile Include="utils\DwFactory.cs" />
@@ -154,6 +158,7 @@
 		<Compile Include="utils\OpenPB.cs" />
 		<Compile Include="utils\OpenSheetWithParmPB.cs" />
 		<Compile Include="utils\OpenWithParmPB.cs" />
+		<Compile Include="utils\Pb.cs" />
 		<Compile Include="utils\PBColor.cs" />
 		<Compile Include="utils\PBControlExtensions.cs" />
 		<Compile Include="utils\PBEnums.cs" />
@@ -311,6 +316,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="Metadata\GeneratedSru\" />
 		<Folder Include="Views\abm\Controls\" />
 		<Folder Include="Views\Accesos\" />
 		<Folder Include="Views\conect_anywhere\Controls\" />

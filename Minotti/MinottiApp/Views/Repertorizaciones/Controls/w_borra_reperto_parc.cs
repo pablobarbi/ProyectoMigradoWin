@@ -1,13 +1,8 @@
 using Minotti.Data;
 using Minotti.Functions;
-using Minotti.Repositories;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Abm.Controls;
-using System;
-using System.Data;
-using System.Data.Odbc;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Repertorizaciones.Controls
 {
@@ -205,7 +200,7 @@ namespace Minotti.Views.Repertorizaciones.Controls
                     {
                         // PB embedded SQL:
                         // DELETE FROM reperto_parcial_med WHERE reperto_parcial = :ll_reperto USING SQLCA;
-                        w_borra_reperto_parc_dal.DeleteRepertoParcialMed(ll_reperto);
+                        Repositories.w_borra_reperto_parc.DeleteRepertoParcialMed(ll_reperto);
 
                         if (SQLCA.SqlCode != 0) this.ib_grabar = false;
                     }

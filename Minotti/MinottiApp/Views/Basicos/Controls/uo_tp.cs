@@ -1,4 +1,5 @@
 ﻿using Minotti;
+using Minotti.Metadata;
 using Minotti.Views.Basicos.Models;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace Minotti.Views.Basicos.Controls
     /// Equivalente a: global type uo_tp from userobject
     /// Esto representa una página de carpeta (tabpage lógica).
     /// </summary>
-    public class uo_tp : UserControl
+    public class uo_tp : UserObjectBase
     {
         // =========================
         // Variables PB -> C#

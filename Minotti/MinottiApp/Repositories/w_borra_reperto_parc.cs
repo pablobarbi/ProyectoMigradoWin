@@ -3,7 +3,7 @@ using System.Data.Odbc;
 
 namespace Minotti.Repositories
 {
-    public static class w_borra_reperto_parc_dal
+    public static class w_borra_reperto_parc
     {
         // PB:
         // DELETE FROM reperto_parcial_med WHERE reperto_parcial = :ll_reperto

@@ -1,12 +1,7 @@
-using Minotti.Data;
 using Minotti.Functions;
-using Minotti.Repositories;
 using Minotti.utils;
 using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Models;
-using System;
-using System.Data;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Menues.Controls
 {

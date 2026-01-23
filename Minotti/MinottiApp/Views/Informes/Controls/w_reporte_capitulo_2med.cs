@@ -2,8 +2,6 @@ using Minotti.Data;
 using Minotti.Repositories;
 using Minotti.Views.Basicos.Models;
 using Minotti.Views.Reportes.Controls;
-using System;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Informes.Controls
 {

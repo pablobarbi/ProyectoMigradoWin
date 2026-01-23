@@ -3,11 +3,8 @@ using Minotti.Data;
 using Minotti.Repositories;
 using Minotti.Structures;
 using Minotti.utils;
-using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Models;
 using Minotti.Views.Pbl.Views;
-using System;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Capitulos.Controls
 {

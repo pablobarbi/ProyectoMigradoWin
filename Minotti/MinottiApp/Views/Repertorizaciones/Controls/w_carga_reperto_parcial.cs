@@ -1,11 +1,6 @@
 using Minotti.Data;
-using Minotti.Repositories;
 using Minotti.utils;
 using Minotti.Views.Basicos;
-using System;
-using System.Data;
-using System.Data.Odbc;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Repertorizaciones.Controls
 {
@@ -56,7 +51,7 @@ namespace Minotti.Views.Repertorizaciones.Controls
                 return;
             }
 
-            w_carga_reperto_parcial_dal.InsertRepertoParcial(
+            Repositories.w_carga_reperto_parcial.InsertRepertoParcial(
                 ll_capitulo,
                 ll_rubrica,
                 ll_subrubrica,

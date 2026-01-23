@@ -1,9 +1,7 @@
 using Minotti.Data;
-using Minotti.Repositories;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Abm.Controls;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Repertorizaciones.Controls
 {
@@ -55,7 +53,7 @@ namespace Minotti.Views.Repertorizaciones.Controls
 
                     if (ib_grabar)
                     {
-                        w_borrar_reperto_dal.DeleteRepertoParcial(ll_reperto);
+                        Repositories.w_borrar_reperto.DeleteRepertoParcial(ll_reperto);
 
                         if (SQLCA.SqlCode < 0)
                             ib_grabar = false;

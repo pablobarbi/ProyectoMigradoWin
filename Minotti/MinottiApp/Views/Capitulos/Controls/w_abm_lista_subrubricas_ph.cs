@@ -1,15 +1,10 @@
 
 using Minotti.Data;
 using Minotti.Functions;
-using Minotti.Repositories;
 using Minotti.Views.Abm.Controls;
 using Minotti.Views.Basicos.Models;
 using MinottiApp.utils;
-using System;
 using System.Data.Odbc;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Capitulos.Controls
 {
