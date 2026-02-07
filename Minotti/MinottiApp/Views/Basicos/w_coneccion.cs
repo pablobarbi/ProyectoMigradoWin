@@ -1,12 +1,7 @@
 using Minotti.Data;
 using Minotti.Funciones;
-using Minotti.Functions;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.utils;
-using Minotti.Views.Basicos.Models;
-using MinottiApp.utils;
-using System;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Basicos
 {

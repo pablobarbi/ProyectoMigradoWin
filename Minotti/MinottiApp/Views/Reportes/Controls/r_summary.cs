@@ -1,10 +1,5 @@
 ﻿using Minotti.Data;
-using Minotti.Views.Basicos.Controls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Minotti.Metadata.GeneratedSru;
 
 namespace Minotti.Views.Reportes.Controls
 {

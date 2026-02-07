@@ -61,5 +61,16 @@ namespace Minotti.utils
         public static DateTime Today() => DateTime.Today;
         public static DateTime Now() => DateTime.Now;
         public static DateTime DateTimeFrom(DateTime date, DateTime time) => date.Date + time.TimeOfDay;
+
+        public static bool IsValid(object? obj)
+        {
+            if (obj == null)
+                return false;
+
+            if (obj is datawindow dw)
+                return !dw.IsDestroyed;
+
+            return true;
+        }
     }
 }

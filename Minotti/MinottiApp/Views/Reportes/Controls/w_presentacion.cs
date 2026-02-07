@@ -1,4 +1,5 @@
 ﻿using Minotti.Data;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Views.Basicos; // SQLCA
 using Minotti.Views.Basicos.Controls;
 using System;
@@ -60,7 +61,7 @@ namespace Minotti.Views.Reportes.Controls
                 dw_1.DeleteRow(0);
 
             // dwAux.RowsCopy(1, dwAux.RowCount(), Primary!, dw_1, 1, Primary!)
-            dwAux.RowsCopy(1, dwAux.RowCount(), DataWindowBuffer.Primary, dw_1, 1, DataWindowBuffer.Primary);
+            dwAux.RowsCopy(1, dwAux.RowCount(), utils.dwbuffer.Primary, dw_1, 1, utils.dwbuffer..Primary);
 
             // PB: ue_iniciar
             ue_iniciar();

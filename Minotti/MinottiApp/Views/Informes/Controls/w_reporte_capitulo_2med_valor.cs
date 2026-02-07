@@ -1,6 +1,5 @@
 using Minotti.Data;
-using Minotti.Repositories;
-using Minotti.Views.Basicos.Models;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Views.Reportes.Controls;
 
 namespace Minotti.Views.Informes.Controls
@@ -89,8 +88,8 @@ namespace Minotti.Views.Informes.Controls
                 ls_capitulos = new uo_capitulos();
                 ls_capitulos.capitulo_id = ll_capitulo;
                 ls_capitulos.uo_cargar_info();
-                ls_capitulos.uo_devolver_un_med_valor(ds_reporte, ls_medicamento, (int)ll_valor);
-                ls_capitulos.uo_devolver_un_med_valor(ds_reporte, ls_medicamento2, (int)ll_valor2);
+                ls_capitulos.uo_devolver_un_med_valor(ref ds_reporte, ls_medicamento, (int)ll_valor);
+                ls_capitulos.uo_devolver_un_med_valor(ref ds_reporte, ls_medicamento2, (int)ll_valor2);
 
                 // comparto el buffer.
                 ds_reporte.share_data(dw_reporte);

@@ -1,14 +1,8 @@
-
-using Microsoft.VisualBasic;
-using Minotti;
 using Minotti.Data;
-using Minotti.Views.Basicos;
-using Minotti.Views.Basicos.Models;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Views.Pbl.Views;
 using MinottiApp.utils;
-using System;
 using System.Data;
-using System.Windows.Forms;
 
 
 namespace Minotti.Functions

@@ -1,11 +1,9 @@
 ﻿
 using Minotti.Data;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.utils;
 using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Controls;
-using Minotti.Views.Basicos.Models;
-using System;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Capitulos.Controls
 {

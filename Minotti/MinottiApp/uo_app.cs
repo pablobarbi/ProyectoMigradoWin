@@ -1,15 +1,12 @@
 ﻿using Minotti.Data;
-using Minotti.Functions;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos;
-using Minotti.Views.Basicos.Models;
 using Minotti.Views.Menues.Controls;
 using Minotti.Views.Pbl.Views;
 using MinottiApp.utils;
-using System;
 using System.Data.Odbc;
-using System.Windows.Forms;
 
 namespace Minotti
 {

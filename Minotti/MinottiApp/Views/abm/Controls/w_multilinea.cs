@@ -1,10 +1,8 @@
 using Minotti.Data;
 using Minotti.Functions;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Structures;
 using Minotti.utils;
-using Minotti.Views.Basicos.Controls;
-using System;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Abm.Controls
 {

@@ -1,11 +1,8 @@
 ﻿using Minotti;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.utils;
 using Minotti.Views.Basicos;
-using Minotti.Views.Basicos.Models;
 using Minotti.Views.Pbl.Views;
-using System;
-using System.Linq;
-using System.Windows.Forms;
 using Message = Minotti.utils.Message;
 
 namespace MinottiApp.utils

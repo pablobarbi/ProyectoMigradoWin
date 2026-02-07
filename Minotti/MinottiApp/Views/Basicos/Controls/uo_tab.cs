@@ -1,14 +1,9 @@
 ﻿using Minotti.Data;
 using Minotti.Functions;
-using Minotti.Structures;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.utils;
-using Minotti.Views.Basicos.Models;
 using MinottiApp.utils;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Reflection;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Basicos.Controls
 {

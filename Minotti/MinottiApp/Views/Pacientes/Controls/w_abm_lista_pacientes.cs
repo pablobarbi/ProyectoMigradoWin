@@ -1,4 +1,5 @@
 using Minotti.Data;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.utils;
 using Minotti.Views.Abm.Controls;
 using Minotti.Views.Basicos.Controls;

@@ -1,4 +1,5 @@
 
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Views.Basicos.Controls;
 
 namespace Minotti.Views.Capitulos.Controls

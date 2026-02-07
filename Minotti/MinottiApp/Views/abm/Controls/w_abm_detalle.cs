@@ -1,5 +1,6 @@
 using Minotti.Data;
 using Minotti.Functions;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos;

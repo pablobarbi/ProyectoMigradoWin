@@ -18,10 +18,10 @@
 		<Compile Remove="Loaders\**" />
 		<Compile Remove="Menus\**" />
 		<Compile Remove="Metadata\Generated - Copy\**" />
-		<Compile Remove="Metadata\GeneratedSru\**" />
 		<Compile Remove="Models\**" />
 		<Compile Remove="PowerBuilderMeta\**" />
 		<Compile Remove="Reports\**" />
+		<Compile Remove="Repositories\**" />
 		<Compile Remove="Resources\**" />
 		<Compile Remove="Services\**" />
 		<Compile Remove="State\**" />
@@ -29,6 +29,7 @@
 		<Compile Remove="UserObjects\**" />
 		<Compile Remove="utils\**" />
 		<Compile Remove="Views1\**" />
+		<Compile Remove="Views\Basicos\Models\**" />
 		<Compile Remove="Views\LegacyPB\**" />
 		<EmbeddedResource Remove="Application\**" />
 		<EmbeddedResource Remove="Catalog\**" />
@@ -37,10 +38,10 @@
 		<EmbeddedResource Remove="Loaders\**" />
 		<EmbeddedResource Remove="Menus\**" />
 		<EmbeddedResource Remove="Metadata\Generated - Copy\**" />
-		<EmbeddedResource Remove="Metadata\GeneratedSru\**" />
 		<EmbeddedResource Remove="Models\**" />
 		<EmbeddedResource Remove="PowerBuilderMeta\**" />
 		<EmbeddedResource Remove="Reports\**" />
+		<EmbeddedResource Remove="Repositories\**" />
 		<EmbeddedResource Remove="Resources\**" />
 		<EmbeddedResource Remove="Services\**" />
 		<EmbeddedResource Remove="State\**" />
@@ -48,6 +49,7 @@
 		<EmbeddedResource Remove="UserObjects\**" />
 		<EmbeddedResource Remove="utils\**" />
 		<EmbeddedResource Remove="Views1\**" />
+		<EmbeddedResource Remove="Views\Basicos\Models\**" />
 		<EmbeddedResource Remove="Views\LegacyPB\**" />
 		<None Remove="Application\**" />
 		<None Remove="Catalog\**" />
@@ -56,10 +58,10 @@
 		<None Remove="Loaders\**" />
 		<None Remove="Menus\**" />
 		<None Remove="Metadata\Generated - Copy\**" />
-		<None Remove="Metadata\GeneratedSru\**" />
 		<None Remove="Models\**" />
 		<None Remove="PowerBuilderMeta\**" />
 		<None Remove="Reports\**" />
+		<None Remove="Repositories\**" />
 		<None Remove="Resources\**" />
 		<None Remove="Services\**" />
 		<None Remove="State\**" />
@@ -67,12 +69,14 @@
 		<None Remove="UserObjects\**" />
 		<None Remove="utils\**" />
 		<None Remove="Views1\**" />
+		<None Remove="Views\Basicos\Models\**" />
 		<None Remove="Views\LegacyPB\**" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Remove="app.cs" />
 		<Compile Remove="sepad.cs" />
+		<Compile Remove="Views\Basicos\Controls\uo_dw.cs" />
 		<Compile Remove="Views\Pbl\Views\w_splash.cs" />
 		<Compile Remove="Views\Pbl\Views\w_splash.Designer.cs" />
 	</ItemGroup>
@@ -152,13 +156,16 @@
 		<Compile Include="utils\FileUtils.cs" />
 		<Compile Include="utils\GlobalHelpers.cs" />
 		<Compile Include="utils\IFormularioConOperacion.cs" />
+		<Compile Include="utils\IPowerObject.cs" />
 		<Compile Include="utils\ListExtensions.cs" />
 		<Compile Include="utils\Message.cs" />
 		<Compile Include="utils\MessageBox.cs" />
 		<Compile Include="utils\OpenPB.cs" />
 		<Compile Include="utils\OpenSheetWithParmPB.cs" />
 		<Compile Include="utils\OpenWithParmPB.cs" />
+		<Compile Include="utils\PowerObjectExtensions.cs" />
 		<Compile Include="utils\Pb.cs" />
+		<Compile Include="utils\PbActionButton.cs" />
 		<Compile Include="utils\PBColor.cs" />
 		<Compile Include="utils\PBControlExtensions.cs" />
 		<Compile Include="utils\PBEnums.cs" />
@@ -168,6 +175,7 @@
 		<Compile Include="utils\PBPictureBox.cs" />
 		<Compile Include="utils\PBUtils.cs" />
 		<Compile Include="utils\PBTreeViewItem.cs" />
+		<Compile Include="utils\UserObject.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -316,7 +324,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Metadata\GeneratedSru\" />
 		<Folder Include="Views\abm\Controls\" />
 		<Folder Include="Views\Accesos\" />
 		<Folder Include="Views\conect_anywhere\Controls\" />

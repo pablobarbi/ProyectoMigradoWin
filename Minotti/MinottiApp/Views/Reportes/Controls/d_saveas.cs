@@ -1,4 +1,5 @@
-﻿using Minotti.Views.Basicos.Controls;
+﻿using Minotti.Metadata.GeneratedSru;
+using Minotti.Views.Basicos.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;

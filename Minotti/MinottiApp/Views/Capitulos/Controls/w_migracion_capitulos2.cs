@@ -1,9 +1,8 @@
 ﻿
 using Minotti.Data;
-using Minotti.Repositories;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Structures;
 using Minotti.utils;
-using Minotti.Views.Basicos.Models;
 using Minotti.Views.Pbl.Views;
 
 namespace Minotti.Views.Capitulos.Controls

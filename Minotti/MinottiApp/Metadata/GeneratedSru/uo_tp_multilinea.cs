@@ -7,12 +7,9 @@
 
 #nullable enable
 using Minotti.Data;
-using Minotti.UserObjects;
+using Minotti.Functions;
 using Minotti.utils;
-using Minotti.Views.Basicos.Models;
-using MinottiApp.utils;
 using static System.Net.Mime.MediaTypeNames;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Minotti.Metadata.GeneratedSru
 {
@@ -21,27 +18,27 @@ namespace Minotti.Metadata.GeneratedSru
         // ---------------------------------------------------------------------
         // Controles
         // ---------------------------------------------------------------------
-        public dw_1 dw_1;
-        public pb_insertar pb_insertar;
-        public pb_borrar pb_borrar;
+        public dw_1 dw_1 { get; private set; }
+        public pb_insertar pb_insertar { get; private set; }
+        public pb_borrar pb_borrar { get; private set; }
 
         // ---------------------------------------------------------------------
         // Eventos PB
         // ---------------------------------------------------------------------
-        public virtual void ue_seleccionado()
+        public override void ue_seleccionado()
         {
             base.ue_seleccionado();
             dw_1?.SetFocus();
         }
 
-        public virtual void ue_insertar()
+        public override void ue_insertar()
         {
             base.ue_insertar();
             dw_1.SetRow(dw_1.InsertRow(0));
             dw_1.SetFocus();
         }
 
-        public virtual void ue_borrar()
+        public override void ue_borrar()
         {
             base.ue_borrar();
             dw_1.DeleteRow(0);
@@ -62,19 +59,16 @@ namespace Minotti.Metadata.GeneratedSru
 
         public bool uof_getclaves(ref string[] parametros, int fila)
         {
-            return dw_1.uof_GetClaves(ref parametros, fila);
+            return dw_1.uof_getclaves(ref parametros, fila);
         }
 
         public void uof_setclaves(string[] parametros)
         {
-            long lAux;
-            int iAux;
-
-            for (lAux = 1; lAux <= dw_1.RowCount(); lAux++)
+            for (int lAux = 1; lAux <= dw_1.RowCount(); lAux++)
             {
-                if (dw_1.GetItemStatus(lAux, 0, DwBuffer.Primary) == DwItemStatus.NewModified)
+                if (dw_1.GetItemStatus(lAux, 0, dwbuffer.Primary) == dwitemstatus.NewModified)
                 {
-                    for (iAux = 1; iAux <= parametros.Length; iAux++)
+                    for (int iAux = 1; iAux <= parametros.Length; iAux++)
                     {
                         dw_1.SetItem(lAux, iAux, parametros[iAux - 1]);
                     }
@@ -84,10 +78,7 @@ namespace Minotti.Metadata.GeneratedSru
 
         public override bool uof_cambios_pendientes()
         {
-            if (dw_1.AcceptText() == -1 || dw_1.ModifiedCount() > 0)
-                return true;
-
-            return false;
+            return dw_1.AcceptText() == -1 || dw_1.ModifiedCount() > 0;
         }
 
         // ---------------------------------------------------------------------
@@ -97,16 +88,19 @@ namespace Minotti.Metadata.GeneratedSru
         {
             base.create();
 
+            // 🔹 ESTE control lo debe pasar el contenedor (tab / form / host)
+            // Ejemplo:
+            // AttachControl(hostPanel);
+
             dw_1 = new dw_1();
             pb_insertar = new pb_insertar();
             pb_borrar = new pb_borrar();
 
-            int iCurrent = Control.Length;
-            Array.Resize(ref Control, iCurrent + 3);
+            dw_1.LostFocus += (_, __) => dw_1.AcceptText();
 
-            Control[iCurrent] = dw_1;
-            Control[iCurrent + 1] = pb_insertar;
-            Control[iCurrent + 2] = pb_borrar;
+            Controls.Add(dw_1);
+            Controls.Add(pb_insertar);
+            Controls.Add(pb_borrar);
         }
 
         public override void destroy()
@@ -125,7 +119,7 @@ namespace Minotti.Metadata.GeneratedSru
         {
             base.ue_leer_parametros(arg_s_pag);
 
-            dw_1.uof_SetDataObject(f_ProxParam(arg_s_pag.Parametros));
+            dw_1.uof_setdataobject(f_ProxParam(arg_s_pag.Parametros));
             dw_1.SetTransObject(SQLCA);
             dw_1.Border = true;
             dw_1.BorderStyle = BorderStyle.StyleBox;
@@ -140,29 +134,24 @@ namespace Minotti.Metadata.GeneratedSru
         {
             base.ue_iniciar(arg_accion, arg_param);
 
-            int cant_claves;
-            int cant_param;
-            int iAux;
-
             if (is_accion == "A")
             {
                 dw_1.InsertRow(0);
             }
-            else
+            else if (dw_1.uof_retrieve(is_parametros) < 1)
             {
-                if (dw_1.uof_Retrieve(is_parametros) < 1)
-                    dw_1.InsertRow(0);
+                dw_1.InsertRow(0);
             }
 
-            dw_1.uof_Edicion(0, "E");
+            dw_1.uof_edicion(0, "E");
 
-            cant_claves = dw_1.ii_claves.Length;
-            cant_param = is_parametros.Length;
+            int cant_claves = dw_1.ii_claves.Length;
+            int cant_param = is_parametros.Length;
 
-            for (iAux = 1; iAux <= cant_param; iAux++)
+            for (int iAux = 1; iAux <= cant_param; iAux++)
             {
                 if (cant_claves >= iAux)
-                    dw_1.uof_Edicion(dw_1.ii_claves[iAux - 1], "N");
+                    dw_1.uof_edicion(dw_1.ii_claves[iAux - 1], "N");
             }
         }
 
@@ -173,8 +162,6 @@ namespace Minotti.Metadata.GeneratedSru
         {
             base.ue_acomodar_objetos();
 
-            int ancho;
-
             SetRedraw(false);
 
             dw_1.Width = Math.Min(
@@ -182,13 +169,12 @@ namespace Minotti.Metadata.GeneratedSru
                 Width - s_esp.borde * 3 - pb_insertar.Width
             );
 
-            ancho = dw_1.Width + pb_insertar.Width;
+            int ancho = dw_1.Width + pb_insertar.Width;
             dw_1.X = (Width - ancho) / 2 - 10;
 
-            if (dw_1.cant_filas == 1)
-                dw_1.Height = Math.Min(dw_1.uof_largo(), Height - s_esp.borde * 2);
-            else
-                dw_1.Height = Height - s_esp.borde * 2;
+            dw_1.Height = dw_1.cant_filas == 1
+                ? Math.Min(dw_1.uof_largo(), Height - s_esp.borde * 2)
+                : Height - s_esp.borde * 2;
 
             dw_1.Y = s_esp.borde;
 
@@ -213,9 +199,9 @@ namespace Minotti.Metadata.GeneratedSru
 
             for (int iAux = 1; iAux <= dw_1.RowCount(); iAux++)
             {
-                if (dw_1.GetItemStatus(iAux, 0, DwBuffer.Primary) == DwItemStatus.NewModified)
+                if (dw_1.GetItemStatus(iAux, 0, dwbuffer.Primary) == dwitemstatus.NewModified)
                 {
-                    if (dw_1.uof_SetClaves(sarg_param, iAux) != 1)
+                    if (dw_1.uof_setclaves(sarg_param, iAux) != 1)
                         return false;
                 }
             }
@@ -235,37 +221,11 @@ namespace Minotti.Metadata.GeneratedSru
             dw_1.Reset();
         }
 
-        // ---------------------------------------------------------------------
-        // Clases internas (DW y Botones)
-        // ---------------------------------------------------------------------
-        public class dw_1 : uo_dw { }
 
-        public class pb_insertar : PictureButton
-        {
-            public pb_insertar()
-            {
-                Text = "&Insertar";
-            }
+      
+    }
 
-            protected override void OnClick(EventArgs e)
-            {
-                base.OnClick(e);
-                Parent?.TriggerEvent("ue_insertar");
-            }
-        }
-
-        public class pb_borrar : PictureButton
-        {
-            public pb_borrar()
-            {
-                Text = "&Borrar";
-            }
-
-            protected override void OnClick(EventArgs e)
-            {
-                base.OnClick(e);
-                Parent?.TriggerEvent("ue_borrar");
-            }
-        }
+    public class dw_1 : uo_dw
+    {
     }
 }

@@ -1,4 +1,5 @@
-﻿using Minotti.Views.Basicos.Controls;
+﻿using Minotti.Metadata.GeneratedSru;
+using Minotti.Views.Basicos.Controls;
 using MinottiApp.utils;
 using System.Windows.Forms;
 
@@ -9,13 +10,8 @@ namespace Minotti.Views.Capitulos.Controls
     {
         public uo_dw_key() : base()
         {
-            // PB: event downkey
-            // En WinForms lo más cercano es KeyDown en el control (o en el grid interno).
-            // Enganchamos el KeyDown del UserControl; si tu uo_dw tiene un grid interno,
-            // idealmente uo_dw expone un evento o método para engancharlo allí.
+            // PB: downkey → WinForms: KeyDown
             this.KeyDown += uo_dw_key_KeyDown;
-
-            // Para que reciba teclas cuando está dentro (si aplica)
             this.TabStop = true;
         }
 
@@ -28,38 +24,24 @@ namespace Minotti.Views.Capitulos.Controls
             base.Dispose(disposing);
         }
 
-        // =========================
+        // =========================================================
         // PB: event downkey; call super::downkey;
-        // =========================
+        // =========================================================
         private void uo_dw_key_KeyDown(object? sender, KeyEventArgs e)
         {
-            // call super::downkey;
-            // Si tu uo_dw tiene override/handler propio, ya corre por su lado.
-            // Acá implemento solo la parte extra del hijo.
+            // PB: If (key = KeyEnter!)
+            if (e.KeyCode != Keys.Enter)
+                return;
 
-            // PB:
-            // If (key = KeyEnter!) Then
-            if (e.KeyCode == Keys.Enter)
+            // PB: If GetRow() > 0 Then Parent.Event Dynamic ue_dw_detalle (This)
+            if (GetRow() > 0)
             {
-                // If GetRow() > 0 Then Parent.Event Dynamic ue_dw_detalle (This)
-                if (this.GetRow() > 0)
-                {
-                    var parent = this.Parent;
-                    if (parent != null)
-                    {
-                        // PB: Parent.Event Dynamic ue_dw_detalle (This)
-                        // Usamos tu helper existente
-                        DynamicEventInvoker.Trigger(parent, "ue_dw_detalle", this);
+                Parent?.TriggerEvent("ue_dw_detalle", this);
 
-                        // Return 0 (consume)
-                        e.Handled = true;
-                        e.SuppressKeyPress = true;
-                        return;
-                    }
-                }
+                // PB: Return 0 → consumir tecla
+                e.Handled = true;
+                e.SuppressKeyPress = true;
             }
-
-            // en PB había variables rtn/estilo pero no se usan
         }
     }
 }

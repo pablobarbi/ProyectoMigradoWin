@@ -1,9 +1,3 @@
-
-
-using Minotti.Views.Basicos.Models;
-using System;
-using System.Windows.Forms;
-
 namespace Minotti.Views.Basicos
 {
     // Migración de PowerBuilder: w_ayuda.srw (window) desde w_response

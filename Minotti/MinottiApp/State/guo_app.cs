@@ -1,7 +1,7 @@
 
+using Minotti.Metadata.GeneratedSru;
 using Minotti.utils;
 using Minotti.Views.Basicos;
-using Minotti.Views.Basicos.Models;
 using Minotti.Views.Pbl.Views;
 
 namespace Minotti

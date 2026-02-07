@@ -1,6 +1,5 @@
 ﻿using Minotti.Data;
-using Minotti.Views.Basicos.Models;
-using System.Data;
+using Minotti.Metadata.GeneratedSru;
 using System.Reflection;
 
 namespace Minotti.Funciones

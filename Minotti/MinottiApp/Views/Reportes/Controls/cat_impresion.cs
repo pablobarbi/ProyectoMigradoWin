@@ -1,4 +1,4 @@
-﻿using Minotti.Views.Basicos.Models;
+﻿using Minotti.Metadata.GeneratedSru;
 using MinottiApp.utils;
 
 namespace Minotti.Views.Reportes.Controls

@@ -1,6 +1,4 @@
-using Minotti.Views.Basicos.Models;
-using System;
-using System.Windows.Forms;
+using Minotti.Metadata.GeneratedSru;
 
 namespace Minotti.Views.Basicos
 {

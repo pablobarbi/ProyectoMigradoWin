@@ -1,4 +1,5 @@
-﻿using Minotti.Views.Basicos.Controls;
+﻿using Minotti.Metadata.GeneratedSru;
+using Minotti.Views.Basicos.Controls;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;

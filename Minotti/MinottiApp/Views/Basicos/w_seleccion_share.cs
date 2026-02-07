@@ -1,8 +1,5 @@
 using Minotti.Data;
-using Minotti.Views.Basicos.Controls;
-using Minotti.Views.Basicos.Models;
-using System;
-using System.Windows.Forms;
+using Minotti.Metadata.GeneratedSru;
 namespace Minotti.Views.Basicos
 {
     // Migración de PowerBuilder: w_seleccion_share.srw

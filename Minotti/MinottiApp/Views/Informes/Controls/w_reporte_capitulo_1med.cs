@@ -1,6 +1,5 @@
 using Minotti.Data;
-using Minotti.Repositories;
-using Minotti.Views.Basicos.Models;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Views.Reportes.Controls;
 
 namespace Minotti.Views.Informes.Controls

@@ -5,10 +5,9 @@
 
 #nullable enable
 using Minotti.Data;
+using Minotti.Functions;
 using Minotti.UserObjects;
-using Minotti.Views.Basicos.Models;
-using System;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using Minotti.utils;
 
 namespace Minotti.Metadata.GeneratedSru
 {
@@ -115,15 +114,15 @@ namespace Minotti.Metadata.GeneratedSru
 
         public virtual void ue_leer_parametros(ref string parametros)
         {
-            dw_1.uof_SetDataObject(f_Proxparam(ref parametros));
-            dw_1.SetTransObject(SQLCA);
+            dw_1.uof_setdataobject(f_proxparam.fproxparam(ref parametros));
+            dw_1.SetTransObject(SQLCA.Instance);
             dw_1.uof_marcar_seleccion(2);
 
-            dw_2.uof_SetDataObject(f_Proxparam(ref parametros));
-            dw_2.SetTransObject(SQLCA);
+            dw_2.uof_setdataobject(f_proxparam.fproxparam(ref parametros));
+            dw_2.SetTransObject(SQLCA.Instance);
             dw_2.uof_marcar_seleccion(2);
 
-            cant_filas = Convert.ToInt32(f_Proxparam(ref parametros));
+            cant_filas = Convert.ToInt32(f_proxparam.fproxparam(ref parametros));
             if (cant_filas <= 0) cant_filas = 8;
 
             dw_1.cant_filas = cant_filas;
@@ -134,10 +133,10 @@ namespace Minotti.Metadata.GeneratedSru
         {
             is_claves = ais_claves;
 
-            dw_1.uof_Retrieve(is_claves);
-            dw_2.uof_Retrieve(is_claves);
+            dw_1.uof_retrieve(is_claves);
+            dw_2.uof_retrieve(is_claves);
 
-            dw_1.uof_Edicion(0, "N");
+            dw_1.uof_edicion(0, "N");
 
             cant_columnas_dw1 = dw_1.at_col.Length;
             cant_columnas_dw2 = dw_2.at_col.Length;
@@ -148,7 +147,7 @@ namespace Minotti.Metadata.GeneratedSru
             {
                 for (int j = 0; j < cant_columnas_dw2; j++)
                 {
-                    if (dw_1.at_col[i].nombre == dw_2.at_col[j].nombre)
+                    if (dw_1.at_col[i].Nombre == dw_2.at_col[j].Nombre)
                     {
                         is_campos[i] = j + 1;
                         break;
@@ -160,7 +159,7 @@ namespace Minotti.Metadata.GeneratedSru
             ue_habilitar_botones();
         }
 
-        public virtual int ue_retrieve(string[] ais_claves)
+        public virtual long ue_retrieve(string[] ais_claves)
         {
             return dw_2.uof_retrieve(ais_claves);
         }
@@ -211,7 +210,7 @@ namespace Minotti.Metadata.GeneratedSru
 
             for (int i = 1; i <= cant_columnas_dw1; i++)
             {
-                dw_2.uof_SetItem(row, is_campos[i - 1], dw_1.uof_GetItem(fila, i));
+                dw_2.uof_setitem(row, is_campos[i - 1], dw_1.uof_getitem(fila, i));
             }
 
             int rtn = Convert.ToInt32(
@@ -224,7 +223,7 @@ namespace Minotti.Metadata.GeneratedSru
                 return -1;
             }
 
-            dw_1.RowsDiscard(fila, fila, PrimaryBuffer.Primary);
+            dw_1.RowsDiscard(fila, fila, dwbuffer.Primary);
             return 1;
         }
 
@@ -241,7 +240,7 @@ namespace Minotti.Metadata.GeneratedSru
 
             for (int i = 1; i <= cant_columnas; i++)
             {
-                dw_1.uof_SetItem(row, i, dw_2.uof_GetItem(fila, is_campos[i - 1]));
+                dw_1.uof_setitem(row, i, dw_2.uof_getitem(fila, is_campos[i - 1]));
             }
 
             dw_2.DeleteRow(fila);
@@ -268,12 +267,12 @@ namespace Minotti.Metadata.GeneratedSru
             };
         }
 
-        public override void destroy()
-        {
-            dw_1?.Destroy();
-            dw_2?.Destroy();
-            pb_agregar?.Destroy();
-            pb_eliminar?.Destroy();
-        }
+        //public override void destroy()
+        //{
+        //    dw_1?.Destroy();
+        //    dw_2?.Destroy();
+        //    //pb_agregar?.Destroy();
+        //    //pb_eliminar?.Destroy();
+        //}
     }
 }

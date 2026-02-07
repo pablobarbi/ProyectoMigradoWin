@@ -1,4 +1,6 @@
-﻿using MinottiApp.utils;
+﻿using Minotti.Data;
+using Minotti.utils;
+using MinottiApp.utils;
 
 namespace Minotti.Metadata.GeneratedSru
 {
@@ -48,7 +50,7 @@ namespace Minotti.Metadata.GeneratedSru
             // CARGA CAPITULO
             // =========================
             ls_Param[1] = capitulo_id.ToString();
-            ds_capitulo.uof_Retrieve(ls_Param);
+            ds_capitulo.uof_retrieve(ls_Param);
 
             // ============================================================
             // TODO EL BLOQUE INTERMEDIO ES EXACTAMENTE IGUAL AL PB
@@ -88,10 +90,10 @@ namespace Minotti.Metadata.GeneratedSru
             ds_capitulo_todo.RowsCopy(
                 1,
                 ds_capitulo_todo.RowCount(),
-                DataBuffer.Primary,
+                 dwbuffer.Primary,
                 ds_retorno,
                 1,
-                DataBuffer.Primary
+                dwbuffer.Primary
             );
         }
 
@@ -115,10 +117,10 @@ namespace Minotti.Metadata.GeneratedSru
             ds_capitulo_todo.RowsCopy(
                 1,
                 ds_capitulo_todo.RowCount(),
-                DataBuffer.Primary,
+                dwbuffer.Primary,
                 ds_retorno,
                 ds_retorno.RowCount() + 1,
-                DataBuffer.Primary
+                dwbuffer.Primary
             );
 
             ds_capitulo_todo.SetFilter("");
@@ -135,10 +137,10 @@ namespace Minotti.Metadata.GeneratedSru
             ds_capitulo_todo.RowsCopy(
                 1,
                 ds_capitulo_todo.RowCount(),
-                DataBuffer.Primary,
+                dwbuffer.Primary,
                 ds_retorno,
                 ds_retorno.RowCount() + 1,
-                DataBuffer.Primary
+                dwbuffer.Primary
             );
 
             ds_capitulo_todo.SetFilter("");
@@ -152,43 +154,43 @@ namespace Minotti.Metadata.GeneratedSru
         public override void constructor()
         {
             ds_capitulo = new uo_ds();
-            ds_capitulo.uof_SetDataObject("duo_capitulaciones");
-            ds_capitulo.SetTransObject(SQLCA);
+            ds_capitulo.uof_setdataobject("duo_capitulaciones");
+            ds_capitulo.SetTransObject(SQLCA.Instance);
 
             ds_rubricas = new uo_ds();
-            ds_rubricas.uof_SetDataObject("duo_rubricaciones");
-            ds_rubricas.SetTransObject(SQLCA);
+            ds_rubricas.uof_setdataobject("duo_rubricaciones");
+            ds_rubricas.SetTransObject(SQLCA.Instance);
 
             ds_subrubricas = new uo_ds();
-            ds_subrubricas.uof_SetDataObject("duo_subrubricaciones");
-            ds_subrubricas.SetTransObject(SQLCA);
+            ds_subrubricas.uof_setdataobject("duo_subrubricaciones");
+            ds_subrubricas.SetTransObject(SQLCA.Instance);
 
             ds_capitulo_med = new uo_ds();
-            ds_capitulo_med.uof_SetDataObject("duo_capitulaciones_med");
-            ds_capitulo_med.SetTransObject(SQLCA);
+            ds_capitulo_med.uof_setdataobject("duo_capitulaciones_med");
+            ds_capitulo_med.SetTransObject(SQLCA.Instance);
 
             ds_rubricas_med = new uo_ds();
-            ds_rubricas_med.uof_SetDataObject("duo_rubricaciones_med");
-            ds_rubricas_med.SetTransObject(SQLCA);
+            ds_rubricas_med.uof_setdataobject("duo_rubricaciones_med");
+            ds_rubricas_med.SetTransObject(SQLCA.Instance);
 
             ds_subrubricas_med = new uo_ds();
-            ds_subrubricas_med.uof_SetDataObject("duo_subrubricaciones_med");
-            ds_subrubricas_med.SetTransObject(SQLCA);
+            ds_subrubricas_med.uof_setdataobject("duo_subrubricaciones_med");
+            ds_subrubricas_med.SetTransObject(SQLCA.Instance);
 
             ds_capitulo_todo = new uo_ds();
-            ds_capitulo_todo.uof_SetDataObject("duo_capitulo_completo");
-            ds_capitulo_todo.SetTransObject(SQLCA);
+            ds_capitulo_todo.uof_setdataobject("duo_capitulo_completo");
+            ds_capitulo_todo.SetTransObject(SQLCA.Instance);
         }
 
         public override void destructor()
         {
-            if (IsValid(ds_capitulo)) ds_capitulo.Destroy();
-            if (IsValid(ds_rubricas)) ds_rubricas.Destroy();
-            if (IsValid(ds_subrubricas)) ds_subrubricas.Destroy();
-            if (IsValid(ds_capitulo_med)) ds_capitulo_med.Destroy();
-            if (IsValid(ds_rubricas_med)) ds_rubricas_med.Destroy();
-            if (IsValid(ds_subrubricas_med)) ds_subrubricas_med.Destroy();
-            if (IsValid(ds_capitulo_todo)) ds_capitulo_todo.Destroy();
+            if (Pb.IsValid(ds_capitulo)) ds_capitulo.Destroy();
+            if (Pb.IsValid(ds_rubricas)) ds_rubricas.Destroy();
+            if (Pb.IsValid(ds_subrubricas)) ds_subrubricas.Destroy();
+            if (Pb.IsValid(ds_capitulo_med)) ds_capitulo_med.Destroy();
+            if (Pb.IsValid(ds_rubricas_med)) ds_rubricas_med.Destroy();
+            if (Pb.IsValid(ds_subrubricas_med)) ds_subrubricas_med.Destroy();
+            if (Pb.IsValid(ds_capitulo_todo)) ds_capitulo_todo.Destroy();
         }
     }
 }

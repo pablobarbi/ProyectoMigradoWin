@@ -7,11 +7,10 @@
 
 #nullable enable
 using Minotti.utils;
-using Minotti.Views.Basicos.Models;
 
 namespace Minotti.Metadata.GeneratedSru
 {
-    public class uo_tp : UserObjectBase
+    public class uo_tp : UserObject
     {
         // ---------------------------------------------------------------------
         // VARIABLES (PB: type variables)
@@ -21,6 +20,13 @@ namespace Minotti.Metadata.GeneratedSru
         public string? is_Accion;
         public string[] is_parametros = System.Array.Empty<string>();
         public bool ib_grabar;
+
+
+        public uo_tp()
+        {
+            
+        }
+
 
         // ---------------------------------------------------------------------
         // EVENTS
@@ -186,20 +192,33 @@ namespace Minotti.Metadata.GeneratedSru
             return (int)(guo_app.uof_Getmdi().WorkSpaceWidth * 0.7);
         }
 
+        protected void SetRedraw(bool enable)
+        {
+            if (IsHandleCreated)
+            {
+                const int WM_SETREDRAW = 0x000B;
+                NativeMethods.SendMessage(this.Handle, WM_SETREDRAW, enable ? 1 : 0, 0);
+
+                if (enable)
+                    this.Invalidate();
+            }
+        }
+
+
         // ---------------------------------------------------------------------
         // PB: on uo_tp.create
         // ---------------------------------------------------------------------
-        //public override void create()
-        //{
-        //    // vacío en PB
-        //}
+        public virtual void create()
+        {
+            // vacío en PB
+        }
 
         // ---------------------------------------------------------------------
         // PB: on uo_tp.destroy
         // ---------------------------------------------------------------------
-        //public override void destroy()
-        //{
-        //    // vacío en PB
-        //}
+        public virtual void destroy()
+        {
+           // vacío en PB
+        }
     }
 }

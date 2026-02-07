@@ -1,7 +1,7 @@
 using Minotti.Functions;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.utils;
 using Minotti.Views.Basicos;
-using Minotti.Views.Basicos.Models;
 
 namespace Minotti.Views.Menues.Controls
 {

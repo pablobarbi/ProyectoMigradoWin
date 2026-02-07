@@ -1,5 +1,6 @@
 ﻿using Minotti.Data;
 using Minotti.Metadata;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Structures;
 using Minotti.Views.Basicos.Controls;
 using Minotti.Views.Reportes.Controls;
@@ -347,7 +348,9 @@ namespace Minotti.utils
             }
         }
 
+        protected bool _isDestroyed = false;
 
+        public bool IsDestroyed => _isDestroyed;
 
         // ===== PB state =====
         protected string _filter = string.Empty;
@@ -990,11 +993,11 @@ namespace Minotti.utils
         public virtual string GetItemString(
             long row,
             string columnName,
-            DataWindowBuffer buffer,
+            utils.dwbuffer buffer,
             bool convertNull)
         {
             // En esta etapa solo soportamos Primary (PB default)
-            if (buffer != DataWindowBuffer.Primary)
+            if (buffer != utils.dwbuffer.Primary)
                 return string.Empty;
 
             var value = GetItemRaw(row, columnName);
@@ -1727,10 +1730,34 @@ namespace Minotti.utils
             return 1;
         }
 
-        public void Destroy()
+        public virtual void Destroy()
         {
-            // PB: DESTROY ds  → en .NET no hace nada
+            // Evitar doble destroy (PB lo permite, pero no hace nada)
+            if (_isDestroyed)
+                return;
+
+            _isDestroyed = true;
+
+            // Limpieza mínima segura (PB-like)
+            _primary = null;
+            _table = null;
+            _view = null;
+
+            _ds = new DataSet("dw");
+
+            _currentRow = 0;
+            _currentColumn = 0;
+            _editorText = null;
+            _filter = string.Empty;
+
+            // Desenganchar eventos (evita leaks)
+            RowFocusChanged = null;
+            ItemChanged = null;
+            DBError = null;
+            RetrieveStart = null;
+            RetrieveEnd = null;
         }
+
 
         /// <summary>
         /// PB: Print()

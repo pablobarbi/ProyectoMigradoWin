@@ -1,4 +1,4 @@
-// -----------------------------------------------------------------------------
+ï»¿// -----------------------------------------------------------------------------
 // AUTO-MIGRADO desde PowerBuilder (.sru)
 // Origen: uo_dw_key
 // -----------------------------------------------------------------------------
@@ -16,55 +16,40 @@ namespace Minotti.Metadata.GeneratedSru
     /// </summary>
     public class uo_dw_key : uo_dw
     {
-        // ---------------------------------------------------------------------
-        // PB: on uo_dw_key.create
-        // ---------------------------------------------------------------------
-        public override void create()
+        public uo_dw_key() : base()
         {
-            // PB: vacío
+            // PB: downkey â†’ WinForms: KeyDown
+            this.KeyDown += uo_dw_key_KeyDown;
+            this.TabStop = true;
         }
 
-        // ---------------------------------------------------------------------
-        // PB: on uo_dw_key.destroy
-        // ---------------------------------------------------------------------
-        public override void destroy()
+        protected override void Dispose(bool disposing)
         {
-            // PB: vacío
-        }
-
-        // ---------------------------------------------------------------------
-        // PB: event downkey
-        // ---------------------------------------------------------------------
-        public override int downkey()
-        {
-            // PB: call super::downkey
-            base.downkey();
-
-            int rtn = 0;
-            string estilo;
-
-            /*
-             * PB:
-             * Si presione la tecla "+" o "ENTER" y tiene seteada la variable de ir al detalle
-             *
-             * keyflag = 0      No presiono ni SHIFT ni CTRL
-             * keyflag = 1      Presiono SHIFT
-             * keyflag = 2      Presiono CTRL
-             * keyflag = 3      SHIFT + CTRL
-             */
-
-            // PB: If (key = KeyEnter!)
-            if (key == KeyEnter)
+            if (disposing)
             {
-                // PB: Llama al evento detalle de la ventana que lo contiene
-                if (GetRow() > 0)
-                {
-                    Parent?.EventDynamic("ue_dw_detalle", this);
-                    return 0;
-                }
+                this.KeyDown -= uo_dw_key_KeyDown;
             }
+            base.Dispose(disposing);
+        }
 
-            return rtn;
+        // =========================================================
+        // PB: event downkey; call super::downkey;
+        // =========================================================
+        private void uo_dw_key_KeyDown(object? sender, KeyEventArgs e)
+        {
+            // PB: If (key = KeyEnter!)
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            // PB: If GetRow() > 0 Then Parent.Event Dynamic ue_dw_detalle (This)
+            if (GetRow() > 0)
+            {
+                Parent?.TriggerEvent("ue_dw_detalle", this);
+
+                // PB: Return 0 â†’ consumir tecla
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
         }
     }
 }

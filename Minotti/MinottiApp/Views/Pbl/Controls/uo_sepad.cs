@@ -1,6 +1,4 @@
 ﻿using Minotti.utils;
-using Minotti.Views.Basicos.Models;
-using System;
 
 namespace Minotti.Views.Pbl.Controls
 {

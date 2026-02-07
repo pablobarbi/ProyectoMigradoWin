@@ -8,7 +8,6 @@ using Minotti.Data;
 using Minotti.Functions;
 using Minotti.Structures;
 using Minotti.utils;
-using Minotti.Views.Basicos.Models;
 using System.Runtime.InteropServices;
 
 namespace Minotti.Views.Menues.Controls

@@ -1,200 +1,185 @@
-// -----------------------------------------------------------------------------
-// AUTO-MIGRADO desde PowerBuilder (.sru)
-// Origen: uo_link
-// -----------------------------------------------------------------------------
+using Minotti.utils;
+using System.ComponentModel;
+using System.Diagnostics;
 
-#nullable enable
-using System;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Windows.Forms;
-
-
-namespace Minotti.Metadata.GeneratedSru
+namespace MinottiApp.Metadata.GeneratedSru
 {
-    /// <summary>
-    /// PB: uo_link
-    /// HiperLink object.
-    /// </summary>
-    public class uo_link : label
+    public partial class uo_link : LinkLabel, IPowerObject
     {
-        // ---------------------------------------------------------------------
-        // CONSTANTES (type variables)
-        // ---------------------------------------------------------------------
-
-        // link action type
         public const int NONE = 0;
         public const int EXE_FILE = 1;
         public const int OPEN_WINDOW = 2;
         public const int TRIGGER_EVENT = 3;
         public const int POST_EVENT = 4;
         public const int CUSTOM = 5;
-
         public const int MAX_ACTIONS = 5;
 
-        // ---------------------------------------------------------------------
-        // VARIABLES
-        // ---------------------------------------------------------------------
+        private string? is_target;
+        private Form? iw_target;
+        private IPowerObject? ipo_target;
+        private string? is_argument;
+        private FormWindowState iws_state = FormWindowState.Normal;
+        private int ii_action = NONE;
 
-        protected string? is_target;
-        protected windowstate iws_state;
+        private Color il_color = Color.FromArgb(0, 0, 255);
+        private Color il_color_clicked = Color.FromArgb(128, 0, 0);
 
-        protected window? iw_target;
+        // Evento PB
+        public event EventHandler? link;
 
-        protected powerobject? ipo_target;
-        protected string? is_argument;
-
-        protected int ii_action = NONE;
-
-        protected long il_color = RGB(0, 0, 255);
-        protected long il_color_clicked = RGB(128, 0, 0);
-
-        // ---------------------------------------------------------------------
-        // EVENT: link
-        // ---------------------------------------------------------------------
-        public virtual void link()
+        public uo_link()
         {
-            /*
-             * Performs preconfigured action.
-             * If action is CUSTOM, this event must be overloaded (but not overwritten)
-             */
+            LinkBehavior = LinkBehavior.AlwaysUnderline;
+            LinkColor = il_color;
+            VisitedLinkColor = il_color_clicked;
+            ActiveLinkColor = il_color;
+            Text = " none"; // espacio inicial como en PB
+            AutoSize = true;
 
+            Click += OnLinkClickedInternal;
+        }
+
+        private void OnLinkClickedInternal(object? sender, EventArgs e)
+        {
+            try
+            {
+                DoAction();
+            }
+            catch
+            {
+                // PB style: swallow
+            }
+
+            link?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void DoAction()
+        {
             switch (ii_action)
             {
-                case OPEN_WINDOW:
-                    Open(iw_target, is_target);
-                    break;
+                case NONE:
+                    return;
 
                 case EXE_FILE:
-                    Run(is_target, iws_state);
+                    ExecuteFile();
+                    break;
+
+                case OPEN_WINDOW:
+                    OpenWindow();
                     break;
 
                 case TRIGGER_EVENT:
-                    if (!IsNull(is_argument))
-                    {
-                        message.StringParm = is_argument;
-                    }
-                    ipo_target?.TriggerEvent(is_target);
+                    ipo_target?.TriggerEvent(is_target!, is_argument);
+                    LinkVisited = true;
                     break;
 
                 case POST_EVENT:
-                    if (!IsNull(is_argument))
-                    {
-                        message.StringParm = is_argument;
-                    }
-                    ipo_target?.PostEvent(is_target);
+                    ipo_target?.PostEvent(is_target!, is_argument);
+                    LinkVisited = true;
+                    break;
+
+                case CUSTOM:
+                    LinkVisited = true;
                     break;
             }
-
-            this.Post(ChangeColor);
-            return;
         }
 
-        // ---------------------------------------------------------------------
-        // settext
-        // ---------------------------------------------------------------------
-        public void settext(string as_text)
+        private void ExecuteFile()
         {
-            this.Text = " " + as_text;
+            if (string.IsNullOrWhiteSpace(is_target)) return;
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = is_target!,
+                UseShellExecute = true,
+                WindowStyle = iws_state switch
+                {
+                    FormWindowState.Minimized => ProcessWindowStyle.Minimized,
+                    FormWindowState.Maximized => ProcessWindowStyle.Maximized,
+                    _ => ProcessWindowStyle.Normal
+                }
+            };
+
+            try { Process.Start(psi); } catch { }
+
+            LinkVisited = true;
         }
 
-        // ---------------------------------------------------------------------
-        // setlink (string)
-        // ---------------------------------------------------------------------
-        public int setlink(string as_target)
+        private void OpenWindow()
         {
-            return this.setlink(as_target, windowstate.Normal);
+            if (iw_target == null) return;
+
+            try
+            {
+                if (string.Equals(is_target, "modal", StringComparison.OrdinalIgnoreCase))
+                    iw_target.ShowDialog(FindForm());
+                else
+                    iw_target.Show();
+            }
+            catch { }
+
+            LinkVisited = true;
         }
 
         // ---------------------------------------------------------------------
-        // setaction
+        // API PB
         // ---------------------------------------------------------------------
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int setaction(int ai_action)
         {
-            if (ai_action < 0 || ai_action > MAX_ACTIONS)
-                return -1;
-
+            if (ai_action < 0 || ai_action > MAX_ACTIONS) return -1;
             ii_action = ai_action;
             return 0;
         }
 
-        // ---------------------------------------------------------------------
-        // setcolor
-        // ---------------------------------------------------------------------
-        public void setcolor(long al_color)
-        {
-            this.il_color = al_color;
-            this.TextColor = il_color;
-        }
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public int setlink(string as_target)
+            => setlink(as_target, FormWindowState.Normal);
 
-        // ---------------------------------------------------------------------
-        // setlink (string, windowstate)
-        // ---------------------------------------------------------------------
-        public int setlink(string as_target, windowstate aws_state)
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public int setlink(string as_target, FormWindowState aws_state)
         {
             if (ii_action == NONE) return -1;
             if (ii_action != EXE_FILE) return -2;
-            if (IsNull(as_target) || Trim(as_target) == "" || IsNull(aws_state)) return -3;
+            if (string.IsNullOrWhiteSpace(as_target)) return -3;
 
             is_target = as_target;
             iws_state = aws_state;
             return 0;
         }
 
-        // ---------------------------------------------------------------------
-        // setlink (window, string)
-        // ---------------------------------------------------------------------
-        public int setlink(window aw_window, string as_type)
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public int setlink(Form aw_window, string as_type)
         {
             if (ii_action == NONE) return -1;
             if (ii_action != OPEN_WINDOW) return -2;
-            if (IsNull(as_type) || as_type == "") return -3;
+            if (string.IsNullOrWhiteSpace(as_type)) return -3;
 
             iw_target = aw_window;
             is_target = as_type;
             return 0;
         }
 
-        // ---------------------------------------------------------------------
-        // setclickedcolor
-        // ---------------------------------------------------------------------
-        public void setclickedcolor(long al_color)
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public int setlink(IPowerObject apo_target, string as_event)
         {
-            il_color_clicked = al_color;
+            return setlink(apo_target, as_event, null);
         }
 
-        // ---------------------------------------------------------------------
-        // changecolor
-        // ---------------------------------------------------------------------
-        public void ChangeColor()
-        {
-            this.TextColor = il_color_clicked;
-        }
-
-        // ---------------------------------------------------------------------
-        // setlink (powerobject, event)
-        // ---------------------------------------------------------------------
-        public int setlink(powerobject apo_target, string as_event)
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public int setlink(IPowerObject apo_target, string as_event, string? as_argument)
         {
             if (ii_action == NONE) return -1;
             if (ii_action != TRIGGER_EVENT && ii_action != POST_EVENT) return -2;
-            if (IsNull(as_event) || Trim(as_event) == "") return -3;
-            if (IsNull(apo_target) || !IsValid(apo_target)) return -4;
-
-            ipo_target = apo_target;
-            is_target = as_event;
-            SetNull(ref is_argument);
-            return 0;
-        }
-
-        // ---------------------------------------------------------------------
-        // setlink (powerobject, event, argument)
-        // ---------------------------------------------------------------------
-        public int setlink(powerobject apo_target, string as_event, string as_argument)
-        {
-            if (ii_action == NONE) return -1;
-            if (ii_action != TRIGGER_EVENT && ii_action != POST_EVENT) return -2;
-            if (IsNull(as_event) || Trim(as_event) == "") return -3;
-            if (IsNull(apo_target) || !IsValid(apo_target)) return -4;
+            if (string.IsNullOrWhiteSpace(as_event)) return -3;
+            if (apo_target is null) return -4;
 
             ipo_target = apo_target;
             is_target = as_event;
@@ -202,23 +187,48 @@ namespace Minotti.Metadata.GeneratedSru
             return 0;
         }
 
-        // ---------------------------------------------------------------------
-        // EVENT: clicked
-        // ---------------------------------------------------------------------
-        public override void clicked()
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public void settext(string as_text)
         {
-            if (ii_action == NONE) return;
-
-            this.Post(link);
-            return;
+            Text = " " + (as_text ?? string.Empty);
         }
 
-        // ---------------------------------------------------------------------
-        // EVENT: constructor
-        // ---------------------------------------------------------------------
-        public override void constructor()
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public void setcolor(long al_color)
         {
-            this.TextColor = il_color;
+            var c = FromPBColor(al_color);
+            il_color = c;
+            LinkColor = c;
+            ActiveLinkColor = c;
+            if (!LinkVisited) ForeColor = c;
+        }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public void setclickedcolor(long al_color)
+        {
+            var c = FromPBColor(al_color);
+            il_color_clicked = c;
+            VisitedLinkColor = c;
+            if (LinkVisited) ForeColor = c;
+        }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public void changecolor()
+        {
+            LinkVisited = !LinkVisited;
+            ForeColor = LinkVisited ? VisitedLinkColor : LinkColor;
+        }
+
+        private static Color FromPBColor(long pbColor)
+        {
+            int r = (int)(pbColor & 0xFF);
+            int g = (int)((pbColor >> 8) & 0xFF);
+            int b = (int)((pbColor >> 16) & 0xFF);
+            return Color.FromArgb(r, g, b);
         }
     }
 }

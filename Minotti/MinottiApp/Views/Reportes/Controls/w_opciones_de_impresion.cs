@@ -1,9 +1,6 @@
 using Minotti.Data;
 using Minotti.utils;
 using Minotti.Views.Basicos.Controls;
-using Minotti.Views.Basicos.Models;
-using System;
-using System.Windows.Forms;
 
 namespace Minotti.Views.Reportes.Controls
 {
@@ -76,11 +73,11 @@ namespace Minotti.Views.Reportes.Controls
                 idw_dw.DeleteRow(0);
 
             // RowsCopy reemplaza ShareData
-            if (dw_orig.RowsCopy(1, dw_orig.RowCount(), DataWindowBuffer.Primary, idw_dw, 1, DataWindowBuffer.Primary) < 1)
+            if (dw_orig.RowsCopy(1, dw_orig.RowCount(), utils.dwbuffer.Primary, idw_dw, 1, utils.dwbuffer.Primary) < 1)
             {
                 idw_dw.DataObject = dw_orig.DataObject;
 
-                if (dw_orig.RowsCopy(1, dw_orig.RowCount(), DataWindowBuffer.Primary, idw_dw, 1, DataWindowBuffer.Primary) < 1)
+                if (dw_orig.RowsCopy(1, dw_orig.RowCount(), utils.dwbuffer.Primary, idw_dw, 1, utils.dwbuffer.Primary) < 1)
                 {
                     MessageBox.Show("No se puede imprimir el reporte", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Close();
@@ -358,10 +355,10 @@ namespace Minotti.Views.Reportes.Controls
         }
     }
 
-    // Si ya lo tenés en tu migración, eliminá esto y usá el tuyo.
-    // Lo dejo acá solo como enum de apoyo para no cambiar lógica de RowsCopy.
-    public enum DataWindowBuffer
-    {
-        Primary = 0
-    }
+    //// Si ya lo tenés en tu migración, eliminá esto y usá el tuyo.
+    //// Lo dejo acá solo como enum de apoyo para no cambiar lógica de RowsCopy.
+    //public enum utils.dwbuffer
+    //{
+    //    Primary = 0
+    //}
 }

@@ -9,11 +9,6 @@
 using Minotti.Data;
 using Minotti.Functions;
 using Minotti.utils;
-using Minotti.Views.Basicos.Models;
-using MinottiApp.utils;
-using System.Diagnostics.PerformanceData;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Minotti.Metadata.GeneratedSru
 {
@@ -30,7 +25,7 @@ namespace Minotti.Metadata.GeneratedSru
     // -------------------------------------------------------------------------
     // CLASS: uo_tab
     // -------------------------------------------------------------------------
-    public class uo_tab : tab
+    public class uo_tab : TabControl
     {
         // ---------------------------------------------------------------------
         // VARIABLES (PB: type variables)

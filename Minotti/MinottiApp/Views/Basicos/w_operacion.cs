@@ -1,10 +1,9 @@
 using Minotti.Data;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos;
 using Minotti.Views.Basicos.Controls;
-using Minotti.Views.Basicos.Models;
-using Message = Minotti.utils.Message;
 
 namespace Minotti.Views.Pbl.Views
 {

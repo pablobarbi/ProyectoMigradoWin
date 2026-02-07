@@ -58,20 +58,20 @@ namespace Minotti.Metadata.GeneratedSru
                 ls_Param[ll_Fila] = "%" + is_parametros[ll_Fila] + "%";
             }
 
-            if (dw_1.uof_Retrieve(ls_Param) < 1)
+            if (dw_1.uof_retrieve(ls_Param) < 1)
             {
                 dw_1.InsertRow(0);
             }
         }
 
-        // ---------------------------------------------------------------------
-        // PB:
-        // type dw_1 from uo_tp_dw_reporte`dw_1 within uo_tp_dw_reporte_like
-        // (hereda sin cambios)
-        // ---------------------------------------------------------------------
-        public new class dw_1 : uo_tp_dw_reporte.dw_1
-        {
-            // Sin modificaciones
-        }
+        //// ---------------------------------------------------------------------
+        //// PB:
+        //// type dw_1 from uo_tp_dw_reporte`dw_1 within uo_tp_dw_reporte_like
+        //// (hereda sin cambios)
+        //// ---------------------------------------------------------------------
+        //public new class dw_1 : uo_tp_dw_reporte.dw_1
+        //{
+        //    // Sin modificaciones
+        //}
     }
 }

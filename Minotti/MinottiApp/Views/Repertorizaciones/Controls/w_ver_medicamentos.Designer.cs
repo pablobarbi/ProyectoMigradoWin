@@ -1,6 +1,7 @@
 using System.Windows.Forms;
 using Minotti.Views.Basicos.Controls;
 using System.ComponentModel;
+using Minotti.Metadata.GeneratedSru;
 
 namespace Minotti.Views.Repertorizaciones.Controls
 {

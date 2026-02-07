@@ -3,9 +3,7 @@ using Minotti.Functions;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos.Controls;
-using Minotti.Views.Basicos.Models;
-using System;
- 
+
 
 namespace Minotti.Views.Reportes.Controls
 {

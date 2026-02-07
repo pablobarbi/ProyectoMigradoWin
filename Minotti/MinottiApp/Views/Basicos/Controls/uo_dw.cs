@@ -1,13 +1,11 @@
 ﻿using Minotti.Data;
-using Minotti.Metadata;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos.Menues;
-using Minotti.Views.Basicos.Models;
 using Minotti.Views.Reportes.Controls;
 using MinottiApp.Metadata;
 using MinottiApp.utils;
-using System.Data;
 using System.Globalization;
 using Message = Minotti.utils.Message;
 

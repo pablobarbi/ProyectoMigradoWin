@@ -1,10 +1,4 @@
-﻿using Minotti.Views.Basicos.Models;
-using MinottiApp.utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MinottiApp.utils;
 
 namespace Minotti.Views.Reportes.Controls
 {

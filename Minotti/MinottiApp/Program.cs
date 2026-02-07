@@ -1,8 +1,4 @@
-﻿using Minotti.Views.Basicos;
-using Minotti.Views.Basicos.Models;
-using Minotti.Views.Pbl.Controls;
-using System;
-using System.Windows.Forms;
+﻿using Minotti.Views.Pbl.Controls;
 
 namespace Minotti
 {

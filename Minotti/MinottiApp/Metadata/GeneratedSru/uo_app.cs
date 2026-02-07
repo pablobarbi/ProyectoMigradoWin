@@ -4,6 +4,7 @@ using Minotti.Structures;
 using Minotti.utils;
 using Minotti.Views.Basicos;
 using Minotti.Views.Menues.Controls;
+using Minotti.Views.Pbl.Views;
 using MinottiApp.utils;
 using System;
 

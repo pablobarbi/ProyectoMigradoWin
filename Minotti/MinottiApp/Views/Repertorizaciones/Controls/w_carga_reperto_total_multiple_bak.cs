@@ -1,15 +1,7 @@
 using Minotti.Data;
-using Minotti.Functions;
+using Minotti.Metadata.GeneratedSru;
 using Minotti.utils;
 using Minotti.Views.Basicos;
-using Minotti.Views.Basicos.Models;
-using System;
-using System.ComponentModel.Design;
-using System.Data;
-using System.Drawing;
-using System.Net;
-using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Minotti.Views.Repertorizaciones.Controls
 {

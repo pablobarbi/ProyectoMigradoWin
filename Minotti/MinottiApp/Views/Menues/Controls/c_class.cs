@@ -1,5 +1,4 @@
 ﻿using Minotti.utils;
-using Minotti.Views.Basicos.Models;
 using MinottiApp.utils;
 
 namespace Minotti.Views.Menues.Controls

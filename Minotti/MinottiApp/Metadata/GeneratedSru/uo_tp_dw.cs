@@ -7,8 +7,8 @@
 
 #nullable enable
 using Minotti.Data;
+using Minotti.Functions;
 using Minotti.utils;
-using Minotti.Views.Basicos.Models;
 
 namespace Minotti.Metadata.GeneratedSru
 {
@@ -174,14 +174,14 @@ namespace Minotti.Metadata.GeneratedSru
         {
             base.ue_leer_parametros(ref arg_s_pag);
 
-            dw_1.uof_setdataobject(f_ProxParam(arg_s_pag.Parametros));
-            dw_1.SetTransObject(SQLCA);
+            dw_1.uof_setdataobject(f_proxparam.fproxparam(ref arg_s_pag.parametros));
+            dw_1.SetTransObject(SQLCA.Instance);
 
             dw_1.Border = true;
             dw_1.BorderStyle = BorderStyle.StyleBox;
 
-            dw_1.uof_setdwimpresion(f_ProxParam(arg_s_pag.Parametros));
-            dw_1.cant_filas = int.Parse(f_ProxParam(arg_s_pag.Parametros));
+            dw_1.uof_setdwimpresion(f_proxparam.fproxparam(ref arg_s_pag.parametros));
+            dw_1.cant_filas = int.Parse(f_proxparam.fproxparam(ref arg_s_pag.parametros));
 
             if (dw_1.cant_filas > 1)
                 dw_1.uof_marcar_seleccion(1);
