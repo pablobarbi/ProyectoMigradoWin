@@ -1,28 +1,64 @@
-using MinottiApp.utils;
-
 namespace Minotti.Metadata.GeneratedSru
 {
+    /// <summary>
+    /// PB: cat_error_db (nonvisualobject autoinstantiate)
+    /// Contiene datos de error producidos en la Base de Datos
+    /// </summary>
     public class cat_error_db : nonvisualobject
     {
-        // === VARIABLES (type variables) ===
+        // =========================
+        // PB: type variables
+        // =========================
 
-        // PB:
-        // Utilizado cuando ocurre un error al grabar en la Base de Datos
-        public int sqldbcode;        // PB: Nro de Error
-        public string sqlerrtext;    // PB: Descripcion del Error
-        public int UserErrorCode;    // PB: Codigo de error personalizado
-        public string UserErrorText; // PB: Texto personalizado de error
+        /// <summary>
+        /// PB: sqldbcode – Código de error de base de datos
+        /// </summary>
+        public int? SqlDbCode;
 
-        // ==== CONSTRUCTOR (event constructor) ====
-        public override void constructor()
+        /// <summary>
+        /// PB: sqlerrtext – Texto del error de base
+        /// </summary>
+        public string? SqlErrText;
+
+        /// <summary>
+        /// PB: UserErrorCode – Código de error personalizado
+        /// </summary>
+        public int? UserErrorCode;
+
+        /// <summary>
+        /// PB: UserErrorText – Texto personalizado de error
+        /// </summary>
+        public string? UserErrorText;
+
+        // =========================
+        // PB: on create
+        // =========================
+        public override void create()
         {
-            // PB: sin lógica
+            // PB: TriggerEvent( this, "constructor" )
+            constructor();
         }
 
-        // ==== DESTRUCTOR (event destructor) ====
+        // =========================
+        // PB: on destroy
+        // =========================
+        public override void destroy()
+        {
+            // PB: TriggerEvent( this, "destructor" )
+            destructor();
+        }
+
+        // =========================
+        // PB: constructor / destructor
+        // =========================
+        public override void constructor()
+        {
+            // sin lógica en PB
+        }
+
         public override void destructor()
         {
-            // PB: sin lógica
+            // sin lógica en PB
         }
     }
 }

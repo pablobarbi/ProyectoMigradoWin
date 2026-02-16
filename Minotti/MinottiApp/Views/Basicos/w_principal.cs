@@ -485,28 +485,28 @@ namespace Minotti.Views.Basicos
         }
         public void SetMicroHelp(string texto)
         {
-            // PB: SetMicroHelp()
-            // WinForms: normalmente status bar / label inferior
+            //// PB: SetMicroHelp()
+            //// WinForms: normalmente status bar / label inferior
 
-            if (string.IsNullOrWhiteSpace(texto))
-                texto = string.Empty;
+            //if (string.IsNullOrWhiteSpace(texto))
+            //    texto = string.Empty;
 
-            // Opción A: StatusStrip
-            if (this.statusStrip1 != null && this.toolStripStatusLabelMicroHelp != null)
-            {
-                this.toolStripStatusLabelMicroHelp.Text = texto;
-                return;
-            }
+            //// Opción A: StatusStrip
+            //if (this.statusStrip1 != null && this.toolStripStatusLabelMicroHelp != null)
+            //{
+            //    this.toolStripStatusLabelMicroHelp.Text = texto;
+            //    return;
+            //}
 
-            // Opción B: Label simple (fallback)
-            if (this.lblMicroHelp != null)
-            {
-                this.lblMicroHelp.Text = texto;
-                return;
-            }
+            //// Opción B: Label simple (fallback)
+            //if (this.lblMicroHelp != null)
+            //{
+            //    this.lblMicroHelp.Text = texto;
+            //    return;
+            //}
 
-            // Opción C: fallback silencioso (no rompe ejecución)
-            // Debug.WriteLine($"MicroHelp: {texto}");
+            //// Opción C: fallback silencioso (no rompe ejecución)
+            //// Debug.WriteLine($"MicroHelp: {texto}");
         }
 
         // =====================================================
